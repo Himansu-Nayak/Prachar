@@ -28,5 +28,12 @@ logging:
     com.prachar: DEBUG
     org.springframework.security: INFO
     org.hibernate.SQL: WARN
+
+prachar:
+  jwt:
+    secret: ${JWT_SECRET:PracharSecuritySecretKeyForPhase2JWTAuthentication2026SecureKeyMustBeLongEnough}
+    access-token-minutes: 15
+    refresh-token-days: 7
+
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

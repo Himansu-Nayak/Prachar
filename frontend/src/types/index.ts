@@ -28,8 +28,46 @@ export interface UserSummary {
   active: boolean;
 }
 
-export interface ProfileSummary {
-  id: string;
+export interface AuthResponse {
+  accessToken: string;
+  refreshToken: string;
+  tokenType: string;
+  expiresInSeconds: number;
+  userId: string;
+  phoneNumber: string;
+  role: string;
+  hasProfile: boolean;
+  usernameSlug?: string;
+}
+
+export interface SlugAvailability {
+  slug: string;
+  available: boolean;
+  message: string;
+}
+
+export interface PublicProfile {
+  usernameSlug: string;
+  displayName: string;
+  category: string;
+  tagline?: string;
+  bio?: string;
+  primaryPhone: string;
+  whatsappNumber?: string;
+  email?: string;
+  websiteUrl?: string;
+  addressText?: string;
+  city: string;
+  avatarUrl?: string;
+  bannerUrl?: string;
+  themeColor: string;
+  layoutType: string;
+  qrCodeUuid?: string;
+  qrTargetUrl?: string;
+}
+
+export interface MyProfile {
+  profileId: string;
   usernameSlug: string;
   displayName: string;
   category: string;
@@ -44,6 +82,53 @@ export interface ProfileSummary {
   avatarUrl?: string;
   bannerUrl?: string;
   status: ProfileStatus;
+  isPublic: boolean;
+  createdAt: string;
+
+  // Digital Card
+  cardId?: string;
+  themeColor?: string;
+  layoutType?: string;
+  isNfcEnabled?: boolean;
+  cardStatus?: CardStatus;
+
+  // QR Code
+  qrId?: string;
+  codeUuid?: string;
+  targetUrl?: string;
+  scanCount?: number;
+}
+
+export interface CreateProfileInput {
+  usernameSlug: string;
+  displayName: string;
+  category: string;
+  tagline?: string;
+  bio?: string;
+  primaryPhone: string;
+  whatsappNumber?: string;
+  email?: string;
+  websiteUrl?: string;
+  addressText?: string;
+  city?: string;
+  themeColor?: string;
+}
+
+export interface UpdateProfileInput {
+  displayName?: string;
+  category?: string;
+  tagline?: string;
+  bio?: string;
+  primaryPhone?: string;
+  whatsappNumber?: string;
+  email?: string;
+  websiteUrl?: string;
+  addressText?: string;
+  city?: string;
+  avatarUrl?: string;
+  bannerUrl?: string;
+  isPublic?: boolean;
+  themeColor?: string;
 }
 
 export interface HealthResponse {

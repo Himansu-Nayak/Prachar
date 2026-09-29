@@ -17,5 +17,7 @@ spring:
 prachar:
   cors:
     allowed-origins: "http://localhost:3000"
-  security:
-    jwt-secret: "test_secret_key_at_least_256_bits_length_for_hmac_sha256_prachar_test_environment"
+  jwt:
+    secret: "test_secret_key_at_least_256_bits_length_for_hmac_sha256_prachar_test_environment"
+    access-token-minutes: 15
+    refresh-token-days: 7
