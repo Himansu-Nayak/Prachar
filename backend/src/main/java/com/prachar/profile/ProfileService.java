@@ -59,17 +59,29 @@ public class ProfileService {
         Profile profile = profileRepository.findByUsernameSlug(slug)
                 .orElseThrow(() -> new EntityNotFoundException("Public profile '" + slug + "' not found"));
 
-        if (!profile.isPublic() || profile.getStatus() != ProfileStatus.ACTIVE) {
-            throw new EntityNotFoundException("Public profile '" + slug + "' is currently inactive or private");
-        }
-
-        DigitalCard card = digitalCardRepository.findByProfileId(profile.getId()).orElse(null);
-        QRCode qrCode = qrCodeRepository.findByProfileId(profile.getId()).orElse(null);
-
         PublicProfileResponseDto dto = new PublicProfileResponseDto();
         dto.setUsernameSlug(profile.getUsernameSlug());
         dto.setDisplayName(profile.getDisplayName());
         dto.setCategory(profile.getCategory());
+        dto.setCity(profile.getCity());
+        dto.setDistrict(profile.getDistrict());
+        dto.setState(profile.getState());
+        dto.setStatus(profile.getStatus().name());
+
+        // Inactive or suspended profiles must not expose contact or card details
+        if (profile.getStatus() == ProfileStatus.SUSPENDED) {
+            dto.setBio("This profile has been suspended by platform administration.");
+            return dto;
+        }
+
+        if (profile.getStatus() == ProfileStatus.INACTIVE || !profile.isPublic()) {
+            dto.setStatus(ProfileStatus.INACTIVE.name());
+            dto.setBio("This profile is temporarily inactive.");
+            return dto;
+        }
+
+        // Active profile - expose full public presence
+        dto.setBusinessName(profile.getBusinessName());
         dto.setTagline(profile.getTagline());
         dto.setBio(profile.getBio());
         dto.setPrimaryPhone(profile.getPrimaryPhone());
@@ -77,11 +89,17 @@ public class ProfileService {
         dto.setEmail(profile.getEmail());
         dto.setWebsiteUrl(profile.getWebsiteUrl());
         dto.setAddressText(profile.getAddressText());
-        dto.setCity(profile.getCity());
         dto.setAvatarUrl(profile.getAvatarUrl());
         dto.setBannerUrl(profile.getBannerUrl());
+        dto.setSocialInstagram(profile.getSocialInstagram());
+        dto.setSocialFacebook(profile.getSocialFacebook());
+        dto.setSocialTwitter(profile.getSocialTwitter());
+        dto.setSocialLinkedin(profile.getSocialLinkedin());
 
-        if (card != null) {
+        DigitalCard card = digitalCardRepository.findByProfileId(profile.getId()).orElse(null);
+        QRCode qrCode = qrCodeRepository.findByProfileId(profile.getId()).orElse(null);
+
+        if (card != null && card.getStatus() == CardStatus.ACTIVE) {
             dto.setThemeColor(card.getThemeColor());
             dto.setLayoutType(card.getLayoutType());
         } else {
@@ -89,7 +107,7 @@ public class ProfileService {
             dto.setLayoutType("STANDARD");
         }
 
-        if (qrCode != null) {
+        if (qrCode != null && qrCode.getStatus() == com.prachar.qr.QRStatus.ACTIVE) {
             dto.setQrCodeUuid(qrCode.getCodeUuid());
             dto.setQrTargetUrl(qrCode.getTargetUrl());
         }
@@ -122,13 +140,16 @@ public class ProfileService {
         String normalizedSlug = reservedSlugService.normalizeSlug(rawSlug);
 
         if (profileRepository.existsByUsernameSlug(normalizedSlug)) {
-            throw new IllegalArgumentException("Username slug '" + normalizedSlug + "' is already taken.");
+            throw new com.prachar.common.ResourceConflictException("Username slug '" + normalizedSlug + "' is already taken.");
         }
 
         Profile profile = new Profile();
         profile.setUser(user);
         profile.setUsernameSlug(normalizedSlug);
         profile.setDisplayName(request.getDisplayName().trim());
+        if (request.getBusinessName() != null && !request.getBusinessName().isBlank()) {
+            profile.setBusinessName(request.getBusinessName().trim());
+        }
         profile.setCategory(request.getCategory().trim());
         profile.setTagline(request.getTagline());
         profile.setBio(request.getBio());
@@ -138,6 +159,12 @@ public class ProfileService {
         profile.setWebsiteUrl(request.getWebsiteUrl());
         profile.setAddressText(request.getAddressText());
         profile.setCity(request.getCity() != null ? request.getCity().trim() : "Bhubaneswar");
+        profile.setDistrict(request.getDistrict() != null ? request.getDistrict().trim() : "Khordha");
+        profile.setState(request.getState() != null ? request.getState().trim() : "Odisha");
+        profile.setSocialInstagram(request.getSocialInstagram());
+        profile.setSocialFacebook(request.getSocialFacebook());
+        profile.setSocialTwitter(request.getSocialTwitter());
+        profile.setSocialLinkedin(request.getSocialLinkedin());
         profile.setStatus(ProfileStatus.ACTIVE);
         profile.setPublic(true);
 
@@ -156,6 +183,7 @@ public class ProfileService {
         String codeUuid = UUID.randomUUID().toString();
         String targetUrl = "/u/" + normalizedSlug;
         QRCode qrCode = new QRCode(savedProfile, codeUuid, targetUrl);
+        qrCode.setStatus(com.prachar.qr.QRStatus.ACTIVE);
         QRCode savedQr = qrCodeRepository.save(qrCode);
 
         return mapToMyProfileResponse(savedProfile, savedCard, savedQr);
@@ -168,6 +196,9 @@ public class ProfileService {
 
         if (request.getDisplayName() != null && !request.getDisplayName().isBlank()) {
             profile.setDisplayName(request.getDisplayName().trim());
+        }
+        if (request.getBusinessName() != null) {
+            profile.setBusinessName(request.getBusinessName().trim());
         }
         if (request.getCategory() != null && !request.getCategory().isBlank()) {
             profile.setCategory(request.getCategory().trim());
@@ -196,11 +227,29 @@ public class ProfileService {
         if (request.getCity() != null && !request.getCity().isBlank()) {
             profile.setCity(request.getCity().trim());
         }
+        if (request.getDistrict() != null && !request.getDistrict().isBlank()) {
+            profile.setDistrict(request.getDistrict().trim());
+        }
+        if (request.getState() != null && !request.getState().isBlank()) {
+            profile.setState(request.getState().trim());
+        }
         if (request.getAvatarUrl() != null) {
             profile.setAvatarUrl(request.getAvatarUrl().trim());
         }
         if (request.getBannerUrl() != null) {
             profile.setBannerUrl(request.getBannerUrl().trim());
+        }
+        if (request.getSocialInstagram() != null) {
+            profile.setSocialInstagram(request.getSocialInstagram().trim());
+        }
+        if (request.getSocialFacebook() != null) {
+            profile.setSocialFacebook(request.getSocialFacebook().trim());
+        }
+        if (request.getSocialTwitter() != null) {
+            profile.setSocialTwitter(request.getSocialTwitter().trim());
+        }
+        if (request.getSocialLinkedin() != null) {
+            profile.setSocialLinkedin(request.getSocialLinkedin().trim());
         }
         if (request.getIsPublic() != null) {
             profile.setPublic(request.getIsPublic());
@@ -219,11 +268,30 @@ public class ProfileService {
         return mapToMyProfileResponse(updatedProfile, card, qrCode);
     }
 
+    @Transactional
+    public MyProfileResponseDto updateProfileStatus(UUID userId, ProfileStatus newStatus) {
+        Profile profile = profileRepository.findByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Profile not found for authenticated user."));
+
+        if (profile.getStatus() == ProfileStatus.SUSPENDED && newStatus != ProfileStatus.SUSPENDED) {
+            throw new org.springframework.security.access.AccessDeniedException("Suspended profiles can only be reactivated by an administrator.");
+        }
+
+        profile.setStatus(newStatus);
+        Profile updated = profileRepository.save(profile);
+
+        DigitalCard card = digitalCardRepository.findByProfileId(profile.getId()).orElse(null);
+        QRCode qrCode = qrCodeRepository.findByProfileId(profile.getId()).orElse(null);
+
+        return mapToMyProfileResponse(updated, card, qrCode);
+    }
+
     private MyProfileResponseDto mapToMyProfileResponse(Profile profile, DigitalCard card, QRCode qrCode) {
         MyProfileResponseDto dto = new MyProfileResponseDto();
         dto.setProfileId(profile.getId());
         dto.setUsernameSlug(profile.getUsernameSlug());
         dto.setDisplayName(profile.getDisplayName());
+        dto.setBusinessName(profile.getBusinessName());
         dto.setCategory(profile.getCategory());
         dto.setTagline(profile.getTagline());
         dto.setBio(profile.getBio());
@@ -233,8 +301,14 @@ public class ProfileService {
         dto.setWebsiteUrl(profile.getWebsiteUrl());
         dto.setAddressText(profile.getAddressText());
         dto.setCity(profile.getCity());
+        dto.setDistrict(profile.getDistrict());
+        dto.setState(profile.getState());
         dto.setAvatarUrl(profile.getAvatarUrl());
         dto.setBannerUrl(profile.getBannerUrl());
+        dto.setSocialInstagram(profile.getSocialInstagram());
+        dto.setSocialFacebook(profile.getSocialFacebook());
+        dto.setSocialTwitter(profile.getSocialTwitter());
+        dto.setSocialLinkedin(profile.getSocialLinkedin());
         dto.setStatus(profile.getStatus().name());
         dto.setPublic(profile.isPublic());
         dto.setCreatedAt(profile.getCreatedAt());
@@ -252,6 +326,7 @@ public class ProfileService {
             dto.setCodeUuid(qrCode.getCodeUuid());
             dto.setTargetUrl(qrCode.getTargetUrl());
             dto.setScanCount(qrCode.getScanCount());
+            dto.setQrStatus(qrCode.getStatus().name());
         }
 
         return dto;

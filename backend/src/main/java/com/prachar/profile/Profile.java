@@ -21,6 +21,9 @@ public class Profile extends BaseEntity {
     @Column(name = "display_name", nullable = false, length = 150)
     private String displayName;
 
+    @Column(name = "business_name", length = 150)
+    private String businessName;
+
     @Column(name = "category", nullable = false, length = 100)
     private String category;
 
@@ -48,11 +51,29 @@ public class Profile extends BaseEntity {
     @Column(name = "city", nullable = false, length = 100)
     private String city = "Bhubaneswar";
 
+    @Column(name = "district", nullable = false, length = 100)
+    private String district = "Khordha";
+
+    @Column(name = "state", nullable = false, length = 100)
+    private String state = "Odisha";
+
     @Column(name = "avatar_url", length = 500)
     private String avatarUrl;
 
     @Column(name = "banner_url", length = 500)
     private String bannerUrl;
+
+    @Column(name = "social_instagram", length = 255)
+    private String socialInstagram;
+
+    @Column(name = "social_facebook", length = 255)
+    private String socialFacebook;
+
+    @Column(name = "social_twitter", length = 255)
+    private String socialTwitter;
+
+    @Column(name = "social_linkedin", length = 255)
+    private String socialLinkedin;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 30)
@@ -86,6 +107,14 @@ public class Profile extends BaseEntity {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public String getBusinessName() {
+        return businessName;
+    }
+
+    public void setBusinessName(String businessName) {
+        this.businessName = businessName;
     }
 
     public String getCategory() {
@@ -160,6 +189,22 @@ public class Profile extends BaseEntity {
         this.city = city;
     }
 
+    public String getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
     public String getAvatarUrl() {
         return avatarUrl;
     }
@@ -174,6 +219,38 @@ public class Profile extends BaseEntity {
 
     public void setBannerUrl(String bannerUrl) {
         this.bannerUrl = bannerUrl;
+    }
+
+    public String getSocialInstagram() {
+        return socialInstagram;
+    }
+
+    public void setSocialInstagram(String socialInstagram) {
+        this.socialInstagram = socialInstagram;
+    }
+
+    public String getSocialFacebook() {
+        return socialFacebook;
+    }
+
+    public void setSocialFacebook(String socialFacebook) {
+        this.socialFacebook = socialFacebook;
+    }
+
+    public String getSocialTwitter() {
+        return socialTwitter;
+    }
+
+    public void setSocialTwitter(String socialTwitter) {
+        this.socialTwitter = socialTwitter;
+    }
+
+    public String getSocialLinkedin() {
+        return socialLinkedin;
+    }
+
+    public void setSocialLinkedin(String socialLinkedin) {
+        this.socialLinkedin = socialLinkedin;
     }
 
     public ProfileStatus getStatus() {

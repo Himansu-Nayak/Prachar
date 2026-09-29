@@ -1,5 +1,6 @@
 package com.prachar.qr;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.prachar.common.BaseEntity;
 import com.prachar.profile.Profile;
 import jakarta.persistence.*;
@@ -10,6 +11,7 @@ import jakarta.persistence.*;
 })
 public class QRCode extends BaseEntity {
 
+    @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "profile_id", nullable = false, unique = true)
     private Profile profile;
@@ -22,6 +24,10 @@ public class QRCode extends BaseEntity {
 
     @Column(name = "scan_count", nullable = false)
     private long scanCount = 0L;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, length = 30)
+    private QRStatus status = QRStatus.ACTIVE;
 
     public QRCode() {
     }
@@ -63,5 +69,13 @@ public class QRCode extends BaseEntity {
 
     public void setScanCount(long scanCount) {
         this.scanCount = scanCount;
+    }
+
+    public QRStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(QRStatus status) {
+        this.status = status;
     }
 }

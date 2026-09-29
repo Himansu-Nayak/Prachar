@@ -1,8 +1,10 @@
 export type Role = 'ROLE_USER' | 'ROLE_ADVERTISER' | 'ROLE_STAFF' | 'ROLE_ADMIN';
 
-export type ProfileStatus = 'DRAFT' | 'ACTIVE' | 'SUSPENDED';
+export type ProfileStatus = 'DRAFT' | 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
 
-export type CardStatus = 'ACTIVE' | 'SUSPENDED' | 'DECOMMISSIONED';
+export type CardStatus = 'ACTIVE' | 'INACTIVE' | 'SUSPENDED' | 'DECOMMISSIONED';
+
+export type QRStatus = 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -49,6 +51,7 @@ export interface SlugAvailability {
 export interface PublicProfile {
   usernameSlug: string;
   displayName: string;
+  businessName?: string;
   category: string;
   tagline?: string;
   bio?: string;
@@ -58,18 +61,26 @@ export interface PublicProfile {
   websiteUrl?: string;
   addressText?: string;
   city: string;
+  district?: string;
+  state?: string;
   avatarUrl?: string;
   bannerUrl?: string;
   themeColor: string;
   layoutType: string;
   qrCodeUuid?: string;
   qrTargetUrl?: string;
+  socialInstagram?: string;
+  socialFacebook?: string;
+  socialTwitter?: string;
+  socialLinkedin?: string;
+  status: string;
 }
 
 export interface MyProfile {
   profileId: string;
   usernameSlug: string;
   displayName: string;
+  businessName?: string;
   category: string;
   tagline?: string;
   bio?: string;
@@ -79,8 +90,14 @@ export interface MyProfile {
   websiteUrl?: string;
   addressText?: string;
   city: string;
+  district?: string;
+  state?: string;
   avatarUrl?: string;
   bannerUrl?: string;
+  socialInstagram?: string;
+  socialFacebook?: string;
+  socialTwitter?: string;
+  socialLinkedin?: string;
   status: ProfileStatus;
   isPublic: boolean;
   createdAt: string;
@@ -97,11 +114,13 @@ export interface MyProfile {
   codeUuid?: string;
   targetUrl?: string;
   scanCount?: number;
+  qrStatus?: string;
 }
 
 export interface CreateProfileInput {
   usernameSlug: string;
   displayName: string;
+  businessName?: string;
   category: string;
   tagline?: string;
   bio?: string;
@@ -111,11 +130,18 @@ export interface CreateProfileInput {
   websiteUrl?: string;
   addressText?: string;
   city?: string;
+  district?: string;
+  state?: string;
+  socialInstagram?: string;
+  socialFacebook?: string;
+  socialTwitter?: string;
+  socialLinkedin?: string;
   themeColor?: string;
 }
 
 export interface UpdateProfileInput {
   displayName?: string;
+  businessName?: string;
   category?: string;
   tagline?: string;
   bio?: string;
@@ -125,10 +151,29 @@ export interface UpdateProfileInput {
   websiteUrl?: string;
   addressText?: string;
   city?: string;
+  district?: string;
+  state?: string;
+  socialInstagram?: string;
+  socialFacebook?: string;
+  socialTwitter?: string;
+  socialLinkedin?: string;
   avatarUrl?: string;
   bannerUrl?: string;
   isPublic?: boolean;
   themeColor?: string;
+}
+
+export interface QRScanEventSummary {
+  scannedAt: string;
+  deviceFamily: string;
+  referrer?: string;
+}
+
+export interface QRAnalytics {
+  totalScans: number;
+  qrStatus: string;
+  codeUuid: string;
+  recentEvents: QRScanEventSummary[];
 }
 
 export interface HealthResponse {

@@ -57,8 +57,37 @@ public class DigitalCardController {
         if (payload.containsKey("layoutType") && payload.get("layoutType") != null) {
             card.setLayoutType(payload.get("layoutType").trim());
         }
+        if (payload.containsKey("isNfcEnabled") && payload.get("isNfcEnabled") != null) {
+            card.setNfcEnabled(Boolean.parseBoolean(payload.get("isNfcEnabled")));
+        }
+        if (payload.containsKey("status") && payload.get("status") != null) {
+            card.setStatus(CardStatus.valueOf(payload.get("status").trim().toUpperCase()));
+        }
 
         DigitalCard updated = digitalCardRepository.save(card);
         return ResponseEntity.ok(ApiResponse.success(updated, "Digital card updated."));
+    }
+
+    @PatchMapping("/me/status")
+    public ResponseEntity<ApiResponse<DigitalCard>> updateCardStatus(
+            @AuthenticationPrincipal UUID userId,
+            @RequestBody Map<String, String> payload) {
+        if (userId == null) {
+            throw new IllegalArgumentException("Authentication required.");
+        }
+        String statusStr = payload.get("status");
+        if (statusStr == null || statusStr.isBlank()) {
+            throw new IllegalArgumentException("Card status is required.");
+        }
+
+        Profile profile = profileRepository.findByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Profile not found."));
+
+        DigitalCard card = digitalCardRepository.findByProfileId(profile.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Digital card not found."));
+
+        card.setStatus(CardStatus.valueOf(statusStr.trim().toUpperCase()));
+        DigitalCard updated = digitalCardRepository.save(card);
+        return ResponseEntity.ok(ApiResponse.success(updated, "Digital card status updated to " + updated.getStatus()));
     }
 }

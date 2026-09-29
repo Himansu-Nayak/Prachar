@@ -45,18 +45,33 @@
 
 ---
 
-## 3. Dynamic QR Redirection Security
+## 3. Dynamic QR Redirection Security & Lifecycle Governance
 
-1. **Strict Internal Routing Contract:**
+1. **Strict Internal Routing Contract (Open Redirect Elimination):**
    - Dynamic 302 Found redirects (`GET /qr/{codeUuid}`) only route to internal canonical profile paths (`/u/{username_slug}`).
    - Open redirect vulnerabilities are completely eliminated by avoiding external target resolution or client-supplied URL parameters.
 2. **Lifecycle & Tamper Resistance:**
    - Code UUIDs are 64-character high-entropy alphanumeric strings.
-   - Inactive or suspended profiles return HTTP 404/410 rather than leaking dormant metadata.
+   - Deactivated QR codes (`status = INACTIVE`) immediately reject redirection with `INVALID_STATE`.
+   - Inactive or suspended profiles (`status = INACTIVE` or `SUSPENDED`) immediately reject redirection with `INVALID_STATE`.
+   - Suspended profiles cannot be reactivated by merchants; reactivation is locked to platform administration.
+3. **Data Leakage Suppression on Public Views:**
+   - When a profile is `INACTIVE` or `SUSPENDED`, public API endpoints (`GET /api/profiles/public/{slug}`) strip and redact all private contact details (phone, email, street address, and active QR metadata), providing clean notice states with zero data leakage.
 
 ---
 
-## 4. Network & Application Security Controls
+## 4. Privacy-Preserving Scan Telemetry (DPDP Act 2023)
+
+1. **Cryptographic One-Way Hashing:**
+   - Visitor IP addresses captured during dynamic QR scans (`GET /qr/{codeUuid}`) are immediately hashed using SHA-256 (`ipHash = sha256(clientIp)`).
+   - Raw IP addresses are NEVER persisted to the database, logs, or caches.
+2. **Data Minimization:**
+   - Only non-identifiable telemetry attributes are recorded: timestamp (`scanned_at`), device family from User-Agent (e.g. Mobile, Tablet, Desktop), and HTTP Referer.
+   - Fully compliant with India Digital Personal Data Protection Act 2023 guidelines on data minimization and privacy by design.
+
+---
+
+## 5. Network & Application Security Controls
 
 1. **CORS Policy (Development vs. Production):**
    - *Development:* Allows origin `http://localhost:3000` with credentials enabled.

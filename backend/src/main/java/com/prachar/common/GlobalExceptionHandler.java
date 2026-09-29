@@ -54,10 +54,24 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error("UNAUTHORIZED", "Full authentication is required to access this resource"));
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ApiResponse<Void>> handleIllegalState(IllegalStateException ex) {
+        log.warn("Invalid state: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.error("INVALID_STATE", ex.getMessage()));
+    }
+
+    @ExceptionHandler(ResourceConflictException.class)
+    public ResponseEntity<ApiResponse<Void>> handleResourceConflict(ResourceConflictException ex) {
+        log.warn("Resource conflict: {}", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(ApiResponse.error("RESOURCE_CONFLICT", ex.getMessage()));
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiResponse<Void>> handleAccessDenied(AccessDeniedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(ApiResponse.error("FORBIDDEN", "Access denied: insufficient permissions"));
+                .body(ApiResponse.error("FORBIDDEN", ex.getMessage() != null ? ex.getMessage() : "Access denied: insufficient permissions"));
     }
 
     @ExceptionHandler(Exception.class)

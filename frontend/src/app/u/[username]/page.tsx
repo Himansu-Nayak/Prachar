@@ -19,12 +19,31 @@ export async function generateMetadata({ params }: ProfilePageProps): Promise<Me
     return {
       title: "Profile Not Found | PRACHAR",
       description: "The requested phygital publicity profile is not available on PRACHAR.",
+      robots: { index: false, follow: false },
     };
   }
 
   const profile = res.data;
-  const title = `${profile.displayName} | PRACHAR Phygital Profile`;
-  const description = profile.tagline || profile.bio || `${profile.category} in ${profile.city}, Odisha. Verified by PRACHAR Phygital Platform.`;
+
+  if (profile.status === "INACTIVE") {
+    return {
+      title: `${profile.displayName} (Inactive) | PRACHAR`,
+      description: "This phygital profile is currently inactive.",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  if (profile.status === "SUSPENDED") {
+    return {
+      title: "Profile Suspended | PRACHAR",
+      description: "This phygital profile has been suspended.",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  const title = `${profile.displayName}${profile.businessName ? ` (${profile.businessName})` : ""} | PRACHAR Phygital Profile`;
+  const locationStr = [profile.city, profile.district, profile.state || "Odisha"].filter(Boolean).join(", ");
+  const description = profile.tagline || profile.bio || `${profile.category} in ${locationStr}. Verified by PRACHAR Phygital Platform.`;
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const canonicalUrl = `${appUrl}/u/${profile.usernameSlug}`;
 
@@ -63,6 +82,58 @@ export default async function PublicProfilePage({ params }: ProfilePageProps) {
   }
 
   const profile = res.data;
+
+  // Handle Suspended Profile State
+  if (profile.status === "SUSPENDED") {
+    return (
+      <div className="min-h-screen py-16 px-4 flex items-center justify-center">
+        <div className="w-full max-w-md text-center p-8 rounded-3xl border border-rose-900/60 bg-slate-900/90 shadow-2xl backdrop-blur-md">
+          <div className="w-16 h-16 rounded-full bg-rose-950/80 border border-rose-800 flex items-center justify-center text-3xl mx-auto mb-4">
+            ⚠️
+          </div>
+          <h1 className="text-xl font-bold text-white mb-2">Profile Suspended</h1>
+          <p className="text-xs text-slate-400 mb-6 leading-relaxed">
+            This digital profile is currently suspended due to policy or administrative review. If you believe this is an error, please contact PRACHAR support.
+          </p>
+          <Link
+            href="/"
+            className="inline-block py-2.5 px-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 font-medium transition"
+          >
+            Return to PRACHAR Home
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Handle Inactive Profile State
+  if (profile.status === "INACTIVE") {
+    return (
+      <div className="min-h-screen py-16 px-4 flex items-center justify-center">
+        <div className="w-full max-w-md text-center p-8 rounded-3xl border border-slate-800 bg-slate-900/90 shadow-2xl backdrop-blur-md">
+          <div className="w-16 h-16 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-3xl mx-auto mb-4">
+            ⏸️
+          </div>
+          <h1 className="text-xl font-bold text-white mb-1">{profile.displayName}</h1>
+          <p className="text-xs text-orange-400 font-medium mb-3 uppercase tracking-wider">{profile.category}</p>
+          <div className="inline-block px-3 py-1 rounded-full bg-amber-950/60 border border-amber-800/60 text-amber-300 text-xs font-semibold mb-4">
+            Profile Temporarily Inactive
+          </div>
+          <p className="text-xs text-slate-400 mb-6 leading-relaxed">
+            The profile owner has temporarily deactivated this phygital profile. Contact details and card services are currently unavailable. Please check back later.
+          </p>
+          <Link
+            href="/"
+            className="inline-block py-2.5 px-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 font-medium transition"
+          >
+            Explore PRACHAR →
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Active Profile Rendering
   const initials = profile.displayName
     .split(" ")
     .map((word) => word[0])
@@ -70,6 +141,8 @@ export default async function PublicProfilePage({ params }: ProfilePageProps) {
     .slice(0, 2)
     .join("")
     .toUpperCase();
+
+  const locationDisplay = [profile.city, profile.district, profile.state || "Odisha"].filter(Boolean).join(", ");
 
   return (
     <div className="min-h-screen py-10 px-4 flex items-center justify-center">
@@ -118,8 +191,11 @@ export default async function PublicProfilePage({ params }: ProfilePageProps) {
 
             {/* Display Name & Meta */}
             <h1 className="text-2xl font-bold text-white leading-tight">{profile.displayName}</h1>
+            {profile.businessName && (
+              <p className="text-sm font-medium text-slate-300 mt-0.5">{profile.businessName}</p>
+            )}
             <p className="text-xs text-orange-400 font-medium mt-1 uppercase tracking-wider">{profile.category}</p>
-            <p className="text-xs text-slate-400 mt-0.5">{profile.city}, Odisha</p>
+            <p className="text-xs text-slate-400 mt-0.5">{locationDisplay}</p>
 
             {/* Tagline */}
             {profile.tagline && (
@@ -160,7 +236,60 @@ export default async function PublicProfilePage({ params }: ProfilePageProps) {
               </div>
             )}
 
-            {/* Interactive Actions (Call, WhatsApp, vCard, QR Modal) */}
+            {/* Social Links */}
+            {(profile.socialInstagram || profile.socialFacebook || profile.socialTwitter || profile.socialLinkedin) && (
+              <div className="mt-4 pt-3 border-t border-slate-800/80">
+                <p className="text-[10px] text-slate-500 uppercase font-semibold tracking-wider mb-2">Connect On Social</p>
+                <div className="flex items-center justify-center gap-3">
+                  {profile.socialInstagram && (
+                    <a
+                      href={profile.socialInstagram.startsWith("http") ? profile.socialInstagram : `https://instagram.com/${profile.socialInstagram.replace(/^@/, "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="Instagram"
+                      className="px-2.5 py-1 rounded-full bg-slate-800 hover:bg-pink-900/50 border border-slate-700 hover:border-pink-600 text-xs text-slate-300 hover:text-white transition font-medium"
+                    >
+                      Instagram
+                    </a>
+                  )}
+                  {profile.socialFacebook && (
+                    <a
+                      href={profile.socialFacebook.startsWith("http") ? profile.socialFacebook : `https://${profile.socialFacebook}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="Facebook"
+                      className="px-2.5 py-1 rounded-full bg-slate-800 hover:bg-blue-900/50 border border-slate-700 hover:border-blue-600 text-xs text-slate-300 hover:text-white transition font-medium"
+                    >
+                      Facebook
+                    </a>
+                  )}
+                  {profile.socialTwitter && (
+                    <a
+                      href={profile.socialTwitter.startsWith("http") ? profile.socialTwitter : `https://x.com/${profile.socialTwitter.replace(/^@/, "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="Twitter / X"
+                      className="px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-500 text-xs text-slate-300 hover:text-white transition font-medium"
+                    >
+                      𝕏 (Twitter)
+                    </a>
+                  )}
+                  {profile.socialLinkedin && (
+                    <a
+                      href={profile.socialLinkedin.startsWith("http") ? profile.socialLinkedin : `https://${profile.socialLinkedin}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="LinkedIn"
+                      className="px-2.5 py-1 rounded-full bg-slate-800 hover:bg-blue-900/50 border border-slate-700 hover:border-blue-600 text-xs text-slate-300 hover:text-white transition font-medium"
+                    >
+                      LinkedIn
+                    </a>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Interactive Actions (Call, WhatsApp, Share, Download QR) */}
             <ProfileClientActions profile={profile} />
 
             {/* Footer Attribution */}

@@ -8,7 +8,9 @@ import com.prachar.auth.dto.OtpRequestDto;
 import com.prachar.auth.dto.OtpVerifyDto;
 import com.prachar.card.DigitalCardRepository;
 import com.prachar.profile.ProfileRepository;
+import com.prachar.profile.ProfileStatus;
 import com.prachar.profile.dto.CreateProfileRequestDto;
+import com.prachar.profile.dto.UpdateProfileStatusRequestDto;
 import com.prachar.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,11 +23,13 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -55,17 +59,22 @@ class QRRedirectIntegrationTest {
     private QRCodeRepository qrCodeRepository;
 
     @Autowired
+    private QRScanEventRepository qrScanEventRepository;
+
+    @Autowired
     private OtpVerificationRepository otpRepository;
 
     @Autowired
     private RefreshTokenRepository refreshTokenRepository;
 
     private String codeUuid;
+    private String authToken;
     private final String testPhone = "+919937012345";
 
     @BeforeEach
     void setUp() throws Exception {
         devOtpProvider.clear();
+        qrScanEventRepository.deleteAll();
         qrCodeRepository.deleteAll();
         digitalCardRepository.deleteAll();
         profileRepository.deleteAll();
@@ -86,7 +95,7 @@ class QRRedirectIntegrationTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String token = objectMapper.readTree(authResult.getResponse().getContentAsString())
+        authToken = objectMapper.readTree(authResult.getResponse().getContentAsString())
                 .get("data").get("accessToken").asText();
 
         // Create Profile
@@ -97,7 +106,7 @@ class QRRedirectIntegrationTest {
         request.setPrimaryPhone(testPhone);
 
         MvcResult profileResult = mockMvc.perform(post("/api/profiles")
-                        .header("Authorization", "Bearer " + token)
+                        .header("Authorization", "Bearer " + authToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -108,17 +117,32 @@ class QRRedirectIntegrationTest {
     }
 
     @Test
-    @DisplayName("Should issue HTTP 302 Found redirect to public profile and increment scan count")
+    @DisplayName("Should issue HTTP 302 Found redirect to public profile, increment scan count, and record hashed IP telemetry")
     void shouldRedirectAndIncrementScanCount() throws Exception {
         QRCode before = qrCodeRepository.findByCodeUuid(codeUuid).orElseThrow();
         assertEquals(0L, before.getScanCount());
 
-        mockMvc.perform(get("/qr/" + codeUuid))
+        mockMvc.perform(get("/qr/" + codeUuid)
+                        .header("X-Forwarded-For", "203.0.113.195")
+                        .header("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X)")
+                        .header("Referer", "https://prachar.in/booklet"))
                 .andExpect(status().isFound())
                 .andExpect(header().string("Location", "/u/lingaraj-store"));
 
         QRCode after = qrCodeRepository.findByCodeUuid(codeUuid).orElseThrow();
         assertEquals(1L, after.getScanCount());
+
+        // Verify telemetry foundation event
+        List<QRScanEvent> events = qrScanEventRepository.findByQrCodeId(after.getId());
+        assertEquals(1, events.size());
+        QRScanEvent event = events.get(0);
+
+        // Verify IP address is hashed (SHA-256), NOT stored raw
+        assertNotNull(event.getIpHash());
+        assertNotEquals("203.0.113.195", event.getIpHash());
+        assertEquals(64, event.getIpHash().length()); // SHA-256 hex is 64 chars
+        assertTrue(event.getUserAgent().contains("iPhone"));
+        assertEquals("https://prachar.in/booklet", event.getReferrer());
     }
 
     @Test
@@ -136,4 +160,63 @@ class QRRedirectIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.IMAGE_PNG_VALUE));
     }
+
+    @Test
+    @DisplayName("Should reject redirection when QR code status is INACTIVE")
+    void shouldRejectScanForInactiveQr() throws Exception {
+        // Deactivate QR code
+        mockMvc.perform(patch("/api/qr/me/status")
+                        .header("Authorization", "Bearer " + authToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(Map.of("status", "INACTIVE"))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.status").value("INACTIVE"));
+
+        // Attempt scan redirect -> 400 Bad Request
+        mockMvc.perform(get("/qr/" + codeUuid))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error.message", containsString("inactive")));
+    }
+
+    @Test
+    @DisplayName("Should reject redirection when associated profile status is INACTIVE")
+    void shouldRejectScanForInactiveProfile() throws Exception {
+        // Deactivate profile
+        UpdateProfileStatusRequestDto statusUpdate = new UpdateProfileStatusRequestDto();
+        statusUpdate.setStatus(ProfileStatus.INACTIVE);
+
+        mockMvc.perform(patch("/api/profiles/me/status")
+                        .header("Authorization", "Bearer " + authToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(statusUpdate)))
+                .andExpect(status().isOk());
+
+        // Attempt scan redirect -> 400 Bad Request
+        mockMvc.perform(get("/qr/" + codeUuid))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error.message", containsString("inactive")));
+    }
+
+    @Test
+    @DisplayName("Should retrieve QR scan analytics summary (/api/qr/analytics)")
+    void shouldFetchQrAnalytics() throws Exception {
+        // Perform 2 scans
+        mockMvc.perform(get("/qr/" + codeUuid)
+                        .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"))
+                .andExpect(status().isFound());
+
+        mockMvc.perform(get("/qr/" + codeUuid)
+                        .header("User-Agent", "Mozilla/5.0 (Android 14; Mobile)"))
+                .andExpect(status().isFound());
+
+        // Fetch analytics
+        mockMvc.perform(get("/api/qr/analytics")
+                        .header("Authorization", "Bearer " + authToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.totalScans").value(2))
+                .andExpect(jsonPath("$.data.qrStatus").value("ACTIVE"))
+                .andExpect(jsonPath("$.data.recentEvents", hasSize(2)));
+    }
 }
+

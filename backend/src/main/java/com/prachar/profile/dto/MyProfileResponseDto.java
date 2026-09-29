@@ -8,6 +8,7 @@ public class MyProfileResponseDto {
     private UUID profileId;
     private String usernameSlug;
     private String displayName;
+    private String businessName;
     private String category;
     private String tagline;
     private String bio;
@@ -17,8 +18,14 @@ public class MyProfileResponseDto {
     private String websiteUrl;
     private String addressText;
     private String city;
+    private String district;
+    private String state;
     private String avatarUrl;
     private String bannerUrl;
+    private String socialInstagram;
+    private String socialFacebook;
+    private String socialTwitter;
+    private String socialLinkedin;
     private String status;
     private boolean isPublic;
     private Instant createdAt;
@@ -35,6 +42,7 @@ public class MyProfileResponseDto {
     private String codeUuid;
     private String targetUrl;
     private long scanCount;
+    private String qrStatus;
 
     public MyProfileResponseDto() {
     }
@@ -245,5 +253,69 @@ public class MyProfileResponseDto {
 
     public void setScanCount(long scanCount) {
         this.scanCount = scanCount;
+    }
+
+    public String getBusinessName() {
+        return businessName;
+    }
+
+    public void setBusinessName(String businessName) {
+        this.businessName = businessName;
+    }
+
+    public String getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getSocialInstagram() {
+        return socialInstagram;
+    }
+
+    public void setSocialInstagram(String socialInstagram) {
+        this.socialInstagram = socialInstagram;
+    }
+
+    public String getSocialFacebook() {
+        return socialFacebook;
+    }
+
+    public void setSocialFacebook(String socialFacebook) {
+        this.socialFacebook = socialFacebook;
+    }
+
+    public String getSocialTwitter() {
+        return socialTwitter;
+    }
+
+    public void setSocialTwitter(String socialTwitter) {
+        this.socialTwitter = socialTwitter;
+    }
+
+    public String getSocialLinkedin() {
+        return socialLinkedin;
+    }
+
+    public void setSocialLinkedin(String socialLinkedin) {
+        this.socialLinkedin = socialLinkedin;
+    }
+
+    public String getQrStatus() {
+        return qrStatus;
+    }
+
+    public void setQrStatus(String qrStatus) {
+        this.qrStatus = qrStatus;
     }
 }

@@ -1,10 +1,14 @@
 import {
   ApiResponse,
   AuthResponse,
+  CardStatus,
   CreateProfileInput,
   HealthResponse,
   MyProfile,
+  ProfileStatus,
   PublicProfile,
+  QRAnalytics,
+  QRStatus,
   SlugAvailability,
   UpdateProfileInput,
 } from "@/types";
@@ -119,6 +123,37 @@ export async function updateProfile(token: string, data: UpdateProfileInput): Pr
     method: "PUT",
     headers: { Authorization: `Bearer ${token}` },
     body: JSON.stringify(data),
+  });
+}
+
+export async function updateProfileStatus(token: string, status: ProfileStatus): Promise<ApiResponse<MyProfile>> {
+  return request<MyProfile>("/api/profiles/me/status", {
+    method: "PATCH",
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ status }),
+  });
+}
+
+export async function updateCardStatus(token: string, status: CardStatus): Promise<ApiResponse<unknown>> {
+  return request("/api/card/me/status", {
+    method: "PATCH",
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ status }),
+  });
+}
+
+export async function updateQrStatus(token: string, status: QRStatus): Promise<ApiResponse<unknown>> {
+  return request("/api/qr/me/status", {
+    method: "PATCH",
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ status }),
+  });
+}
+
+export async function fetchQrAnalytics(token: string): Promise<ApiResponse<QRAnalytics>> {
+  return request<QRAnalytics>("/api/qr/analytics", {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
   });
 }
 

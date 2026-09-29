@@ -48,21 +48,28 @@
    │  user_id: UUID (FK)   │   │  user_id: UUID (FK -> users.id, UNIQUE, NOT NULL)      │
    │  token: VARCHAR(255)  │   │  username_slug: VARCHAR(60) (UNIQUE, NOT NULL)         │
    │  expires_at: TIMESTAMPTZ  │  display_name: VARCHAR(150) (NOT NULL)                 │
-   │  revoked: BOOLEAN     │   │  category: VARCHAR(100) (NOT NULL)                     │
-   │  created_at: TZ       │   │  tagline: VARCHAR(255) (NULLABLE)                      │
-   └───────────────────────┘   │  bio: TEXT (NULLABLE)                                  │
-                               │  primary_phone: VARCHAR(20) (NOT NULL)                 │
-   ┌───────────────────────┐   │  whatsapp_number: VARCHAR(20) (NULLABLE)               │
-   │         otps          │   │  email: VARCHAR(255) (NULLABLE)                        │
-   │ ───────────────────── │   │  website_url: VARCHAR(500) (NULLABLE)                  │
-   │  id: UUID (PK)        │   │  address_text: VARCHAR(300) (NULLABLE)                 │
-   │  phone_number: VARCHAR│   │  city: VARCHAR(100) (NOT NULL, DEFAULT 'Bhubaneswar')  │
-   │  otp_hash: VARCHAR    │   │  avatar_url: VARCHAR(500) (NULLABLE)                   │
-   │  expires_at: TZ       │   │  banner_url: VARCHAR(500) (NULLABLE)                   │
-   │  attempts: INT        │   │  is_public: BOOLEAN (NOT NULL, DEFAULT TRUE)           │
-   │  verified: BOOLEAN    │   │  status: VARCHAR(30) (NOT NULL, DEFAULT 'ACTIVE')      │
-   │  created_at: TZ       │   │  created_at: TIMESTAMP WITH TIME ZONE (NOT NULL)       │
-   └───────────────────────┘   │  updated_at: TIMESTAMP WITH TIME ZONE (NOT NULL)       │
+   │  revoked: BOOLEAN     │   │  business_name: VARCHAR(150) (NULLABLE)                │
+   │  created_at: TZ       │   │  category: VARCHAR(100) (NOT NULL)                     │
+   └───────────────────────┘   │  tagline: VARCHAR(255) (NULLABLE)                      │
+                               │  bio: TEXT (NULLABLE)                                  │
+   ┌───────────────────────┐   │  primary_phone: VARCHAR(20) (NOT NULL)                 │
+   │         otps          │   │  whatsapp_number: VARCHAR(20) (NULLABLE)               │
+   │ ───────────────────── │   │  email: VARCHAR(255) (NULLABLE)                        │
+   │  id: UUID (PK)        │   │  website_url: VARCHAR(500) (NULLABLE)                  │
+   │  phone_number: VARCHAR│   │  address_text: VARCHAR(300) (NULLABLE)                 │
+   │  otp_hash: VARCHAR    │   │  city: VARCHAR(100) (NOT NULL, DEFAULT 'Bhubaneswar')  │
+   │  expires_at: TZ       │   │  district: VARCHAR(100) (NOT NULL, DEFAULT 'Khordha')  │
+   │  attempts: INT        │   │  state: VARCHAR(100) (NOT NULL, DEFAULT 'Odisha')      │
+   │  verified: BOOLEAN    │   │  avatar_url: VARCHAR(500) (NULLABLE)                   │
+   │  created_at: TZ       │   │  banner_url: VARCHAR(500) (NULLABLE)                   │
+   └───────────────────────┘   │  social_instagram: VARCHAR(255) (NULLABLE)             │
+                               │  social_facebook: VARCHAR(255) (NULLABLE)              │
+                               │  social_twitter: VARCHAR(255) (NULLABLE)               │
+                               │  social_linkedin: VARCHAR(255) (NULLABLE)              │
+                               │  is_public: BOOLEAN (NOT NULL, DEFAULT TRUE)           │
+                               │  status: VARCHAR(30) (NOT NULL, DEFAULT 'ACTIVE')      │
+                               │  created_at: TIMESTAMP WITH TIME ZONE (NOT NULL)       │
+                               │  updated_at: TIMESTAMP WITH TIME ZONE (NOT NULL)       │
                                └──────────────┬───────────────────────────┬─────────────┘
                                               │ 1 : 1                     │ 1 : 1
                                               ▼                           ▼
@@ -74,10 +81,23 @@
                              │  theme_color: VARCHAR(20)       │  │  code_uuid: VARCHAR(64) (UNIQUE) │
                              │  layout_type: VARCHAR(30)       │  │  target_url: VARCHAR(500)        │
                              │  is_nfc_enabled: BOOLEAN        │  │  scan_count: BIGINT (DEFAULT 0)  │
-                             │  status: VARCHAR(30)            │  │  created_at: TIMESTAMP WITH TZ   │
-                             │  created_at: TIMESTAMP WITH TZ  │  │  updated_at: TIMESTAMP WITH TZ   │
-                             │  updated_at: TIMESTAMP WITH TZ  │  └──────────────────────────────────┘
-                             └─────────────────────────────────┘
+                             │  status: VARCHAR(30)            │  │  status: VARCHAR(30) (DEFAULT AC)│
+                             │  created_at: TIMESTAMP WITH TZ  │  │  created_at: TIMESTAMP WITH TZ   │
+                             │  updated_at: TIMESTAMP WITH TZ  │  │  updated_at: TIMESTAMP WITH TZ   │
+                             └─────────────────────────────────┘  └────────────────┬─────────────────┘
+                                                                                   │ 1 : N
+                                                                                   ▼
+                                                                  ┌──────────────────────────────────┐
+                                                                  │          qr_scan_events          │
+                                                                  │ ──────────────────────────────── │
+                                                                  │  id: UUID (PK)                   │
+                                                                  │  qr_code_id: UUID (FK)           │
+                                                                  │  profile_id: UUID (FK)           │
+                                                                  │  scanned_at: TIMESTAMPTZ         │
+                                                                  │  ip_hash: VARCHAR(64) (SHA-256)  │
+                                                                  │  user_agent: VARCHAR(500)        │
+                                                                  │  referrer: VARCHAR(500)          │
+                                                                  └──────────────────────────────────┘
 ```
 
 ---

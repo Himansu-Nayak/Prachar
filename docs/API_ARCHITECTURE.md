@@ -55,7 +55,7 @@ To guarantee predictability for frontend consumption, all Spring Boot REST API e
 
 ---
 
-## 2. Implemented Endpoints (Phase 2 Baseline)
+## 2. Implemented Endpoints (Phase 3 Baseline)
 
 ```
 +-------------------------------------------------------------------------------------------------------------+
@@ -70,13 +70,17 @@ To guarantee predictability for frontend consumption, all Spring Boot REST API e
 | POST   | /api/auth/logout              | Authenticated (Bearer)| Revokes refresh token session              |
 | GET    | /api/auth/me                  | Authenticated (Bearer)| Current user identity & profile linkage    |
 | GET    | /api/profiles/claim/{slug}    | Public                | Checks username slug availability          |
-| GET    | /api/profiles/public/{slug}   | Public                | Retrieves public profile micro-site data   |
+| GET    | /api/profiles/public/{slug}   | Public                | Public micro-site data (sanitized if off)  |
 | GET    | /api/profiles/me              | Authenticated (Bearer)| Retrieves authenticated user's profile     |
 | POST   | /api/profiles                 | Authenticated (Bearer)| Creates profile & auto-generates Card & QR |
-| PUT    | /api/profiles/me              | Authenticated (Bearer)| Updates profile bio, contacts, theme color |
+| PUT    | /api/profiles/me              | Authenticated (Bearer)| Updates profile details, contacts, theme   |
+| PATCH  | /api/profiles/me/status       | Authenticated (Bearer)| Updates profile status (ACTIVE, INACTIVE)  |
 | GET    | /api/card/me                  | Authenticated (Bearer)| Companion Digital Card appearance          |
-| PUT    | /api/card/me                  | Authenticated (Bearer)| Updates card theme color & layout          |
+| PUT    | /api/card/me                  | Authenticated (Bearer)| Updates card theme color, layout, NFC      |
+| PATCH  | /api/card/me/status           | Authenticated (Bearer)| Updates card status (ACTIVE, INACTIVE)     |
 | GET    | /api/qr/me                    | Authenticated (Bearer)| Retrieves companion QR code details        |
+| PATCH  | /api/qr/me/status             | Authenticated (Bearer)| Updates QR redirect status (ACTIVE/INACT)  |
+| GET    | /api/qr/analytics             | Authenticated (Bearer)| QR scan telemetry summary & events         |
 | GET    | /api/qr/image/{codeUuid}      | Public                | Generates & returns QR code PNG image      |
 | GET    | /qr/{codeUuid}                | Public                | Dynamic 302 redirect to /u/{username_slug} |
 +--------+-------------------------------+-----------------------+--------------------------------------------+

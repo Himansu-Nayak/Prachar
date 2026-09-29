@@ -46,6 +46,33 @@ export default function ProfileClientActions({ profile }: ProfileClientActionsPr
     setTimeout(() => setCopiedLink(false), 2000);
   };
 
+  const handleShare = async () => {
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share({
+          title: `${profile.displayName} | PRACHAR Phygital Profile`,
+          text: `Check out ${profile.displayName}'s verified digital profile on PRACHAR:`,
+          url: window.location.href,
+        });
+        return;
+      } catch {
+        // Fallback to copy link
+      }
+    }
+    handleCopyLink();
+  };
+
+  const handleDownloadQr = () => {
+    if (!profile.qrCodeUuid) return;
+    const link = document.createElement("a");
+    link.href = getQrImageUrl(profile.qrCodeUuid, 500);
+    link.download = `prachar-qr-${profile.usernameSlug}.png`;
+    link.target = "_blank";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const cleanPhone = profile.primaryPhone.replace(/\D/g, "");
   const cleanWa = profile.whatsappNumber ? profile.whatsappNumber.replace(/\D/g, "") : cleanPhone;
 
@@ -55,9 +82,10 @@ export default function ProfileClientActions({ profile }: ProfileClientActionsPr
       <div className="grid grid-cols-2 gap-3 mt-6">
         <a
           href={`tel:${profile.primaryPhone}`}
-          className="py-3 px-4 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-semibold text-xs text-center transition shadow-lg shadow-orange-950 flex items-center justify-center gap-2"
+          className="py-3 px-4 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-semibold text-xs text-center transition shadow-lg shadow-orange-950 flex items-center justify-center gap-2 focus:ring-2 focus:ring-orange-400"
+          aria-label={`Call ${profile.displayName}`}
         >
-          <span>📞</span>
+          <span aria-hidden="true">📞</span>
           <span>Call Now</span>
         </a>
 
@@ -65,9 +93,10 @@ export default function ProfileClientActions({ profile }: ProfileClientActionsPr
           href={`https://wa.me/${cleanWa}?text=${encodeURIComponent("Hello! Found your business profile on PRACHAR Phygital Platform.")}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs text-center transition shadow-lg shadow-emerald-950 flex items-center justify-center gap-2"
+          className="py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs text-center transition shadow-lg shadow-emerald-950 flex items-center justify-center gap-2 focus:ring-2 focus:ring-emerald-400"
+          aria-label={`Chat with ${profile.displayName} on WhatsApp`}
         >
-          <span>💬</span>
+          <span aria-hidden="true">💬</span>
           <span>WhatsApp</span>
         </a>
       </div>
@@ -77,29 +106,30 @@ export default function ProfileClientActions({ profile }: ProfileClientActionsPr
         <button
           type="button"
           onClick={handleDownloadVCard}
-          className="py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs font-medium transition flex items-center justify-center gap-1.5"
+          className="py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs font-medium transition flex items-center justify-center gap-1.5 focus:ring-2 focus:ring-slate-500"
         >
-          <span>📥</span>
+          <span aria-hidden="true">📥</span>
           <span>Save Contact</span>
         </button>
 
         <button
           type="button"
           onClick={() => setShowQrModal(true)}
-          className="py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs font-medium transition flex items-center justify-center gap-1.5"
+          className="py-2.5 px-3 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs font-medium transition flex items-center justify-center gap-1.5 focus:ring-2 focus:ring-slate-500"
         >
-          <span>📱</span>
-          <span>Scan / Share QR</span>
+          <span aria-hidden="true">📱</span>
+          <span>Scan / View QR</span>
         </button>
       </div>
 
-      {/* Share Profile Link */}
+      {/* Native Web Share & Copy Profile Link */}
       <button
         type="button"
-        onClick={handleCopyLink}
-        className="w-full mt-3 py-2 text-center text-[11px] text-slate-400 hover:text-orange-400 transition"
+        onClick={handleShare}
+        className="w-full mt-3 py-2 text-center text-xs font-medium text-slate-400 hover:text-orange-400 transition flex items-center justify-center gap-1.5"
       >
-        {copiedLink ? "✓ Link Copied to Clipboard!" : "Copy Permanent Micro-Site Link"}
+        <span>🔗</span>
+        <span>{copiedLink ? "✓ Link Copied to Clipboard!" : "Share Phygital Profile"}</span>
       </button>
 
       {/* QR Modal */}
@@ -126,17 +156,28 @@ export default function ProfileClientActions({ profile }: ProfileClientActionsPr
               />
             </div>
 
-            <p className="text-[11px] text-slate-400 mb-6">
+            <p className="text-[11px] text-slate-400 mb-4">
               Scan with any mobile camera or Google Lens to connect directly.
             </p>
 
-            <button
-              type="button"
-              onClick={() => setShowQrModal(false)}
-              className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-medium text-xs transition"
-            >
-              Close
-            </button>
+            <div className="space-y-2">
+              <button
+                type="button"
+                onClick={handleDownloadQr}
+                className="w-full py-2.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-medium text-xs transition flex items-center justify-center gap-1.5"
+              >
+                <span>💾</span>
+                <span>Download QR Image</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowQrModal(false)}
+                className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium text-xs transition"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}

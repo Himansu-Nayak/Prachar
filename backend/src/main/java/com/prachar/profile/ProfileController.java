@@ -63,4 +63,15 @@ public class ProfileController {
         MyProfileResponseDto response = profileService.updateProfile(userId, request);
         return ResponseEntity.ok(ApiResponse.success(response, "Profile updated successfully."));
     }
+
+    @PatchMapping("/me/status")
+    public ResponseEntity<ApiResponse<MyProfileResponseDto>> updateProfileStatus(
+            @AuthenticationPrincipal UUID userId,
+            @Valid @RequestBody UpdateProfileStatusRequestDto request) {
+        if (userId == null) {
+            throw new IllegalArgumentException("Authentication required to update profile status.");
+        }
+        MyProfileResponseDto response = profileService.updateProfileStatus(userId, request.getStatus());
+        return ResponseEntity.ok(ApiResponse.success(response, "Profile status updated successfully."));
+    }
 }

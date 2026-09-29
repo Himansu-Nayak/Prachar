@@ -40,6 +40,13 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .cors(cors -> cors.configurationSource(corsConfigurationSource))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .exceptionHandling(exceptions -> exceptions
+                .authenticationEntryPoint((request, response, authException) -> {
+                    response.setStatus(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType(org.springframework.http.MediaType.APPLICATION_JSON_VALUE);
+                    response.getWriter().write("{\"success\":false,\"error\":{\"code\":\"UNAUTHORIZED\",\"message\":\"Full authentication is required to access this resource\"}}");
+                })
+            )
             .authorizeHttpRequests(auth -> auth
                 // Public Health and Actuator checks
                 .requestMatchers("/api/health", "/actuator/health", "/actuator/info").permitAll()
@@ -54,7 +61,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/profiles").authenticated()
                 .requestMatchers(HttpMethod.PUT, "/api/profiles/me").authenticated()
                 // Protected Card & QR management
-                .requestMatchers("/api/card/**", "/api/qr/me/**").authenticated()
+                .requestMatchers("/api/card/**", "/api/qr/me/**", "/api/qr/analytics").authenticated()
                 // Protected Auth endpoints
                 .requestMatchers("/api/auth/logout", "/api/auth/me").authenticated()
                 // All other paths require authentication
