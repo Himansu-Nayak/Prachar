@@ -55,19 +55,31 @@ To guarantee predictability for frontend consumption, all Spring Boot REST API e
 
 ---
 
-## 2. Phase 1 & Phase 2 Core Endpoints
+## 2. Implemented Endpoints (Phase 2 Baseline)
 
 ```
-+----------------------------------------------------------------------------------------------------+
-|                                    REST API SPECIFICATION                                          |
-+--------+--------------------------+-----------------------+---------------------+------------------+
-| Method | Endpoint                 | Access Control        | Description         | Status           |
-+--------+--------------------------+-----------------------+---------------------+------------------+
-| GET    | /api/health              | Public                | Health info         | Active (Phase 1) |
-| GET    | /qr/{codeUuid}           | Public                | 302 redirect        | Planned (Phase 2)|
-| GET    | /api/profiles/{slug}     | Public                | Public profile      | Planned (Phase 2)|
-| GET    | /api/profiles/claim/{slug}| Public               | Username check      | Planned (Phase 2)|
-+--------+--------------------------+-----------------------+---------------------+------------------+
++-------------------------------------------------------------------------------------------------------------+
+|                                        PRACHAR REST API CONTRACT                                            |
++--------+-------------------------------+-----------------------+--------------------------------------------+
+| Method | Endpoint                      | Access Control        | Description / Response                     |
++--------+-------------------------------+-----------------------+--------------------------------------------+
+| GET    | /api/health                   | Public                | Service & DB health status                 |
+| POST   | /api/auth/otp/send            | Public                | Requests 6-digit verification OTP (Indian) |
+| POST   | /api/auth/otp/verify          | Public                | Verifies OTP, returns JWT Access & Refresh |
+| POST   | /api/auth/refresh             | Public                | Issues new Access Token using RefreshToken |
+| POST   | /api/auth/logout              | Authenticated (Bearer)| Revokes refresh token session              |
+| GET    | /api/auth/me                  | Authenticated (Bearer)| Current user identity & profile linkage    |
+| GET    | /api/profiles/claim/{slug}    | Public                | Checks username slug availability          |
+| GET    | /api/profiles/public/{slug}   | Public                | Retrieves public profile micro-site data   |
+| GET    | /api/profiles/me              | Authenticated (Bearer)| Retrieves authenticated user's profile     |
+| POST   | /api/profiles                 | Authenticated (Bearer)| Creates profile & auto-generates Card & QR |
+| PUT    | /api/profiles/me              | Authenticated (Bearer)| Updates profile bio, contacts, theme color |
+| GET    | /api/card/me                  | Authenticated (Bearer)| Companion Digital Card appearance          |
+| PUT    | /api/card/me                  | Authenticated (Bearer)| Updates card theme color & layout          |
+| GET    | /api/qr/me                    | Authenticated (Bearer)| Retrieves companion QR code details        |
+| GET    | /api/qr/image/{codeUuid}      | Public                | Generates & returns QR code PNG image      |
+| GET    | /qr/{codeUuid}                | Public                | Dynamic 302 redirect to /u/{username_slug} |
++--------+-------------------------------+-----------------------+--------------------------------------------+
 ```
 
 ---

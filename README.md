@@ -82,12 +82,22 @@ Available at `http://localhost:3000`.
 ## 5. Documentation Directory
 
 - [`PHASE_0_PRODUCT_SPECIFICATION.md`](PHASE_0_PRODUCT_SPECIFICATION.md): Core business requirements, rate cards (P1–P5), Odisha map hero specification.
-- [`PHASE_0_AUDIT_REPORT.md`](PHASE_0_AUDIT_REPORT.md): Audit sign-off (Score: 98.4%).
+- [`PHASE_0_AUDIT_REPORT.md`](PHASE_0_AUDIT_REPORT.md): Phase 0 audit sign-off (Score: 98.4%).
+- [`PHASE_1_COMPLETION_REPORT.md`](PHASE_1_COMPLETION_REPORT.md): Phase 1 foundational architecture completion.
+- [`PHASE_1_AUDIT_REPORT.md`](PHASE_1_AUDIT_REPORT.md): Phase 1 forensic audit sign-off (Score: 98.0%).
+- [`PHASE_2_IMPLEMENTATION_PLAN.md`](PHASE_2_IMPLEMENTATION_PLAN.md): Phase 2 complete vertical slice architecture and roadmap.
+- [`PHASE_2_COMPLETION_REPORT.md`](PHASE_2_COMPLETION_REPORT.md): Phase 2 implementation summary and verification evidence.
+- [`PHASE_2_AUDIT_REPORT.md`](PHASE_2_AUDIT_REPORT.md): Phase 2 comprehensive forensic audit report.
 - [`docs/VERSION_DECISION.md`](docs/VERSION_DECISION.md): Evaluation of Spring Boot 3.3 vs 4.x and PostgreSQL 16 vs 17.
-- [`docs/DATABASE_DOMAIN_MODEL.md`](docs/DATABASE_DOMAIN_MODEL.md): Entity relationships, constraints, and lifecycle definitions.
-- [`docs/API_ARCHITECTURE.md`](docs/API_ARCHITECTURE.md): `ApiResponse<T>` envelopes and REST contract standards.
-- [`docs/SECURITY_ARCHITECTURE.md`](docs/SECURITY_ARCHITECTURE.md): JWT, OTP, RBAC, and DPDP Act 2023 compliance.
+- [`docs/DATABASE_DOMAIN_MODEL.md`](docs/DATABASE_DOMAIN_MODEL.md): Entity relationships, constraints, and lifecycle definitions (V1 & V2 migrations).
+- [`docs/API_ARCHITECTURE.md`](docs/API_ARCHITECTURE.md): `ApiResponse<T>` envelopes, REST endpoints, and contracts.
+- [`docs/SECURITY_ARCHITECTURE.md`](docs/SECURITY_ARCHITECTURE.md): JWT, OTP provider abstraction, RBAC, and DPDP Act 2023 compliance.
+- [`docs/AUTHENTICATION_ARCHITECTURE.md`](docs/AUTHENTICATION_ARCHITECTURE.md): Phone-first OTP authentication, token rotation, and rate limits.
+- [`docs/PROFILE_ARCHITECTURE.md`](docs/PROFILE_ARCHITECTURE.md): Digital profiles, reserved vanity URL slug governance, and companion cards.
+- [`docs/QR_ARCHITECTURE.md`](docs/QR_ARCHITECTURE.md): Stable UUID dynamic routing (`/qr/:uuid` -> 302 -> `/u/:slug`) and ZXing rendering.
+- [`docs/HERO_ARCHITECTURE.md`](docs/HERO_ARCHITECTURE.md): Vector Odisha SVG map, Bhubaneswar radar pulse, and motion accessibility.
 - [`docs/DEVELOPMENT_SETUP.md`](docs/DEVELOPMENT_SETUP.md): Step-by-step developer onboarding instructions.
 
-  DESIGN AND DEVELOPED BY HIMANSU NAYAK
-  
+---
+
+**Designed and Developed by Himansu Nayak**
