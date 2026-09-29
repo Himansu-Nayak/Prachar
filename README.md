@@ -88,3 +88,6 @@ Available at `http://localhost:3000`.
 - [`docs/API_ARCHITECTURE.md`](docs/API_ARCHITECTURE.md): `ApiResponse<T>` envelopes and REST contract standards.
 - [`docs/SECURITY_ARCHITECTURE.md`](docs/SECURITY_ARCHITECTURE.md): JWT, OTP, RBAC, and DPDP Act 2023 compliance.
 - [`docs/DEVELOPMENT_SETUP.md`](docs/DEVELOPMENT_SETUP.md): Step-by-step developer onboarding instructions.
+
+  DESIGN AND DEVELOPED BY HIMANSU NAYAK
+  
