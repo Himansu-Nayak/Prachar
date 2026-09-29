@@ -90,6 +90,8 @@ Available at `http://localhost:3000`.
 - [`PHASE_2_AUDIT_REPORT.md`](PHASE_2_AUDIT_REPORT.md): Phase 2 comprehensive forensic audit report.
 - [`PHASE_3_PRE_IMPLEMENTATION_AUDIT.md`](PHASE_3_PRE_IMPLEMENTATION_AUDIT.md): Phase 3 pre-implementation forensic audit and gap analysis.
 - [`PHASE_3_IMPLEMENTATION_REPORT.md`](PHASE_3_IMPLEMENTATION_REPORT.md): Phase 3 public digital profile, dynamic QR, and lifecycle management implementation report.
+- [`PHASE_4_PRE_IMPLEMENTATION_AUDIT.md`](PHASE_4_PRE_IMPLEMENTATION_AUDIT.md): Phase 4 forensic pre-audit covering auth hardening, account lifecycle, and onboarding state requirements.
+- [`PHASE_4_IMPLEMENTATION_REPORT.md`](PHASE_4_IMPLEMENTATION_REPORT.md): Phase 4 authentication hardening, merchant onboarding state machine, account management API, and security headers implementation report.
 - [`docs/VERSION_DECISION.md`](docs/VERSION_DECISION.md): Evaluation of Spring Boot 3.3 vs 4.x and PostgreSQL 16 vs 17.
 - [`docs/DATABASE_DOMAIN_MODEL.md`](docs/DATABASE_DOMAIN_MODEL.md): Entity relationships, constraints, and lifecycle definitions (V1 & V2 migrations).
 - [`docs/API_ARCHITECTURE.md`](docs/API_ARCHITECTURE.md): `ApiResponse<T>` envelopes, REST endpoints, and contracts.

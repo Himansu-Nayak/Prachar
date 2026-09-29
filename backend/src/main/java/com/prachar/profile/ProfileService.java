@@ -186,6 +186,10 @@ public class ProfileService {
         qrCode.setStatus(com.prachar.qr.QRStatus.ACTIVE);
         QRCode savedQr = qrCodeRepository.save(qrCode);
 
+        // Update User Onboarding Lifecycle
+        user.setOnboardingStatus(com.prachar.user.OnboardingStatus.COMPLETED);
+        userRepository.save(user);
+
         return mapToMyProfileResponse(savedProfile, savedCard, savedQr);
     }
 

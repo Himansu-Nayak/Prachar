@@ -22,9 +22,12 @@ import java.util.UUID;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final com.prachar.user.UserRepository userRepository;
 
-    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
+    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider,
+                                   com.prachar.user.UserRepository userRepository) {
         this.jwtTokenProvider = jwtTokenProvider;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -37,6 +40,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
             UUID userId = jwtTokenProvider.getUserIdFromToken(jwt);
+
+            // Real-time account status verification
+            var userOpt = userRepository.findById(userId);
+            if (userOpt.isEmpty() || !userOpt.get().isActive()
+                    || userOpt.get().getAccountStatus() == com.prachar.user.AccountStatus.DISABLED
+                    || userOpt.get().getAccountStatus() == com.prachar.user.AccountStatus.SUSPENDED) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                response.setContentType(org.springframework.http.MediaType.APPLICATION_JSON_VALUE);
+                response.getWriter().write("{\"success\":false,\"error\":{\"code\":\"ACCOUNT_INACTIVE\",\"message\":\"User account is disabled or suspended.\"}}");
+                return;
+            }
+
             Role role = jwtTokenProvider.getRoleFromToken(jwt);
 
             SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.name());

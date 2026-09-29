@@ -35,7 +35,7 @@ public class AuthController {
         this.profileRepository = profileRepository;
     }
 
-    @PostMapping("/otp/send")
+    @PostMapping(value = {"/otp/send", "/otp/request"})
     public ResponseEntity<ApiResponse<Map<String, String>>> requestOtp(@Valid @RequestBody OtpRequestDto request) {
         authService.requestOtp(request);
         Map<String, String> data = new HashMap<>();
@@ -43,7 +43,7 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success(data, "OTP request processed."));
     }
 
-    @PostMapping("/otp/verify")
+    @PostMapping(value = {"/otp/verify", "/login", "/register"})
     public ResponseEntity<ApiResponse<AuthResponseDto>> verifyOtp(@Valid @RequestBody OtpVerifyDto request) {
         AuthResponseDto response = authService.verifyOtpAndAuthenticate(request);
         return ResponseEntity.ok(ApiResponse.success(response, "Authentication successful."));
@@ -77,6 +77,8 @@ public class AuthController {
         data.put("userId", user.getId());
         data.put("phoneNumber", user.getPhoneNumber());
         data.put("role", user.getRole().name());
+        data.put("accountStatus", user.getAccountStatus() != null ? user.getAccountStatus().name() : "ACTIVE");
+        data.put("onboardingStatus", user.getOnboardingStatus() != null ? user.getOnboardingStatus().name() : "NOT_STARTED");
         data.put("hasProfile", profileOpt.isPresent());
         profileOpt.ifPresent(p -> {
             data.put("usernameSlug", p.getUsernameSlug());

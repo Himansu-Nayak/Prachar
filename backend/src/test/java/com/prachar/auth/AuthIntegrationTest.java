@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.prachar.auth.dto.OtpRequestDto;
 import com.prachar.auth.dto.OtpVerifyDto;
 import com.prachar.auth.dto.RefreshTokenRequestDto;
+import com.prachar.user.AccountStatus;
+import com.prachar.user.Role;
+import com.prachar.user.User;
 import com.prachar.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -199,5 +202,126 @@ class AuthIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.phoneNumber").value(testPhone));
+    }
+
+    @Test
+    @DisplayName("Should authenticate successfully via /api/auth/login alias")
+    void shouldAuthenticateViaLoginAlias() throws Exception {
+        mockMvc.perform(post("/api/auth/otp/send")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new OtpRequestDto(testPhone))))
+                .andExpect(status().isOk());
+
+        String otp = devOtpProvider.getLastSentOtp(testPhone);
+
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new OtpVerifyDto(testPhone, otp))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.accessToken").isString());
+    }
+
+    @Test
+    @DisplayName("Should authenticate successfully via /api/auth/register alias")
+    void shouldAuthenticateViaRegisterAlias() throws Exception {
+        mockMvc.perform(post("/api/auth/otp/send")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new OtpRequestDto(testPhone))))
+                .andExpect(status().isOk());
+
+        String otp = devOtpProvider.getLastSentOtp(testPhone);
+
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new OtpVerifyDto(testPhone, otp))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.accessToken").isString());
+    }
+
+    @Test
+    @DisplayName("Should reject authentication attempt for disabled user account")
+    void shouldRejectAuthForDisabledAccount() throws Exception {
+        // Pre-create user in disabled state
+        User disabledUser = new User(testPhone, Role.ROLE_USER);
+        disabledUser.setAccountStatus(AccountStatus.DISABLED);
+        userRepository.save(disabledUser);
+
+        // Request OTP
+        mockMvc.perform(post("/api/auth/otp/send")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new OtpRequestDto(testPhone))))
+                .andExpect(status().isOk());
+
+        String otp = devOtpProvider.getLastSentOtp(testPhone);
+
+        // Verify OTP must be blocked
+        mockMvc.perform(post("/api/auth/otp/verify")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new OtpVerifyDto(testPhone, otp))))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error.message", containsString("account is disabled")));
+    }
+
+    @Test
+    @DisplayName("Should reject authentication attempt for suspended user account")
+    void shouldRejectAuthForSuspendedAccount() throws Exception {
+        // Pre-create user in suspended state
+        User suspendedUser = new User(testPhone, Role.ROLE_USER);
+        suspendedUser.setAccountStatus(AccountStatus.SUSPENDED);
+        userRepository.save(suspendedUser);
+
+        // Request OTP
+        mockMvc.perform(post("/api/auth/otp/send")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new OtpRequestDto(testPhone))))
+                .andExpect(status().isOk());
+
+        String otp = devOtpProvider.getLastSentOtp(testPhone);
+
+        // Verify OTP must be blocked
+        mockMvc.perform(post("/api/auth/otp/verify")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new OtpVerifyDto(testPhone, otp))))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error.message", containsString("account is suspended")));
+    }
+
+    @Test
+    @DisplayName("Should revoke refresh token upon logout")
+    void shouldRevokeRefreshTokenOnLogout() throws Exception {
+        mockMvc.perform(post("/api/auth/otp/send")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new OtpRequestDto(testPhone))))
+                .andExpect(status().isOk());
+
+        String otp = devOtpProvider.getLastSentOtp(testPhone);
+        MvcResult authResult = mockMvc.perform(post("/api/auth/otp/verify")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new OtpVerifyDto(testPhone, otp))))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String accessToken = objectMapper.readTree(authResult.getResponse().getContentAsString())
+                .get("data").get("accessToken").asText();
+        String refreshToken = objectMapper.readTree(authResult.getResponse().getContentAsString())
+                .get("data").get("refreshToken").asText();
+
+        // Logout
+        mockMvc.perform(post("/api/auth/logout")
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true));
+
+        // Attempting to refresh using revoked token must be rejected
+        mockMvc.perform(post("/api/auth/refresh")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new RefreshTokenRequestDto(refreshToken))))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error.message", containsString("Invalid or expired refresh token")));
     }
 }

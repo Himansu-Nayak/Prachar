@@ -13,6 +13,8 @@ public class AuthResponseDto {
     private String role;
     private boolean hasProfile;
     private String usernameSlug;
+    private String onboardingStatus;
+    private String accountStatus;
 
     public AuthResponseDto() {
     }
@@ -20,6 +22,13 @@ public class AuthResponseDto {
     public AuthResponseDto(String accessToken, String refreshToken, long expiresInSeconds,
                            UUID userId, String phoneNumber, String role,
                            boolean hasProfile, String usernameSlug) {
+        this(accessToken, refreshToken, expiresInSeconds, userId, phoneNumber, role, hasProfile, usernameSlug, "NOT_STARTED", "ACTIVE");
+    }
+
+    public AuthResponseDto(String accessToken, String refreshToken, long expiresInSeconds,
+                           UUID userId, String phoneNumber, String role,
+                           boolean hasProfile, String usernameSlug,
+                           String onboardingStatus, String accountStatus) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.expiresInSeconds = expiresInSeconds;
@@ -28,6 +37,8 @@ public class AuthResponseDto {
         this.role = role;
         this.hasProfile = hasProfile;
         this.usernameSlug = usernameSlug;
+        this.onboardingStatus = onboardingStatus;
+        this.accountStatus = accountStatus;
     }
 
     public String getAccessToken() {
@@ -100,5 +111,21 @@ public class AuthResponseDto {
 
     public void setUsernameSlug(String usernameSlug) {
         this.usernameSlug = usernameSlug;
+    }
+
+    public String getOnboardingStatus() {
+        return onboardingStatus;
+    }
+
+    public void setOnboardingStatus(String onboardingStatus) {
+        this.onboardingStatus = onboardingStatus;
+    }
+
+    public String getAccountStatus() {
+        return accountStatus;
+    }
+
+    public void setAccountStatus(String accountStatus) {
+        this.accountStatus = accountStatus;
     }
 }

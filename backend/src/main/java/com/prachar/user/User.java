@@ -23,6 +23,14 @@ public class User extends BaseEntity {
     @Column(name = "is_active", nullable = false)
     private boolean active = true;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "account_status", nullable = false, length = 30)
+    private AccountStatus accountStatus = AccountStatus.ACTIVE;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "onboarding_status", nullable = false, length = 30)
+    private OnboardingStatus onboardingStatus = OnboardingStatus.NOT_STARTED;
+
     public User() {
     }
 
@@ -30,6 +38,8 @@ public class User extends BaseEntity {
         this.phoneNumber = phoneNumber;
         this.role = role != null ? role : Role.ROLE_USER;
         this.active = true;
+        this.accountStatus = AccountStatus.ACTIVE;
+        this.onboardingStatus = OnboardingStatus.NOT_STARTED;
     }
 
     public String getPhoneNumber() {
@@ -65,10 +75,32 @@ public class User extends BaseEntity {
     }
 
     public boolean isActive() {
-        return active;
+        return active && accountStatus == AccountStatus.ACTIVE;
     }
 
     public void setActive(boolean active) {
         this.active = active;
+        if (!active && this.accountStatus == AccountStatus.ACTIVE) {
+            this.accountStatus = AccountStatus.DISABLED;
+        } else if (active && this.accountStatus == AccountStatus.DISABLED) {
+            this.accountStatus = AccountStatus.ACTIVE;
+        }
+    }
+
+    public AccountStatus getAccountStatus() {
+        return accountStatus;
+    }
+
+    public void setAccountStatus(AccountStatus accountStatus) {
+        this.accountStatus = accountStatus != null ? accountStatus : AccountStatus.ACTIVE;
+        this.active = (this.accountStatus == AccountStatus.ACTIVE);
+    }
+
+    public OnboardingStatus getOnboardingStatus() {
+        return onboardingStatus;
+    }
+
+    public void setOnboardingStatus(OnboardingStatus onboardingStatus) {
+        this.onboardingStatus = onboardingStatus != null ? onboardingStatus : OnboardingStatus.NOT_STARTED;
     }
 }

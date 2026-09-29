@@ -6,6 +6,8 @@ import com.prachar.auth.dto.OtpVerifyDto;
 import com.prachar.auth.dto.RefreshTokenRequestDto;
 import com.prachar.profile.Profile;
 import com.prachar.profile.ProfileRepository;
+import com.prachar.user.AccountStatus;
+import com.prachar.user.OnboardingStatus;
 import com.prachar.user.Role;
 import com.prachar.user.User;
 import com.prachar.user.UserRepository;
@@ -60,9 +62,20 @@ public class AuthService {
                     return userRepository.save(newUser);
                 });
 
+        // Enforce Account Lifecycle: Disabled or Suspended accounts cannot authenticate
+        if (!user.isActive() || user.getAccountStatus() == AccountStatus.DISABLED || user.getAccountStatus() == AccountStatus.SUSPENDED) {
+            throw new IllegalStateException("Your account is " + user.getAccountStatus().name().toLowerCase() + ". Please contact platform support.");
+        }
+
         Optional<Profile> profileOpt = profileRepository.findByUserId(user.getId());
         boolean hasProfile = profileOpt.isPresent();
         String usernameSlug = profileOpt.map(Profile::getUsernameSlug).orElse(null);
+
+        // Synchronize Onboarding Status
+        if (hasProfile && user.getOnboardingStatus() != OnboardingStatus.COMPLETED) {
+            user.setOnboardingStatus(OnboardingStatus.COMPLETED);
+            userRepository.save(user);
+        }
 
         String accessToken = jwtTokenProvider.generateAccessToken(user);
         String rawRefreshToken = jwtTokenProvider.generateRawRefreshToken();
@@ -83,7 +96,9 @@ public class AuthService {
                 user.getPhoneNumber(),
                 user.getRole().name(),
                 hasProfile,
-                usernameSlug
+                usernameSlug,
+                user.getOnboardingStatus().name(),
+                user.getAccountStatus().name()
         );
     }
 
@@ -102,6 +117,12 @@ public class AuthService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid or expired refresh token."));
 
         User user = activeToken.getUser();
+
+        // Enforce Account Lifecycle: Disabled or Suspended accounts cannot refresh token
+        if (!user.isActive() || user.getAccountStatus() == AccountStatus.DISABLED || user.getAccountStatus() == AccountStatus.SUSPENDED) {
+            throw new IllegalStateException("Your account is " + user.getAccountStatus().name().toLowerCase() + ". Access denied.");
+        }
+
         Optional<Profile> profileOpt = profileRepository.findByUserId(user.getId());
         boolean hasProfile = profileOpt.isPresent();
         String usernameSlug = profileOpt.map(Profile::getUsernameSlug).orElse(null);
@@ -116,7 +137,9 @@ public class AuthService {
                 user.getPhoneNumber(),
                 user.getRole().name(),
                 hasProfile,
-                usernameSlug
+                usernameSlug,
+                user.getOnboardingStatus().name(),
+                user.getAccountStatus().name()
         );
     }
 
