@@ -55,5 +55,5 @@ Frontend will be available at: `http://localhost:3000`
 
 ## 3. Environment Configuration Files
 
-- Root / Backend: Copy `infrastructure/.env.example` to `backend/.env` or configure via `application-dev.yml`.
+- Root / Backend: Environment variables can be exported from `infrastructure/.env.example` or configured directly via `backend/src/main/resources/application-dev.yml`.
 - Frontend: Copy `frontend/.env.example` to `frontend/.env.local`.

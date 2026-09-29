@@ -55,19 +55,19 @@ To guarantee predictability for frontend consumption, all Spring Boot REST API e
 
 ---
 
-## 2. Phase 1 Core Endpoints
+## 2. Phase 1 & Phase 2 Core Endpoints
 
 ```
 +----------------------------------------------------------------------------------------------------+
-|                                    PHASE 1 REST API SPECIFICATION                                  |
-+--------+--------------------------+-----------------------+----------------------------------------+
-| Method | Endpoint                 | Access Control        | Description / Response                 |
-+--------+--------------------------+-----------------------+----------------------------------------+
-| GET    | /api/health              | Public                | Returns service & database health info |
-| GET    | /qr/{codeUuid}           | Public                | Logs scan & returns 302 redirect       |
-| GET    | /api/profiles/{slug}     | Public                | Fetches public digital profile by slug |
-| GET    | /api/profiles/claim/{slug}| Public               | Checks if username slug is available   |
-+--------+--------------------------+-----------------------+----------------------------------------+
+|                                    REST API SPECIFICATION                                          |
++--------+--------------------------+-----------------------+---------------------+------------------+
+| Method | Endpoint                 | Access Control        | Description         | Status           |
++--------+--------------------------+-----------------------+---------------------+------------------+
+| GET    | /api/health              | Public                | Health info         | Active (Phase 1) |
+| GET    | /qr/{codeUuid}           | Public                | 302 redirect        | Planned (Phase 2)|
+| GET    | /api/profiles/{slug}     | Public                | Public profile      | Planned (Phase 2)|
+| GET    | /api/profiles/claim/{slug}| Public               | Username check      | Planned (Phase 2)|
++--------+--------------------------+-----------------------+---------------------+------------------+
 ```
 
 ---

@@ -82,9 +82,10 @@ In early project notes, a version string of `Spring Boot 4.1.0` was cited.
 - **Reason:** Flyway 10 is the native BOM dependency managed by Spring Boot 3.3.x. It provides deterministic startup migrations, lock tables, and checksum validation.
 
 ### 3.5 Redis In-Memory Cache
-- **Selected Version:** `redis:7.2-alpine` in Docker Compose.
-- **Client Library:** `spring-boot-starter-data-redis` using the Lettuce 6.3 driver.
-- **Usage:** Token blacklisting, distributed rate-limiting, and micro-profile caching.
+- **Selected Version:** `redis:7.2-alpine` in root `docker-compose.yml`.
+- **Infrastructure Status:** Redis 7.2 container infrastructure is provisioned in Phase 1.
+- **Client Timing:** Application-level Redis integration (`spring-boot-starter-data-redis` with Lettuce 6.3 driver) is intentionally deferred to later phases when token blacklisting, rate-limiting, and distributed caching are required. Redis application client dependencies and code are not present in Phase 1.
+- **Target Usage (Later Phases):** Token blacklisting, distributed rate-limiting, and micro-profile caching.
 
 ### 3.6 Frontend Stack (Next.js 14.2 + React 18 + TypeScript 5)
 - **Selected Version:** Next.js 14.2.x with App Router.
@@ -97,7 +98,7 @@ In early project notes, a version string of `Spring Boot 4.1.0` was cited.
 
 The versions selected in this document are strictly enforced across all project files:
 1. `backend/pom.xml`: `<java.version>21</java.version>`, Spring Boot parent `3.3.4`.
-2. `infrastructure/docker-compose.yml`: `postgres:16-alpine`, `redis:7.2-alpine`.
+2. `docker-compose.yml`: `postgres:16-alpine`, `redis:7.2-alpine` (at repository root).
 3. `frontend/package.json`: `next: ^14.2.0`, `react: ^18.3.0`, `typescript: ^5.4.0`.
 4. Documentation: All documentation files reference Java 21, Spring Boot 3.3, and PostgreSQL 16.
 
