@@ -1,83 +1,41 @@
-package com.prachar.profile;
+package com.prachar.profile.dto;
 
-import com.prachar.common.BaseEntity;
-import com.prachar.user.User;
-import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 
-@Entity
-@Table(name = "profiles", indexes = {
-    @Index(name = "idx_profiles_username_slug", columnList = "username_slug"),
-    @Index(name = "idx_profiles_city_category", columnList = "city, category")
-})
-public class Profile extends BaseEntity {
+public class UpdateProfileRequestDto {
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
-    private User user;
-
-    @Column(name = "username_slug", nullable = false, unique = true, length = 60)
-    private String usernameSlug;
-
-    @Column(name = "display_name", nullable = false, length = 150)
+    @Size(max = 150, message = "Display name cannot exceed 150 characters")
     private String displayName;
 
-    @Column(name = "category", nullable = false, length = 100)
+    @Size(max = 100, message = "Category cannot exceed 100 characters")
     private String category;
 
-    @Column(name = "tagline")
+    @Size(max = 255, message = "Tagline cannot exceed 255 characters")
     private String tagline;
 
-    @Column(name = "bio", columnDefinition = "TEXT")
     private String bio;
 
-    @Column(name = "primary_phone", nullable = false, length = 20)
     private String primaryPhone;
 
-    @Column(name = "whatsapp_number", length = 20)
     private String whatsappNumber;
 
-    @Column(name = "email")
     private String email;
 
-    @Column(name = "website_url", length = 500)
     private String websiteUrl;
 
-    @Column(name = "address_text", length = 300)
     private String addressText;
 
-    @Column(name = "city", nullable = false, length = 100)
-    private String city = "Bhubaneswar";
+    private String city;
 
-    @Column(name = "avatar_url", length = 500)
     private String avatarUrl;
 
-    @Column(name = "banner_url", length = 500)
     private String bannerUrl;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, length = 30)
-    private ProfileStatus status = ProfileStatus.ACTIVE;
+    private Boolean isPublic;
 
-    @Column(name = "is_public", nullable = false)
-    private boolean isPublic = true;
+    private String themeColor;
 
-    public Profile() {
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public String getUsernameSlug() {
-        return usernameSlug;
-    }
-
-    public void setUsernameSlug(String usernameSlug) {
-        this.usernameSlug = usernameSlug;
+    public UpdateProfileRequestDto() {
     }
 
     public String getDisplayName() {
@@ -176,19 +134,19 @@ public class Profile extends BaseEntity {
         this.bannerUrl = bannerUrl;
     }
 
-    public ProfileStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(ProfileStatus status) {
-        this.status = status;
-    }
-
-    public boolean isPublic() {
+    public Boolean getIsPublic() {
         return isPublic;
     }
 
-    public void setPublic(boolean isPublic) {
+    public void setIsPublic(Boolean isPublic) {
         this.isPublic = isPublic;
+    }
+
+    public String getThemeColor() {
+        return themeColor;
+    }
+
+    public void setThemeColor(String themeColor) {
+        this.themeColor = themeColor;
     }
 }
