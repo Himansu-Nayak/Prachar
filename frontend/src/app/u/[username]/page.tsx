@@ -13,6 +13,13 @@ interface ProfilePageProps {
 
 export async function generateMetadata({ params }: ProfilePageProps): Promise<Metadata> {
   const { username } = params;
+  if (!username) {
+    return {
+      title: "Profile Not Found | PRACHAR",
+      robots: { index: false, follow: false },
+    };
+  }
+
   const res = await fetchPublicProfile(username);
 
   if (!res.success || !res.data) {
@@ -36,15 +43,22 @@ export async function generateMetadata({ params }: ProfilePageProps): Promise<Me
   if (profile.status === "SUSPENDED") {
     return {
       title: "Profile Suspended | PRACHAR",
-      description: "This phygital profile has been suspended.",
+      description: "This phygital profile has been suspended by administration.",
       robots: { index: false, follow: false },
     };
   }
 
-  const title = `${profile.displayName}${profile.businessName ? ` (${profile.businessName})` : ""} | PRACHAR Phygital Profile`;
+  const title = profile.businessName
+    ? `${profile.displayName} (${profile.businessName}) | PRACHAR`
+    : `${profile.displayName} | PRACHAR Phygital Profile`;
+
   const locationStr = [profile.city, profile.district, profile.state || "Odisha"].filter(Boolean).join(", ");
-  const description = profile.tagline || profile.bio || `${profile.category} in ${locationStr}. Verified by PRACHAR Phygital Platform.`;
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const description =
+    profile.tagline ||
+    profile.bio ||
+    `${profile.displayName} - ${profile.category} in ${locationStr}. Verified by PRACHAR Phygital Platform.`;
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://prachar.in";
   const canonicalUrl = `${appUrl}/u/${profile.usernameSlug}`;
 
   return {
@@ -53,6 +67,10 @@ export async function generateMetadata({ params }: ProfilePageProps): Promise<Me
     alternates: {
       canonical: canonicalUrl,
     },
+    robots: {
+      index: true,
+      follow: true,
+    },
     openGraph: {
       title,
       description,
@@ -60,11 +78,13 @@ export async function generateMetadata({ params }: ProfilePageProps): Promise<Me
       siteName: "PRACHAR Phygital Platform",
       locale: "en_IN",
       type: "profile",
+      images: profile.avatarUrl ? [{ url: profile.avatarUrl }] : undefined,
     },
     twitter: {
       card: "summary",
       title,
       description,
+      images: profile.avatarUrl ? [profile.avatarUrl] : undefined,
     },
   };
 }
@@ -86,7 +106,7 @@ export default async function PublicProfilePage({ params }: ProfilePageProps) {
   // Handle Suspended Profile State
   if (profile.status === "SUSPENDED") {
     return (
-      <div className="min-h-screen py-16 px-4 flex items-center justify-center">
+      <main className="min-h-screen py-16 px-4 flex items-center justify-center bg-slate-950">
         <div className="w-full max-w-md text-center p-8 rounded-3xl border border-rose-900/60 bg-slate-900/90 shadow-2xl backdrop-blur-md">
           <div className="w-16 h-16 rounded-full bg-rose-950/80 border border-rose-800 flex items-center justify-center text-3xl mx-auto mb-4">
             ⚠️
@@ -97,19 +117,19 @@ export default async function PublicProfilePage({ params }: ProfilePageProps) {
           </p>
           <Link
             href="/"
-            className="inline-block py-2.5 px-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 font-medium transition"
+            className="inline-block py-2.5 px-6 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 font-medium transition border border-slate-700"
           >
             Return to PRACHAR Home
           </Link>
         </div>
-      </div>
+      </main>
     );
   }
 
   // Handle Inactive Profile State
   if (profile.status === "INACTIVE") {
     return (
-      <div className="min-h-screen py-16 px-4 flex items-center justify-center">
+      <main className="min-h-screen py-16 px-4 flex items-center justify-center bg-slate-950">
         <div className="w-full max-w-md text-center p-8 rounded-3xl border border-slate-800 bg-slate-900/90 shadow-2xl backdrop-blur-md">
           <div className="w-16 h-16 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-3xl mx-auto mb-4">
             ⏸️
@@ -120,16 +140,16 @@ export default async function PublicProfilePage({ params }: ProfilePageProps) {
             Profile Temporarily Inactive
           </div>
           <p className="text-xs text-slate-400 mb-6 leading-relaxed">
-            The profile owner has temporarily deactivated this phygital profile. Contact details and card services are currently unavailable. Please check back later.
+            The profile owner has temporarily paused this phygital profile. Contact details and card services are currently unavailable. Please check back later.
           </p>
           <Link
             href="/"
-            className="inline-block py-2.5 px-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 font-medium transition"
+            className="inline-block py-2.5 px-6 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 font-medium transition border border-slate-700"
           >
             Explore PRACHAR →
           </Link>
         </div>
-      </div>
+      </main>
     );
   }
 
@@ -143,33 +163,119 @@ export default async function PublicProfilePage({ params }: ProfilePageProps) {
     .toUpperCase();
 
   const locationDisplay = [profile.city, profile.district, profile.state || "Odisha"].filter(Boolean).join(", ");
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://prachar.in";
+  const canonicalUrl = `${appUrl}/u/${profile.usernameSlug}`;
+
+  // Safe external URL builders
+  const safeWebsiteUrl =
+    profile.websiteUrl && /^https?:\/\//i.test(profile.websiteUrl)
+      ? profile.websiteUrl
+      : profile.websiteUrl && !/^[a-z]+:/i.test(profile.websiteUrl)
+      ? `https://${profile.websiteUrl}`
+      : null;
+
+  const safeInstagram =
+    profile.socialInstagram && /^https?:\/\//i.test(profile.socialInstagram)
+      ? profile.socialInstagram
+      : profile.socialInstagram && !/^[a-z]+:/i.test(profile.socialInstagram)
+      ? `https://instagram.com/${profile.socialInstagram.replace(/^@/, "")}`
+      : null;
+
+  const safeFacebook =
+    profile.socialFacebook && /^https?:\/\//i.test(profile.socialFacebook)
+      ? profile.socialFacebook
+      : profile.socialFacebook && !/^[a-z]+:/i.test(profile.socialFacebook)
+      ? `https://${profile.socialFacebook}`
+      : null;
+
+  const safeTwitter =
+    profile.socialTwitter && /^https?:\/\//i.test(profile.socialTwitter)
+      ? profile.socialTwitter
+      : profile.socialTwitter && !/^[a-z]+:/i.test(profile.socialTwitter)
+      ? `https://x.com/${profile.socialTwitter.replace(/^@/, "")}`
+      : null;
+
+  const safeLinkedin =
+    profile.socialLinkedin && /^https?:\/\//i.test(profile.socialLinkedin)
+      ? profile.socialLinkedin
+      : profile.socialLinkedin && !/^[a-z]+:/i.test(profile.socialLinkedin)
+      ? `https://${profile.socialLinkedin}`
+      : null;
+
+  // JSON-LD Structured Data
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: profile.displayName,
+    alternateName: profile.businessName || undefined,
+    description: profile.tagline || profile.bio || `${profile.category} in ${locationDisplay}`,
+    url: canonicalUrl,
+    telephone: profile.primaryPhone,
+    email: profile.email || undefined,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: profile.addressText || undefined,
+      addressLocality: profile.city,
+      addressRegion: profile.district || profile.state || "Odisha",
+      addressCountry: "IN",
+    },
+    image: profile.avatarUrl || undefined,
+    sameAs: [safeWebsiteUrl, safeInstagram, safeFacebook, safeTwitter, safeLinkedin].filter(Boolean),
+  };
+
+  const theme = profile.themeColor || "#0F172A";
 
   return (
-    <div className="min-h-screen py-10 px-4 flex items-center justify-center">
-      <div className="w-full max-w-md">
-        {/* Main Phygital Card Container */}
-        <div className="rounded-3xl border border-slate-800 bg-slate-900/90 shadow-2xl overflow-hidden backdrop-blur-md">
-          {/* Header Accent Band */}
+    <main className="min-h-screen py-10 sm:py-16 px-4 flex items-center justify-center bg-[#000000] text-[#FFF3EA] space-grid-bg relative">
+      {/* Schema.org Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
+      {/* Top Hairline Telemetry Indicator */}
+      <div className="w-full max-w-lg mx-auto">
+        {/* Main 21hrs.space Phygital Smart Identity Chassis */}
+        <article className="relative bg-[#050811]/95 border border-[#E4B592]/30 shadow-[0_0_50px_rgba(0,0,0,0.9)] backdrop-blur-2xl overflow-hidden">
+          {/* 4 Precision Copper Corner Viewfinder Reticles */}
+          <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-[#E4B592] pointer-events-none z-30" />
+          <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-[#E4B592] pointer-events-none z-30" />
+          <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-[#E4B592] pointer-events-none z-30" />
+          <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-[#E4B592] pointer-events-none z-30" />
+
+          {/* Top Telemetry Header Band */}
+          <div className="px-5 py-2.5 bg-[#000000]/80 border-b border-[#E4B592]/20 flex items-center justify-between font-mono text-[10px] text-slate-400">
+            <span className="flex items-center gap-1.5 text-[#E4B592] font-bold tracking-widest uppercase">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#E4B592] animate-pulse" />
+              PHYGITAL IDENTITY CARD
+            </span>
+            <span className="tracking-wider text-slate-400">
+              {profile.city.toUpperCase()} {"//"} 20°N 85°E
+            </span>
+          </div>
+
+          {/* Header Accent Band with Theme Color */}
           <div
-            style={{ backgroundColor: profile.themeColor || "#0F172A" }}
-            className="h-28 w-full relative flex items-center justify-between px-6 transition-colors duration-300"
+            style={{
+              background: `linear-gradient(135deg, ${theme} 0%, #050811 100%)`,
+            }}
+            className="h-28 w-full relative flex items-center justify-between px-6 border-b border-white/10"
           >
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold tracking-widest uppercase bg-black/40 text-white/90 px-2.5 py-0.5 rounded-full backdrop-blur-sm border border-white/10">
-                PHYGITAL CARD
+              <span className="text-[9px] font-mono font-bold tracking-[0.2em] uppercase bg-black/60 text-[#E4B592] px-2.5 py-1 border border-[#E4B592]/30">
+                TOKEN: /u/{profile.usernameSlug}
               </span>
             </div>
-            <span className="text-[10px] text-white/80 font-mono tracking-wider">
-              {profile.city}, OD
+            <span className="text-[10px] text-slate-300 font-mono tracking-wider">
+              PRGI: ORORI/25/A3295
             </span>
           </div>
 
           {/* Profile Identity Body */}
-          <div className="px-6 pb-8 pt-0 -mt-12 text-center relative z-10">
-            {/* Avatar Circle */}
+          <div className="px-6 sm:px-8 pb-8 pt-0 -mt-12 text-center relative z-10">
+            {/* Avatar Chassis */}
             <div
-              style={{ borderColor: profile.themeColor || "#0F172A" }}
-              className="w-24 h-24 rounded-full bg-slate-950 border-4 mx-auto mb-3 flex items-center justify-center text-2xl font-black text-white shadow-xl overflow-hidden"
+              className="w-24 h-24 rounded-sm bg-[#000000] border-2 border-[#E4B592] mx-auto mb-4 flex items-center justify-center text-2xl font-black text-[#FFF3EA] shadow-[0_0_25px_rgba(228,181,146,0.3)] overflow-hidden relative"
             >
               {profile.avatarUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -179,121 +285,134 @@ export default async function PublicProfilePage({ params }: ProfilePageProps) {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <span className="tracking-wider">{initials}</span>
+                <span className="font-mono tracking-wider text-[#E4B592]">{initials}</span>
               )}
             </div>
 
-            {/* Verification Badge */}
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-950/80 border border-orange-800/80 text-orange-400 text-xs font-semibold mb-2">
-              <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
-              <span>ପ୍ରଚାର ପ୍ରମାଣିତ (Verified Identity)</span>
+            {/* Odisha Regional Verification Badge */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#E4B592]/10 border border-[#E4B592]/40 text-[#E4B592] text-[11px] font-mono font-bold tracking-wider uppercase mb-3">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span>ପ୍ରଚାର ପ୍ରମାଣିତ // VERIFIED IDENTITY</span>
             </div>
 
             {/* Display Name & Meta */}
-            <h1 className="text-2xl font-bold text-white leading-tight">{profile.displayName}</h1>
+            <h1 className="text-2xl sm:text-3xl font-black text-[#FFF3EA] tracking-tight leading-tight break-words font-sans">
+              {profile.displayName}
+            </h1>
             {profile.businessName && (
-              <p className="text-sm font-medium text-slate-300 mt-0.5">{profile.businessName}</p>
+              <p className="text-sm font-medium text-slate-300 mt-1 break-words font-sans">
+                {profile.businessName}
+              </p>
             )}
-            <p className="text-xs text-orange-400 font-medium mt-1 uppercase tracking-wider">{profile.category}</p>
-            <p className="text-xs text-slate-400 mt-0.5">{locationDisplay}</p>
+            <p className="font-mono text-xs text-[#E4B592] mt-1.5 uppercase tracking-widest">
+              {profile.category} • {locationDisplay}
+            </p>
 
             {/* Tagline */}
             {profile.tagline && (
-              <p className="text-xs italic text-slate-300 mt-3 px-4 leading-relaxed">
+              <p className="text-xs italic text-slate-300 mt-3 px-2 leading-relaxed break-words font-sans">
                 &ldquo;{profile.tagline}&rdquo;
               </p>
             )}
 
             {/* Bio Narrative */}
             {profile.bio && (
-              <div className="mt-4 p-3.5 rounded-xl bg-slate-950/60 border border-slate-800/80 text-left">
-                <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-line">{profile.bio}</p>
+              <div className="mt-5 p-4 bg-[#000000]/60 border border-white/10 text-left font-sans">
+                <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-line break-words">
+                  {profile.bio}
+                </p>
               </div>
             )}
 
             {/* Address & Website details */}
-            {(profile.addressText || profile.websiteUrl) && (
-              <div className="mt-4 space-y-1.5 text-left text-xs text-slate-400 bg-slate-950/30 p-3 rounded-xl border border-slate-800/50">
+            {(profile.addressText || safeWebsiteUrl) && (
+              <div className="mt-4 space-y-2 text-left text-xs font-mono text-slate-300 bg-[#000000]/40 p-3.5 border border-white/10">
                 {profile.addressText && (
-                  <p className="flex items-start gap-2">
-                    <span className="text-slate-500">📍</span>
+                  <p className="flex items-start gap-2 break-words">
+                    <span className="text-[#E4B592] flex-shrink-0" aria-hidden="true">GEO:</span>
                     <span>{profile.addressText}</span>
                   </p>
                 )}
-                {profile.websiteUrl && (
+                {safeWebsiteUrl && (
                   <p className="flex items-center gap-2">
-                    <span className="text-slate-500">🌐</span>
+                    <span className="text-[#E4B592] flex-shrink-0" aria-hidden="true">WEB:</span>
                     <a
-                      href={profile.websiteUrl.startsWith("http") ? profile.websiteUrl : `https://${profile.websiteUrl}`}
+                      href={safeWebsiteUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-orange-400 hover:underline truncate"
+                      className="text-[#E4B592] hover:underline truncate"
+                      aria-label={`Visit ${profile.displayName}'s website`}
                     >
-                      {profile.websiteUrl.replace(/^https?:\/\//, "")}
+                      {safeWebsiteUrl.replace(/^https?:\/\//, "")}
                     </a>
                   </p>
                 )}
               </div>
             )}
 
+
             {/* Social Links */}
-            {(profile.socialInstagram || profile.socialFacebook || profile.socialTwitter || profile.socialLinkedin) && (
+            {(safeInstagram || safeFacebook || safeTwitter || safeLinkedin) && (
               <div className="mt-4 pt-3 border-t border-slate-800/80">
                 <p className="text-[10px] text-slate-500 uppercase font-semibold tracking-wider mb-2">Connect On Social</p>
-                <div className="flex items-center justify-center gap-3">
-                  {profile.socialInstagram && (
+                <div className="flex flex-wrap items-center justify-center gap-2.5">
+                  {safeInstagram && (
                     <a
-                      href={profile.socialInstagram.startsWith("http") ? profile.socialInstagram : `https://instagram.com/${profile.socialInstagram.replace(/^@/, "")}`}
+                      href={safeInstagram}
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="Instagram"
-                      className="px-2.5 py-1 rounded-full bg-slate-800 hover:bg-pink-900/50 border border-slate-700 hover:border-pink-600 text-xs text-slate-300 hover:text-white transition font-medium"
+                      className="min-h-[36px] px-3 py-1.5 rounded-full bg-slate-800 hover:bg-pink-900/50 border border-slate-700 hover:border-pink-600 text-xs text-slate-300 hover:text-white transition font-medium flex items-center gap-1 focus-visible:ring-2 focus-visible:ring-pink-500"
                     >
-                      Instagram
+                      <span>📸</span>
+                      <span>Instagram</span>
                     </a>
                   )}
-                  {profile.socialFacebook && (
+                  {safeFacebook && (
                     <a
-                      href={profile.socialFacebook.startsWith("http") ? profile.socialFacebook : `https://${profile.socialFacebook}`}
+                      href={safeFacebook}
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="Facebook"
-                      className="px-2.5 py-1 rounded-full bg-slate-800 hover:bg-blue-900/50 border border-slate-700 hover:border-blue-600 text-xs text-slate-300 hover:text-white transition font-medium"
+                      className="min-h-[36px] px-3 py-1.5 rounded-full bg-slate-800 hover:bg-blue-900/50 border border-slate-700 hover:border-blue-600 text-xs text-slate-300 hover:text-white transition font-medium flex items-center gap-1 focus-visible:ring-2 focus-visible:ring-blue-500"
                     >
-                      Facebook
+                      <span>👥</span>
+                      <span>Facebook</span>
                     </a>
                   )}
-                  {profile.socialTwitter && (
+                  {safeTwitter && (
                     <a
-                      href={profile.socialTwitter.startsWith("http") ? profile.socialTwitter : `https://x.com/${profile.socialTwitter.replace(/^@/, "")}`}
+                      href={safeTwitter}
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="Twitter / X"
-                      className="px-2.5 py-1 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-500 text-xs text-slate-300 hover:text-white transition font-medium"
+                      className="min-h-[36px] px-3 py-1.5 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-500 text-xs text-slate-300 hover:text-white transition font-medium flex items-center gap-1 focus-visible:ring-2 focus-visible:ring-slate-400"
                     >
-                      𝕏 (Twitter)
+                      <span>𝕏</span>
+                      <span>Twitter</span>
                     </a>
                   )}
-                  {profile.socialLinkedin && (
+                  {safeLinkedin && (
                     <a
-                      href={profile.socialLinkedin.startsWith("http") ? profile.socialLinkedin : `https://${profile.socialLinkedin}`}
+                      href={safeLinkedin}
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label="LinkedIn"
-                      className="px-2.5 py-1 rounded-full bg-slate-800 hover:bg-blue-900/50 border border-slate-700 hover:border-blue-600 text-xs text-slate-300 hover:text-white transition font-medium"
+                      className="min-h-[36px] px-3 py-1.5 rounded-full bg-slate-800 hover:bg-blue-900/50 border border-slate-700 hover:border-blue-600 text-xs text-slate-300 hover:text-white transition font-medium flex items-center gap-1 focus-visible:ring-2 focus-visible:ring-blue-500"
                     >
-                      LinkedIn
+                      <span>💼</span>
+                      <span>LinkedIn</span>
                     </a>
                   )}
                 </div>
               </div>
             )}
 
-            {/* Interactive Actions (Call, WhatsApp, Share, Download QR) */}
+            {/* Interactive Client Actions (Call, WhatsApp, Email, Save Contact, QR, Share) */}
             <ProfileClientActions profile={profile} />
 
-            {/* Footer Attribution */}
-            <div className="mt-8 pt-6 border-t border-slate-800 text-[11px] text-slate-500 space-y-1">
+            {/* Footer Attribution to Publisher */}
+            <footer className="mt-8 pt-6 border-t border-slate-800 text-[11px] text-slate-500 space-y-1">
               <p>
                 A Unit of <strong>Saroswati Khabar</strong> • Reg: ORORI/25/A3295
               </p>
@@ -305,10 +424,10 @@ export default async function PublicProfilePage({ params }: ProfilePageProps) {
                   Create your own Phygital Card on PRACHAR →
                 </Link>
               </div>
-            </div>
+            </footer>
           </div>
-        </div>
+        </article>
       </div>
-    </div>
+    </main>
   );
 }

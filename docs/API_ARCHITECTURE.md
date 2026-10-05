@@ -83,6 +83,15 @@ To guarantee predictability for frontend consumption, all Spring Boot REST API e
 | GET    | /api/qr/analytics             | Authenticated (Bearer)| QR scan telemetry summary & events         |
 | GET    | /api/qr/image/{codeUuid}      | Public                | Generates & returns QR code PNG image      |
 | GET    | /qr/{codeUuid}                | Public                | Dynamic 302 redirect to /u/{username_slug} |
+| GET    | /api/advertising/packages     | Public                | Authoritative P1–P5 rate card pricing      |
+| POST   | /api/advertising/book         | Authenticated (Bearer)| Creates campaign booking with cutoff rules |
+| GET    | /api/advertising/my           | Authenticated (Bearer)| Lists authenticated user's advertisements  |
+| POST   | /api/advertising/advertisements/{id}/payment/order | Authenticated (Bearer)| Creates Razorpay order (paise minor units)|
+| POST   | /api/advertising/payments/verify | Authenticated (Bearer)| HMAC-SHA256 signature verification         |
+| GET    | /api/advertising/advertisements/{id}/payments | Authenticated (Bearer)| Fetches transaction history for ad         |
+| POST   | /api/payments/razorpay/webhook| Public (HMAC Verified) | Webhook reconciliation for async events     |
+| GET    | /api/admin/payments           | Admin/Staff Only       | Audits all platform payment transactions   |
+| POST   | /api/admin/payments/{id}/refund | Admin Only           | Processes transaction refund               |
 +--------+-------------------------------+-----------------------+--------------------------------------------+
 ```
 

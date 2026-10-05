@@ -49,3 +49,12 @@ logs/
 # Test & Coverage
 coverage/
 .nyc_output/
+
+# Local File & Creative Uploads
+uploads/
+backend/uploads/
+.openpost/
+docx_extracted/
+*.png
+
+

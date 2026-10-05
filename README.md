@@ -92,6 +92,16 @@ Available at `http://localhost:3000`.
 - [`PHASE_3_IMPLEMENTATION_REPORT.md`](PHASE_3_IMPLEMENTATION_REPORT.md): Phase 3 public digital profile, dynamic QR, and lifecycle management implementation report.
 - [`PHASE_4_PRE_IMPLEMENTATION_AUDIT.md`](PHASE_4_PRE_IMPLEMENTATION_AUDIT.md): Phase 4 forensic pre-audit covering auth hardening, account lifecycle, and onboarding state requirements.
 - [`PHASE_4_IMPLEMENTATION_REPORT.md`](PHASE_4_IMPLEMENTATION_REPORT.md): Phase 4 authentication hardening, merchant onboarding state machine, account management API, and security headers implementation report.
+- [`PHASE_5_COMPLETION_REPORT.md`](PHASE_5_COMPLETION_REPORT.md): Phase 5 public phygital profile, digital card, and QR experience.
+- [`PHASE_6_COMPLETION_REPORT.md`](PHASE_6_COMPLETION_REPORT.md): Phase 6 advertising engine, rate cards, cutoff enforcement, and campaign workflow.
+- [`PHASE_7_PRE_IMPLEMENTATION_ASSESSMENT.md`](PHASE_7_PRE_IMPLEMENTATION_ASSESSMENT.md): Phase 7 payment engine forensic audit and gap analysis.
+- [`PHASE_7_COMPLETION_REPORT.md`](PHASE_7_COMPLETION_REPORT.md): Phase 7 payment engine, Razorpay integration, transaction lifecycle, and audit reconciliation.
+- [`PHASE_8_PRE_IMPLEMENTATION_ASSESSMENT.md`](PHASE_8_PRE_IMPLEMENTATION_ASSESSMENT.md): Phase 8 payment hardening pre-implementation assessment and forensic gap analysis.
+- [`PHASE_8_COMPLETION_REPORT.md`](PHASE_8_COMPLETION_REPORT.md): Phase 8 payment hardening, state machine enforcement, webhook deduplication, and production verification report.
+- [`PHASE_9_COMPLETION_REPORT.md`](PHASE_9_COMPLETION_REPORT.md): Phase 9+ premium UI/UX transformation, authentic Odisha hero map, responsive browser QA, and production readiness report.
+- [`docs/PAYMENT_STATE_MACHINE.md`](docs/PAYMENT_STATE_MACHINE.md): Formally enforced payment transaction state machine and lifecycle specification.
+- [`docs/PAYMENT_OPERATIONS.md`](docs/PAYMENT_OPERATIONS.md): Razorpay webhook operations, deduplication ledger, structured log markers, and incident response runbook.
+- [`docs/PRODUCTION_SECURITY_CHECKLIST.md`](docs/PRODUCTION_SECURITY_CHECKLIST.md): 19-point production security and cryptographic compliance checklist.
 - [`docs/VERSION_DECISION.md`](docs/VERSION_DECISION.md): Evaluation of Spring Boot 3.3 vs 4.x and PostgreSQL 16 vs 17.
 - [`docs/DATABASE_DOMAIN_MODEL.md`](docs/DATABASE_DOMAIN_MODEL.md): Entity relationships, constraints, and lifecycle definitions (V1 & V2 migrations).
 - [`docs/API_ARCHITECTURE.md`](docs/API_ARCHITECTURE.md): `ApiResponse<T>` envelopes, REST endpoints, and contracts.

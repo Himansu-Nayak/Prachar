@@ -218,5 +218,65 @@ class QRRedirectIntegrationTest {
                 .andExpect(jsonPath("$.data.qrStatus").value("ACTIVE"))
                 .andExpect(jsonPath("$.data.recentEvents", hasSize(2)));
     }
+
+    @Test
+    @DisplayName("Should resolve QR code via public API endpoint (/api/public/qr/{uuid})")
+    void shouldResolvePublicQrViaPublicApi() throws Exception {
+        mockMvc.perform(get("/api/public/qr/" + codeUuid)
+                        .header("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)")
+                        .header("X-Forwarded-For", "49.37.12.88"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.codeUuid").value(codeUuid))
+                .andExpect(jsonPath("$.data.targetUrl").value("/u/lingaraj-store"))
+                .andExpect(jsonPath("$.data.usernameSlug").value("lingaraj-store"))
+                .andExpect(jsonPath("$.data.displayName").value("Lingaraj General Store"))
+                .andExpect(jsonPath("$.data.qrStatus").value("ACTIVE"))
+                .andExpect(jsonPath("$.data.profileStatus").value("ACTIVE"));
+
+        // Verify scan was counted
+        QRCode updated = qrCodeRepository.findByCodeUuid(codeUuid).orElseThrow();
+        assertEquals(1L, updated.getScanCount());
+    }
+
+    @Test
+    @DisplayName("Should return 404 for public QR API resolution when UUID does not exist")
+    void shouldReturn404ForNonexistentPublicQr() throws Exception {
+        mockMvc.perform(get("/api/public/qr/" + UUID.randomUUID()))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error.code").value("NOT_FOUND"));
+    }
+
+    @Test
+    @DisplayName("Should reject public QR resolution when QR code is inactive")
+    void shouldRejectPublicQrResolutionWhenQrIsInactive() throws Exception {
+        mockMvc.perform(patch("/api/qr/me/status")
+                        .header("Authorization", "Bearer " + authToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(Map.of("status", "INACTIVE"))))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/public/qr/" + codeUuid))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error.code").value("INVALID_STATE"));
+    }
+
+    @Test
+    @DisplayName("Should block open redirect attempt when QR targetUrl is external or malicious")
+    void shouldPreventOpenRedirectWhenTargetUrlIsUnsafe() throws Exception {
+        // Manually tamper QR code targetUrl to external site
+        QRCode qrCode = qrCodeRepository.findByCodeUuid(codeUuid).orElseThrow();
+        qrCode.setTargetUrl("https://malicious-phishing-site.com/steal");
+        qrCodeRepository.save(qrCode);
+
+        // Attempt redirect -> must be rejected with 400 SECURITY_VIOLATION
+        mockMvc.perform(get("/qr/" + codeUuid))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error.code").value("SECURITY_VIOLATION"))
+                .andExpect(jsonPath("$.error.message", containsString("Unsafe redirect target")));
+    }
 }
 

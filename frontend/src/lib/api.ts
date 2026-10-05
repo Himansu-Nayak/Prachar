@@ -1,16 +1,31 @@
 import {
+  AdminRefundInput,
+  AdminReviewInput,
+  Advertisement,
+  AdvertisementPackage,
+  AdvertisementSummary,
   ApiResponse,
   AuthResponse,
   CardStatus,
+  CreateAdvertisementInput,
+  CreatePaymentOrderResponse,
   CreateProfileInput,
+  EditionCutoff,
   HealthResponse,
   MyProfile,
+  OnboardingStatusData,
+  OnboardingStatusType,
+  PaymentTransaction,
   ProfileStatus,
   PublicProfile,
+  PublicQrResolution,
   QRAnalytics,
   QRStatus,
   SlugAvailability,
+  UpdateAdvertisementInput,
   UpdateProfileInput,
+  UserAccount,
+  VerifyPaymentInput,
 } from "@/types";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
@@ -97,7 +112,7 @@ export async function checkSlugAvailability(slug: string): Promise<ApiResponse<S
 }
 
 export async function fetchPublicProfile(slug: string): Promise<ApiResponse<PublicProfile>> {
-  return request<PublicProfile>(`/api/profiles/public/${encodeURIComponent(slug)}`, {
+  return request<PublicProfile>(`/api/public/profiles/${encodeURIComponent(slug)}`, {
     method: "GET",
     next: { revalidate: 10 },
   });
@@ -165,3 +180,269 @@ export function getQrImageUrl(codeUuid: string, size = 300): string {
 export function getQrRedirectUrl(codeUuid: string): string {
   return `${API_BASE_URL}/qr/${encodeURIComponent(codeUuid)}`;
 }
+
+export async function fetchPublicQrResolution(codeUuid: string): Promise<ApiResponse<PublicQrResolution>> {
+  return request<PublicQrResolution>(`/api/public/qr/${encodeURIComponent(codeUuid)}`, {
+    method: "GET",
+    next: { revalidate: 0 },
+  });
+}
+
+// Phase 4: User Account Management
+export async function fetchUserAccount(token: string): Promise<ApiResponse<UserAccount>> {
+  return request<UserAccount>("/api/user/me", {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export async function updateUserAccount(
+  token: string,
+  data: { email?: string }
+): Promise<ApiResponse<UserAccount>> {
+  return request<UserAccount>("/api/user/me", {
+    method: "PUT",
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(data),
+  });
+}
+
+// Phase 4: Onboarding Status API
+export async function fetchOnboardingStatus(
+  token: string
+): Promise<ApiResponse<OnboardingStatusData>> {
+  return request<OnboardingStatusData>("/api/onboarding/status", {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export async function updateOnboardingStep(
+  token: string,
+  status: OnboardingStatusType
+): Promise<ApiResponse<OnboardingStatusData>> {
+  return request<OnboardingStatusData>("/api/onboarding/step", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ status }),
+  });
+}
+
+// Phase 6: Advertising & Phygital Campaign API
+export async function fetchAdvertisingPackages(): Promise<ApiResponse<AdvertisementPackage[]>> {
+  return request<AdvertisementPackage[]>("/api/advertising/packages", {
+    method: "GET",
+    next: { revalidate: 300 },
+  });
+}
+
+export async function fetchAdvertisingCutoff(): Promise<ApiResponse<EditionCutoff>> {
+  return request<EditionCutoff>("/api/advertising/cutoff", {
+    method: "GET",
+    next: { revalidate: 60 },
+  });
+}
+
+export async function fetchMyAdvertisements(token: string): Promise<ApiResponse<Advertisement[]>> {
+  return request<Advertisement[]>("/api/advertising/advertisements", {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export async function fetchMyAdvertisementSummary(token: string): Promise<ApiResponse<AdvertisementSummary>> {
+  return request<AdvertisementSummary>("/api/advertising/advertisements/summary", {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export async function fetchMyAdvertisementById(token: string, id: string): Promise<ApiResponse<Advertisement>> {
+  return request<Advertisement>(`/api/advertising/advertisements/${id}`, {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export async function createAdvertisement(
+  token: string,
+  data: CreateAdvertisementInput
+): Promise<ApiResponse<Advertisement>> {
+  return request<Advertisement>("/api/advertising/advertisements", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(data),
+  });
+}
+
+export async function updateAdvertisement(
+  token: string,
+  id: string,
+  data: UpdateAdvertisementInput
+): Promise<ApiResponse<Advertisement>> {
+  return request<Advertisement>(`/api/advertising/advertisements/${id}`, {
+    method: "PATCH",
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(data),
+  });
+}
+
+export async function submitAdvertisement(token: string, id: string): Promise<ApiResponse<Advertisement>> {
+  return request<Advertisement>(`/api/advertising/advertisements/${id}/submit`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export async function cancelAdvertisement(token: string, id: string): Promise<ApiResponse<Advertisement>> {
+  return request<Advertisement>(`/api/advertising/advertisements/${id}/cancel`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export async function uploadAdvertisementCreative(
+  token: string,
+  id: string,
+  file: File
+): Promise<ApiResponse<Advertisement>> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const url = `${API_BASE_URL}/api/advertising/advertisements/${id}/creative`;
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+      body: formData,
+    });
+    const data = await res.json();
+    return data as ApiResponse<Advertisement>;
+  } catch (error) {
+    return {
+      success: false,
+      error: {
+        code: "NETWORK_ERROR",
+        message: error instanceof Error ? error.message : "Failed to upload creative file",
+      },
+      timestamp: new Date().toISOString(),
+    };
+  }
+}
+
+export async function fetchAdminAdvertisements(
+  token: string,
+  status?: string
+): Promise<ApiResponse<Advertisement[]>> {
+  const query = status ? `?status=${encodeURIComponent(status)}` : "";
+  return request<Advertisement[]>(`/api/admin/advertisements${query}`, {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export async function fetchAdminAdvertisementSummary(
+  token: string
+): Promise<ApiResponse<AdvertisementSummary>> {
+  return request<AdvertisementSummary>("/api/admin/advertisements/summary", {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export async function reviewAdvertisement(
+  token: string,
+  id: string,
+  data: AdminReviewInput
+): Promise<ApiResponse<Advertisement>> {
+  return request<Advertisement>(`/api/admin/advertisements/${id}/review`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(data),
+  });
+}
+
+// ============================================================
+// Phase 7: Payment Engine & Razorpay Integration API Calls
+// ============================================================
+
+export function loadRazorpayScript(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (typeof window === "undefined") {
+      resolve(false);
+      return;
+    }
+    if ((window as unknown as { Razorpay?: unknown }).Razorpay) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+}
+
+export async function createPaymentOrder(
+  token: string,
+  advertisementId: string
+): Promise<ApiResponse<CreatePaymentOrderResponse>> {
+  return request<CreatePaymentOrderResponse>(
+    `/api/advertising/advertisements/${advertisementId}/payment/order`,
+    {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+}
+
+export async function verifyPayment(
+  token: string,
+  data: VerifyPaymentInput
+): Promise<ApiResponse<PaymentTransaction>> {
+  return request<PaymentTransaction>("/api/advertising/payments/verify", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(data),
+  });
+}
+
+export async function fetchAdvertisementPayments(
+  token: string,
+  advertisementId: string
+): Promise<ApiResponse<PaymentTransaction[]>> {
+  return request<PaymentTransaction[]>(
+    `/api/advertising/advertisements/${advertisementId}/payments`,
+    {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+}
+
+export async function fetchAllPaymentsAdmin(
+  token: string
+): Promise<ApiResponse<PaymentTransaction[]>> {
+  return request<PaymentTransaction[]>("/api/admin/payments", {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+export async function refundPaymentAdmin(
+  token: string,
+  transactionId: string,
+  data: AdminRefundInput
+): Promise<ApiResponse<PaymentTransaction>> {
+  return request<PaymentTransaction>(`/api/admin/payments/${transactionId}/refund`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(data),
+  });
+}
+
+

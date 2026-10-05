@@ -21,3 +21,9 @@ prachar:
     secret: "test_secret_key_at_least_256_bits_length_for_hmac_sha256_prachar_test_environment"
     access-token-minutes: 15
     refresh-token-days: 7
+  razorpay:
+    key-id: "rzp_test_placeholder_key"
+    key-secret: "test_secret_key_for_razorpay_hmac_sha256_testing_only"
+    webhook-secret: "test_webhook_secret_for_razorpay_hmac_sha256_testing_only"
+    simulation-mode: true
+

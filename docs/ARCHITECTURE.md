@@ -56,6 +56,11 @@
 ### 2.4 Redis 7 In-Memory Cache (Port 6379)
 - **Role:** High-speed cache for dynamic QR redirect targets (`qr:target:{uuid}`), JWT token blacklisting, and rate limiting (OTP abuse prevention).
 
+### 2.5 Payment Engine & Razorpay Gateway Abstraction (Phase 7)
+- **Role:** Server-authoritative order creation, integer minor unit (paise) bookkeeping, client checkout cryptographic verification (HMAC-SHA256), webhook reconciliation (`order.paid`, `payment.captured`), and admin refunds.
+- **Decoupled Architecture:** Business logic relies on `PaymentGateway` interface rather than direct SDK coupling, supporting live mode with automated simulation/fallback for testing environments.
+
+
 ---
 
 ## 3. Network & Deployment Topology

@@ -66,7 +66,7 @@ public class SecurityConfig {
                 // Public dynamic QR resolution and image rendering
                 .requestMatchers("/qr/**", "/api/qr/image/**").permitAll()
                 // Public Profile read and claim checks
-                .requestMatchers("/api/profiles/public/**", "/api/profiles/claim/**").permitAll()
+                .requestMatchers("/api/profiles/public/**", "/api/profiles/claim/**", "/api/public/**").permitAll()
                 // Protected Profile operations
                 .requestMatchers("/api/profiles/me/**").authenticated()
                 .requestMatchers(HttpMethod.POST, "/api/profiles").authenticated()
@@ -77,6 +77,14 @@ public class SecurityConfig {
                 .requestMatchers("/api/user/**", "/api/onboarding/**").authenticated()
                 // Protected Auth endpoints
                 .requestMatchers("/api/auth/logout", "/api/auth/me").authenticated()
+                // Public Advertising packages and cutoff schedule
+                .requestMatchers("/api/advertising/packages/**", "/api/advertising/cutoff").permitAll()
+                // Public Razorpay webhook listener (cryptographic HMAC-SHA256 signature verified)
+                .requestMatchers("/api/payments/razorpay/webhook").permitAll()
+                // Admin Advertising Review, Payments and Management
+                .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "STAFF")
+                // Protected Advertising Operations
+                .requestMatchers("/api/advertising/**").authenticated()
                 // All other paths require authentication
                 .anyRequest().authenticated()
             )

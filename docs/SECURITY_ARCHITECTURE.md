@@ -83,3 +83,24 @@
 3. **Data Privacy (India DPDP Act 2023 Compliance):**
    - Public profiles render contact information (phone, WhatsApp, email) based on profile configuration.
    - Profile visibility toggle (`is_public`) allows users to unpublish their digital micro-website immediately.
+
+---
+
+## 6. Payment Engine & Cryptographic Integrity (Phase 7)
+
+1. **Server-Authoritative Pricing (Zero Client Trust):**
+   - Transaction amounts are derived strictly server-side from canonical Rate Cards (`P1`–`P5`) and multiplied by target editions.
+   - Client-submitted prices or manipulated payloads are strictly ignored.
+   - All internal calculations use integer minor units (paise: ₹1 = 100 paise; e.g. ₹1,500 = 150000 paise).
+2. **Cryptographic Signature Verification:**
+   - Client checkout verification enforces HMAC-SHA256 calculation over `order_id + "|" + payment_id` using `RAZORPAY_KEY_SECRET`.
+   - Webhook verification computes HMAC-SHA256 over raw payload bytes using `RAZORPAY_WEBHOOK_SECRET`.
+   - Timing-attack resistant verification via `MessageDigest.isEqual`.
+   - Tampered signatures immediately mark the transaction as `PAYMENT_FAILED` and reject with `SecurityException` without rolling back audit trails (`noRollbackFor = SecurityException.class`).
+3. **Decoupled Editorial & Payment Concerns:**
+   - `PaymentStatus` and `AdvertisementStatus` are decoupled. Payment confirmation updates `paymentStatus = CONFIRMED`, leaving `advertisementStatus = SUBMITTED`.
+   - An advertisement is NEVER automatically approved or published upon payment receipt; editorial review remains mandatory.
+4. **Idempotency & Replay Resistance:**
+   - Double-clicking pay or retrying order creation re-uses existing active order transactions.
+   - Duplicate webhook delivery and verification attempts are handled idempotently via unique database constraints on `gateway_order_id` and `gateway_payment_id`.
+

@@ -32,6 +32,9 @@ public class QRController {
         this.qrCodeRepository = qrCodeRepository;
     }
 
+    private static final java.util.regex.Pattern SAFE_TARGET_PATTERN =
+            java.util.regex.Pattern.compile("^/u/[a-z0-9-]+$");
+
     /**
      * Public dynamic QR redirection endpoint.
      * Records telemetry event, atomically increments scan count, and issues HTTP 302 Found redirect to profile.
@@ -44,6 +47,11 @@ public class QRController {
 
         QRCode qrCode = qrCodeService.resolveAndIncrement(codeUuid, clientIp, userAgent, referrer);
         String targetUrl = qrCode.getTargetUrl();
+
+        // Enforce open redirect protection: targetUrl must match internal relative profile path
+        if (targetUrl == null || !SAFE_TARGET_PATTERN.matcher(targetUrl.trim()).matches()) {
+            throw new SecurityException("Unsafe redirect target detected for QR code.");
+        }
 
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create(targetUrl));

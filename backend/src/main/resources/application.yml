@@ -34,6 +34,12 @@ prachar:
     secret: ${JWT_SECRET:PracharSecuritySecretKeyForPhase2JWTAuthentication2026SecureKeyMustBeLongEnough}
     access-token-minutes: 15
     refresh-token-days: 7
+  razorpay:
+    key-id: ${RAZORPAY_KEY_ID:rzp_test_placeholder_key}
+    key-secret: ${RAZORPAY_KEY_SECRET:placeholder_secret_key_2026}
+    webhook-secret: ${RAZORPAY_WEBHOOK_SECRET:placeholder_webhook_secret_2026}
+    api-url: ${RAZORPAY_API_URL:https://api.razorpay.com/v1}
+    simulation-mode: ${RAZORPAY_SIMULATION_MODE:true}
 
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

@@ -492,5 +492,42 @@ class ProfileIntegrationTest {
                 .andExpect(jsonPath("$.data.nfcEnabled").value(true))
                 .andExpect(jsonPath("$.data.themeColor").value("#059669"));
     }
+
+    @Test
+    @DisplayName("Should fetch public profile via dedicated public API (/api/public/profiles/{slug})")
+    void shouldFetchPublicProfileViaDedicatedPublicEndpoint() throws Exception {
+        CreateProfileRequestDto request = new CreateProfileRequestDto();
+        request.setUsernameSlug("utkal-handicrafts");
+        request.setDisplayName("Utkal Handicrafts Ekamra");
+        request.setCategory("Art & Crafts");
+        request.setPrimaryPhone(testPhone);
+        request.setCity("Bhubaneswar");
+        request.setState("Odisha");
+
+        mockMvc.perform(post("/api/profiles")
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated());
+
+        // Call /api/public/profiles/utkal-handicrafts (unauthenticated)
+        mockMvc.perform(get("/api/public/profiles/utkal-handicrafts"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.usernameSlug").value("utkal-handicrafts"))
+                .andExpect(jsonPath("$.data.displayName").value("Utkal Handicrafts Ekamra"))
+                .andExpect(jsonPath("$.data.category").value("Art & Crafts"))
+                .andExpect(jsonPath("$.data.state").value("Odisha"))
+                .andExpect(jsonPath("$.data.qrCodeUuid").isString());
+    }
+
+    @Test
+    @DisplayName("Should return 404 for unknown profile via dedicated public API (/api/public/profiles/{slug})")
+    void shouldReturn404ForUnknownPublicProfile() throws Exception {
+        mockMvc.perform(get("/api/public/profiles/nonexistent-store-slug"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error.code").value("NOT_FOUND"));
+    }
 }
 

@@ -75,6 +75,24 @@ public class QRCodeService {
     }
 
     @Transactional
+    public com.prachar.qr.dto.PublicQrResolutionDto resolvePublicQr(String codeUuid, String clientIp, String userAgent, String referrer) {
+        QRCode qrCode = resolveAndIncrement(codeUuid, clientIp, userAgent, referrer);
+        Profile profile = qrCode.getProfile();
+        String slug = (profile != null) ? profile.getUsernameSlug() : null;
+        String displayName = (profile != null) ? profile.getDisplayName() : null;
+        String profileStatus = (profile != null) ? profile.getStatus().name() : "INACTIVE";
+
+        return new com.prachar.qr.dto.PublicQrResolutionDto(
+                qrCode.getCodeUuid(),
+                qrCode.getTargetUrl(),
+                slug,
+                displayName,
+                qrCode.getStatus().name(),
+                profileStatus
+        );
+    }
+
+    @Transactional
     public QRCode updateQrStatus(UUID userId, QRStatus newStatus) {
         Profile profile = profileRepository.findByUserId(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Profile not found for authenticated user."));
