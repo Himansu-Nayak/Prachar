@@ -3,16 +3,13 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import {
-  CreditCard,
   QrCode,
   Smartphone,
   Phone,
   MessageCircle,
   RotateCw,
-  Sparkles,
   CheckCircle2,
   ArrowRight,
-  Radio,
   Wifi,
 } from "lucide-react";
 import { useCardTilt } from "@/lib/motion";
@@ -39,7 +36,7 @@ const MERCHANTS: SandboxMerchant[] = [
     location: "Plot 104, BJB Nagar, Bhubaneswar",
     phone: "+91 91788 98844",
     whatsapp: "+91 70770 11733",
-    themeColor: "#EA580C",
+    themeColor: "#FFB703",
     avatarText: "PS",
     services: [
       { title: "Special Nayagarh Chhena Poda", price: "₹450 / kg" },
@@ -83,8 +80,7 @@ export default function InteractiveCardSandbox() {
   const [isFlipped, setIsFlipped] = useState(false);
   const [nfcTapped, setNfcTapped] = useState(false);
 
-  // Controlled tilt: max 6 degrees for physical restraint
-  const cardTiltRef = useCardTilt(6, 1.015);
+  const cardTiltRef = useCardTilt(5, 1.01);
 
   const handleSimulateTap = () => {
     setNfcTapped(true);
@@ -92,61 +88,59 @@ export default function InteractiveCardSandbox() {
   };
 
   return (
-    <section className="relative w-full border-t border-[#E4B592]/20 bg-[#000000] py-20 sm:py-28 px-4 sm:px-8 overflow-hidden">
-      {/* Subtle deep ambient atmosphere */}
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_50%_40%,rgba(228,181,146,0.03)_0%,transparent_60%)]" />
-
-      <div className="max-w-7xl mx-auto relative z-10">
+    <section className="relative w-full bg-[#0A0A0A] text-[#EDEDED] py-24 sm:py-32 lg:py-40 px-4 sm:px-8 border-b border-white/10">
+      <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <span className="reticle-badge mb-3">
-            [TACTILE_HARDWARE // SIMULATOR]
-          </span>
-          <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-[#FFF3EA] tracking-tight">
-            Tactile Smart Card Simulator.
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-400 font-mono mt-3">
-            Physically believable matte-black NFC card with integrated NTAG215 wireless telemetry and dynamic QR router.
-          </p>
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-16 lg:mb-24 gap-8">
+          <div>
+            <span className="text-xs uppercase tracking-[0.2em] font-semibold text-[#FFB703] block mb-3 font-mono">
+              Hardware Experience
+            </span>
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.04] font-display">
+              Tactile Smart Card <br />
+              <span className="text-neutral-500">interactive sandbox</span>
+            </h2>
+          </div>
 
-          {/* Merchant Pill Switcher */}
-          <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
-            {MERCHANTS.map((m) => (
-              <button
-                key={m.id}
-                type="button"
-                onClick={() => {
-                  setSelectedMerchant(m);
-                  setIsFlipped(false);
-                }}
-                className={`px-3 py-1.5 rounded-full text-xs font-mono transition-all border ${
-                  selectedMerchant.id === m.id
-                    ? "bg-[#E4B592] text-black font-bold border-[#E4B592] shadow-md shadow-[#E4B592]/20"
-                    : "bg-[#070B14] border-white/10 text-slate-400 hover:text-white hover:border-white/20"
-                }`}
-              >
-                <span>{m.name.split(" ")[0]}</span>
-                <span className="text-[10px] opacity-70 ml-1">({m.category.split(" ")[0]})</span>
-              </button>
-            ))}
+          <div className="max-w-md text-sm sm:text-base text-neutral-400 leading-relaxed font-normal">
+            Physical matte-black NFC smart card with integrated contactless chip and permanent dynamic QR. Click to flip the card or simulate an instant mobile tap.
           </div>
         </div>
 
-        {/* 3D Physical Smart Card & Interaction Deck */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-          {/* Left: Physically Grounded 3D Card Object */}
-          <div className="lg:col-span-6 flex flex-col items-center justify-center">
-            {/* Card Pedestal with realistic ambient contact shadow */}
-            <div className="relative p-4 sm:p-6 flex items-center justify-center">
-              {/* Soft contact drop shadow casting on the surface */}
-              <div
-                className="absolute bottom-2 w-[320px] sm:w-[350px] h-6 rounded-full bg-black/90 blur-xl transition-all duration-300 pointer-events-none"
-                style={{
-                  transform: `scale(${isFlipped ? 0.95 : 1})`,
-                }}
-              />
+        {/* Merchant Switcher Pills */}
+        <div className="flex items-center gap-3 pb-8 mb-10 border-b border-white/10 overflow-x-auto scrollbar-none">
+          <span className="text-xs uppercase tracking-wider font-mono text-neutral-500 mr-2 flex-shrink-0">
+            Sample Profile:
+          </span>
+          {MERCHANTS.map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              onClick={() => {
+                setSelectedMerchant(m);
+                setIsFlipped(false);
+              }}
+              className={`px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 flex-shrink-0 flex items-center gap-2 ${
+                selectedMerchant.id === m.id
+                  ? "bg-white text-black font-bold shadow-md"
+                  : "bg-white/5 text-neutral-400 hover:text-white hover:bg-white/10 border border-white/5"
+              }`}
+            >
+              <span>{m.name}</span>
+              <span className="text-[11px] opacity-60">({m.category.split(" ")[0]})</span>
+            </button>
+          ))}
+        </div>
 
-              {/* 3D Card Object with ISO/IEC 7810 ID-1 standard aspect ratio (85.60 x 53.98 mm) */}
+        {/* 3D Physical Smart Card & Interaction Deck */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center bg-[#121214] border border-white/10 rounded-3xl p-8 sm:p-12 lg:p-16 shadow-2xl">
+          {/* Left: Tactile 3D Card Object */}
+          <div className="lg:col-span-6 flex flex-col items-center justify-center">
+            <div className="relative p-4 sm:p-6 flex items-center justify-center">
+              {/* Drop Shadow */}
+              <div className="absolute bottom-2 w-[320px] sm:w-[350px] h-6 rounded-full bg-black/90 blur-xl pointer-events-none" />
+
+              {/* Physical Card Object */}
               <div
                 ref={cardTiltRef}
                 onClick={() => setIsFlipped(!isFlipped)}
@@ -156,18 +150,14 @@ export default function InteractiveCardSandbox() {
                   transformStyle: "preserve-3d",
                 }}
               >
-                {/* Physical Card Front Face: Matte Obsidian Polymer */}
+                {/* Front Face: Matte Black Polymer */}
                 <div
-                  className={`absolute inset-0 rounded-xl p-6 card-matte-surface border border-[#E4B592]/30 flex flex-col justify-between transition-transform duration-600 ease-out backface-hidden ${
+                  className={`absolute inset-0 rounded-2xl p-6 card-matte-surface border border-white/15 flex flex-col justify-between transition-transform duration-600 ease-out backface-hidden ${
                     isFlipped ? "rotate-y-180 opacity-0 pointer-events-none" : "rotate-y-0 opacity-100"
                   }`}
-                  style={{
-                    boxShadow: "inset 0 1px 1px 0 rgba(255, 255, 255, 0.15), inset 0 -1px 2px 0 rgba(0, 0, 0, 0.8), 0 20px 40px -10px rgba(0, 0, 0, 0.95)",
-                  }}
                 >
-                  {/* Top: EMV Contact Chip & Contactless Wave Glyph */}
+                  {/* Top: EMV Chip & NFC Wave */}
                   <div className="flex items-center justify-between">
-                    {/* Realistic Gold EMV Contact Chip with segmented contact pads */}
                     <div className="w-11 h-8 rounded-xs emv-chip-gold border border-amber-900/60 relative p-1 grid grid-cols-2 gap-0.5 shadow-sm">
                       <div className="border-r border-b border-black/40" />
                       <div className="border-b border-black/40" />
@@ -175,173 +165,154 @@ export default function InteractiveCardSandbox() {
                       <div />
                     </div>
 
-                    {/* Contactless Wave Glyphs (ISO 14443) */}
-                    <div className="flex items-center gap-1.5 font-mono text-[10px] text-[#E4B592]">
-                      <Wifi className="w-4 h-4 rotate-90" />
-                      <span className="tracking-widest">NFC 13.56 MHz</span>
+                    <div className="flex items-center gap-1.5 font-mono text-[11px] text-neutral-400">
+                      <Wifi className="w-3.5 h-3.5 rotate-90 text-[#FFB703]" />
+                      <span>NFC 13.56 MHz</span>
                     </div>
                   </div>
 
-                  {/* Middle: Debossed Hot-Stamped Metallic Brand */}
+                  {/* Middle: Brand Header */}
                   <div>
-                    <h4
-                      className="text-lg font-bold text-[#FFF3EA] font-sans tracking-tight"
-                      style={{ textShadow: "0 1px 2px rgba(0,0,0,0.9)" }}
-                    >
+                    <h4 className="text-xl font-bold text-white font-display tracking-tight">
                       {selectedMerchant.name}
                     </h4>
-                    <p className="text-xs text-[#E4B592] font-serif">{selectedMerchant.odiaName}</p>
-                    <p className="text-[10px] text-slate-400 font-mono mt-0.5">{selectedMerchant.category}</p>
+                    <p className="text-xs text-[#FFB703] font-serif mt-0.5">{selectedMerchant.odiaName}</p>
+                    <p className="text-xs text-neutral-400 font-mono mt-1">{selectedMerchant.category}</p>
                   </div>
 
-                  {/* Bottom: Legal & Geographic Identifier */}
-                  <div className="flex items-center justify-between pt-2 border-t border-white/10 font-mono text-[9px] text-slate-400">
+                  {/* Bottom: Location & Flip prompt */}
+                  <div className="flex items-center justify-between pt-3 border-t border-white/10 font-mono text-[10px] text-neutral-400">
                     <span className="truncate max-w-[200px]">{selectedMerchant.location}</span>
-                    <span className="text-[#E4B592] flex-shrink-0">CLICK TO FLIP ↻</span>
+                    <span className="text-[#FFB703]">Click to flip ↻</span>
                   </div>
                 </div>
 
-                {/* Physical Card Back Face: Dynamic QR Resolution Surface */}
+                {/* Back Face: Dynamic QR */}
                 <div
-                  className={`absolute inset-0 rounded-xl p-6 card-matte-surface border border-[#E4B592]/30 flex flex-col justify-between transition-transform duration-600 ease-out backface-hidden ${
+                  className={`absolute inset-0 rounded-2xl p-6 card-matte-surface border border-white/15 flex flex-col justify-between transition-transform duration-600 ease-out backface-hidden ${
                     isFlipped ? "rotate-y-0 opacity-100" : "-rotate-y-180 opacity-0 pointer-events-none"
                   }`}
-                  style={{
-                    boxShadow: "inset 0 1px 1px 0 rgba(255, 255, 255, 0.15), inset 0 -1px 2px 0 rgba(0, 0, 0, 0.8), 0 20px 40px -10px rgba(0, 0, 0, 0.95)",
-                  }}
                 >
-                  {/* Subtle NFC Internal Coil Trace Outline */}
-                  <div className="absolute inset-2 border border-white/5 rounded-lg pointer-events-none" />
-
-                  <div className="flex items-center justify-between font-mono text-[10px] text-[#E4B592]">
+                  <div className="flex items-center justify-between font-mono text-xs text-[#FFB703]">
                     <span>PRACHAR DYNAMIC QR</span>
-                    <span>UUID ROUTING</span>
+                    <span>EDGE ROUTED</span>
                   </div>
 
-                  {/* Central Crisp QR Code Block */}
                   <div className="flex items-center justify-center gap-5 my-auto">
-                    <div className="w-20 h-20 bg-white p-1 rounded-xs shadow-xl flex items-center justify-center flex-shrink-0">
+                    <div className="w-20 h-20 bg-white p-1 rounded-lg shadow-xl flex items-center justify-center flex-shrink-0">
                       <QrCode className="w-18 h-18 text-black" />
                     </div>
                     <div className="font-mono text-xs space-y-1">
-                      <span className="text-white font-bold block">PERMANENT CLOUD URI</span>
-                      <span className="text-[#E4B592] block">/qr/{selectedMerchant.id}</span>
-                      <span className="text-[9px] text-slate-400 block font-sans">
-                        Zero reprint cost on destination change
+                      <span className="text-white font-bold block">PERMANENT URI</span>
+                      <span className="text-[#FFB703] block">/qr/{selectedMerchant.id}</span>
+                      <span className="text-[10px] text-neutral-400 block font-sans">
+                        Zero reprint cost on offer changes
                       </span>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-2 border-t border-white/10 font-mono text-[9px] text-slate-400">
-                    <span>BHUBANESWAR PHYGITAL NETWORK</span>
-                    <span className="text-[#E4B592]">CLICK TO FLIP ↻</span>
+                  <div className="flex items-center justify-between pt-3 border-t border-white/10 font-mono text-[10px] text-neutral-400">
+                    <span>BHUBANESWAR PHYGITAL</span>
+                    <span className="text-[#FFB703]">Click to flip ↻</span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Interaction Buttons */}
-            <div className="flex items-center gap-3 mt-4 font-mono text-xs">
+            <div className="flex items-center gap-3 mt-6">
               <button
                 type="button"
                 onClick={() => setIsFlipped(!isFlipped)}
-                className="px-4 py-2 rounded-full border border-white/20 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition flex items-center gap-1.5"
+                className="rounded-full px-5 py-2.5 border border-white/15 bg-white/5 hover:bg-white/10 text-neutral-300 hover:text-white text-xs font-semibold transition-all flex items-center gap-2"
               >
                 <RotateCw className="w-3.5 h-3.5" />
-                <span>FLIP CARD</span>
+                <span>Flip Card</span>
               </button>
               <button
                 type="button"
                 onClick={handleSimulateTap}
-                className="px-4 py-2 rounded-full border border-[#E4B592] bg-[#E4B592]/10 hover:bg-[#E4B592] text-[#FFF3EA] hover:text-black font-bold transition flex items-center gap-1.5 shadow-md shadow-[#E4B592]/20"
+                className="rounded-full px-5 py-2.5 bg-[#FFB703] hover:bg-amber-400 text-black text-xs font-bold transition-all flex items-center gap-2 shadow-sm"
               >
                 <Smartphone className="w-3.5 h-3.5" />
-                <span>SIMULATE PHONE TAP</span>
+                <span>Simulate Phone Tap</span>
               </button>
             </div>
           </div>
 
-          {/* Right: Resolved Digital Experience */}
-          <div className="lg:col-span-6 p-6 sm:p-8 rounded-sm border border-white/10 bg-[#070B14]/90 backdrop-blur-xl relative">
-            <div className="absolute top-2 left-2 w-3 h-3 border-t-2 border-l-2 border-[#E4B592]" />
-            <div className="absolute top-2 right-2 w-3 h-3 border-t-2 border-r-2 border-[#E4B592]" />
-
-            {/* Tap Notification Feedback */}
-            {nfcTapped && (
-              <div className="mb-4 p-3 rounded-xs bg-emerald-950/80 border border-emerald-500 text-emerald-300 font-mono text-xs flex items-center gap-2 animate-fadeIn">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                <span>NFC TAP DETECTED // Resolved in 84ms to /u/{selectedMerchant.id}</span>
-              </div>
-            )}
-
-            <div className="flex items-center justify-between pb-3 border-b border-white/10 font-mono text-xs">
-              <span className="text-[#E4B592] font-bold">DIGITAL MICRO-PROFILE</span>
-              <span className="text-emerald-400 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                VERIFIED PROFILE
-              </span>
-            </div>
-
-            <div className="mt-4 flex items-center gap-3">
-              <div
-                className="w-12 h-12 rounded-xs flex items-center justify-center font-bold text-white font-mono text-lg shadow-md"
-                style={{ backgroundColor: selectedMerchant.themeColor }}
-              >
-                {selectedMerchant.avatarText}
-              </div>
-              <div>
-                <h4 className="text-lg font-bold text-[#FFF3EA] font-sans">
-                  {selectedMerchant.name}
-                </h4>
-                <p className="text-xs text-slate-400 font-mono">
-                  prachar.in/u/{selectedMerchant.id}
-                </p>
-              </div>
-            </div>
-
-            {/* 1-Tap Actions */}
-            <div className="grid grid-cols-2 gap-3 mt-5 font-mono text-xs">
-              <a
-                href={`https://wa.me/${selectedMerchant.whatsapp.replace(/[^0-9]/g, "")}?text=Hi%20${encodeURIComponent(selectedMerchant.name)},%20I%20saw%20your%20Prachar%20card`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-3 rounded-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold flex items-center justify-center gap-2 transition"
-              >
-                <MessageCircle className="w-4 h-4" />
-                <span>1-TAP WHATSAPP</span>
-              </a>
-              <a
-                href={`tel:${selectedMerchant.phone.replace(/[^0-9]/g, "")}`}
-                className="p-3 rounded-xs bg-white/10 hover:bg-white/15 text-[#FFF3EA] font-bold flex items-center justify-center gap-2 transition"
-              >
-                <Phone className="w-4 h-4 text-[#E4B592]" />
-                <span>DIRECT CALL</span>
-              </a>
-            </div>
-
-            {/* Catalog Items */}
-            <div className="mt-5 pt-4 border-t border-white/10 font-mono text-xs space-y-2">
-              <span className="text-[10px] text-slate-400 uppercase tracking-wider block">
-                Featured Catalog Items:
-              </span>
-              {selectedMerchant.services.map((srv, idx) => (
-                <div
-                  key={idx}
-                  className="p-2.5 rounded-xs bg-black/60 border border-white/5 flex items-center justify-between"
-                >
-                  <span className="text-slate-300 font-sans">{srv.title}</span>
-                  <span className="text-[#E4B592] font-bold">{srv.price}</span>
+          {/* Right: Phone Instant Resolution Result */}
+          <div className="lg:col-span-6 flex flex-col justify-center">
+            <div className="w-full max-w-sm mx-auto bg-[#18181B] border border-white/15 rounded-3xl p-6 sm:p-7 shadow-2xl space-y-6 relative overflow-hidden">
+              {nfcTapped && (
+                <div className="absolute inset-0 bg-[#FFB703]/10 border-2 border-[#FFB703] rounded-3xl flex items-center justify-center z-20 backdrop-blur-xs transition-all">
+                  <div className="bg-black/90 p-5 rounded-2xl border border-white/20 text-center space-y-2">
+                    <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
+                    <span className="font-bold text-white text-sm block">NFC Tap Detected!</span>
+                    <span className="text-xs text-neutral-400 font-mono block">Opening /u/{selectedMerchant.id}</span>
+                  </div>
                 </div>
-              ))}
-            </div>
+              )}
 
-            {/* Footer */}
-            <div className="mt-6 pt-3 border-t border-white/10 flex items-center justify-between font-mono text-[10px] text-slate-400">
-              <span>SCAN TELEMETRY: REAL-TIME TRACKING</span>
-              <Link href="/demo" className="text-[#E4B592] hover:underline flex items-center gap-1">
-                <span>FULL SIMULATOR</span>
-                <ArrowRight className="w-3 h-3" />
-              </Link>
+              {/* Verified Badge Header */}
+              <div className="flex items-center justify-between pb-4 border-b border-white/10">
+                <span className="text-xs font-mono text-neutral-400">Mobile Resolution</span>
+                <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3" />
+                  Verified Profile
+                </span>
+              </div>
+
+              {/* Profile Details */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-[#FFB703] text-black font-bold flex items-center justify-center text-base">
+                    {selectedMerchant.avatarText}
+                  </div>
+                  <div>
+                    <h5 className="font-bold text-white text-lg font-display">{selectedMerchant.name}</h5>
+                    <p className="text-xs text-neutral-400 font-mono">prachar.in/u/{selectedMerchant.id}</p>
+                  </div>
+                </div>
+
+                <div className="p-3 bg-black/40 rounded-xl border border-white/5 space-y-1 text-xs">
+                  <span className="text-neutral-400 font-mono">Services &amp; Specialities:</span>
+                  {selectedMerchant.services.map((s, i) => (
+                    <div key={i} className="flex justify-between text-neutral-200">
+                      <span>• {s.title}</span>
+                      <span className="text-[#FFB703] font-semibold">{s.price}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Instant Actions */}
+                <div className="grid grid-cols-2 gap-3 pt-2">
+                  <a
+                    href={`https://wa.me/${selectedMerchant.whatsapp.replace(/[^0-9]/g, "")}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="py-3 px-3 bg-emerald-950/70 border border-emerald-500/40 rounded-xl text-center text-xs font-bold text-emerald-400 flex items-center justify-center gap-1.5 hover:bg-emerald-900/80 transition"
+                  >
+                    <MessageCircle className="w-3.5 h-3.5" />
+                    <span>WhatsApp</span>
+                  </a>
+                  <a
+                    href={`tel:${selectedMerchant.phone.replace(/[^0-9+]/g, "")}`}
+                    className="py-3 px-3 bg-white/10 border border-white/15 rounded-xl text-center text-xs font-bold text-white flex items-center justify-center gap-1.5 hover:bg-white/20 transition"
+                  >
+                    <Phone className="w-3.5 h-3.5" />
+                    <span>Call Direct</span>
+                  </a>
+                </div>
+              </div>
+
+              <div className="pt-2 text-center">
+                <Link
+                  href="/register"
+                  className="text-xs text-[#FFB703] hover:underline font-medium"
+                >
+                  Claim your business smart card &amp; profile →
+                </Link>
+              </div>
             </div>
           </div>
         </div>

@@ -235,22 +235,16 @@ export default async function PublicProfilePage({ params }: ProfilePageProps) {
 
       {/* Top Hairline Telemetry Indicator */}
       <div className="w-full max-w-lg mx-auto">
-        {/* Main 21hrs.space Phygital Smart Identity Chassis */}
-        <article className="relative bg-[#050811]/95 border border-[#E4B592]/30 shadow-[0_0_50px_rgba(0,0,0,0.9)] backdrop-blur-2xl overflow-hidden">
-          {/* 4 Precision Copper Corner Viewfinder Reticles */}
-          <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-[#E4B592] pointer-events-none z-30" />
-          <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-[#E4B592] pointer-events-none z-30" />
-          <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-[#E4B592] pointer-events-none z-30" />
-          <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-[#E4B592] pointer-events-none z-30" />
-
-          {/* Top Telemetry Header Band */}
-          <div className="px-5 py-2.5 bg-[#000000]/80 border-b border-[#E4B592]/20 flex items-center justify-between font-mono text-[10px] text-slate-400">
-            <span className="flex items-center gap-1.5 text-[#E4B592] font-bold tracking-widest uppercase">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#E4B592] animate-pulse" />
-              PHYGITAL IDENTITY CARD
+        {/* Main Phygital Smart Identity Card */}
+        <article className="relative bg-[#121214] border border-white/15 rounded-3xl shadow-2xl overflow-hidden">
+          {/* Header Band */}
+          <div className="px-6 py-3 bg-black/40 border-b border-white/10 flex items-center justify-between text-xs text-neutral-400">
+            <span className="flex items-center gap-2 text-white font-medium">
+              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+              Verified Public Profile
             </span>
-            <span className="tracking-wider text-slate-400">
-              {profile.city.toUpperCase()} {"//"} 20°N 85°E
+            <span className="font-mono text-[11px] text-neutral-500">
+              {profile.city} • Odisha
             </span>
           </div>
 

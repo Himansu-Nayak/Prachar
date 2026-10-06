@@ -91,48 +91,49 @@
   -webkit-text-fill-color: transparent;
 }
 
-/* 21hrs.space Museum-Grade Reticle & Viewfinder System */
+/* Brand Appart Editorial Design Tokens */
 :root {
   --copper: #E4B592;
-  --copper-glow: rgba(228, 181, 146, 0.35);
-  --void-black: #000000;
-  --obsidian: #050811;
-  --starlight: #FFF3EA;
-  --telemetry-dim: #94A3B8;
+  --void-black: #0A0A0A;
+  --surface-dark: #121212;
+  --surface-border: rgba(255, 255, 255, 0.08);
+  --text-main: #FFFFFF;
+  --text-muted: #8E8E93;
+  --prachar-yellow: #FFB703;
+  --prachar-red: #E11D48;
 }
 
-/* Luxury editorial matte ground texture (subtle, non-distracting) */
+/* Subtle clean editorial background */
 .space-grid-bg {
-  background-color: #000000;
-  background-image: radial-gradient(circle at 50% 0%, rgba(228, 181, 146, 0.04) 0%, transparent 60%);
+  background-color: #0A0A0A;
 }
 
 /* Light Ivory Editorial Section System */
 .section-light-ivory {
-  background-color: #FBF8F3;
-  color: #0F172A;
-  border-color: rgba(15, 23, 42, 0.1);
+  background-color: #F8F7F4;
+  color: #121212;
+  border-color: rgba(0, 0, 0, 0.08);
 }
 
 .section-light-warm {
-  background-color: #F4EFEB;
-  color: #0F172A;
-  border-color: rgba(15, 23, 42, 0.12);
+  background-color: #F3F1EC;
+  color: #121212;
+  border-color: rgba(0, 0, 0, 0.08);
 }
 
 .text-charcoal-primary {
-  color: #0F172A;
+  color: #121212;
 }
 
 .text-charcoal-secondary {
-  color: #334155;
+  color: #383838;
 }
 
 .text-charcoal-muted {
-  color: #64748B;
+  color: #71717A;
 }
 
-/* Line Reveal Mask for Editorial Typography */
+/* Editorial Line Reveal */
 .hero-line-mask {
   overflow: hidden;
   display: block;
@@ -145,17 +146,17 @@
 
 /* Authentic Print Stock Paper Surface */
 .print-paper-stock {
-  background-color: #080C16;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 0);
-  background-size: 4px 4px;
+  background-color: #0F0F11;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0);
+  background-size: 6px 6px;
 }
 
 /* Physical Card Realistic Material Styles */
 .card-matte-surface {
-  background: linear-gradient(135deg, #0F1422 0%, #080B14 50%, #03050A 100%);
+  background: linear-gradient(135deg, #18181B 0%, #0F0F12 50%, #08080A 100%);
   box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.12),
-              inset 0 -1px 1px 0 rgba(0, 0, 0, 0.6),
-              0 24px 48px -12px rgba(0, 0, 0, 0.95);
+              inset 0 -1px 1px 0 rgba(0, 0, 0, 0.8),
+              0 20px 40px -15px rgba(0, 0, 0, 0.8);
 }
 
 .emv-chip-gold {
@@ -164,129 +165,97 @@
               0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
+/* Clean Editorial Card (No HUD/viewfinder brackets) */
 .reticle-card {
   position: relative;
-  background: radial-gradient(circle at 10% 10%, rgba(228, 181, 146, 0.04) 0%, rgba(5, 8, 17, 0.88) 100%);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(228, 181, 146, 0.16);
-  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.reticle-card::before {
-  content: "";
-  position: absolute;
-  top: -1px;
-  left: -1px;
-  width: 10px;
-  height: 10px;
-  border-top: 2px solid #E4B592;
-  border-left: 2px solid #E4B592;
-  pointer-events: none;
-  transition: width 0.25s ease, height 0.25s ease;
-}
-
-.reticle-card::after {
-  content: "";
-  position: absolute;
-  bottom: -1px;
-  right: -1px;
-  width: 10px;
-  height: 10px;
-  border-bottom: 2px solid #E4B592;
-  border-right: 2px solid #E4B592;
-  pointer-events: none;
-  transition: width 0.25s ease, height 0.25s ease;
+  background: #121214;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .reticle-card:hover {
-  border-color: rgba(228, 181, 146, 0.55);
-  box-shadow: 0 20px 50px -15px rgba(0, 0, 0, 0.9), 0 0 30px -5px rgba(228, 181, 146, 0.2);
+  border-color: rgba(255, 255, 255, 0.2);
   transform: translateY(-2px);
+  box-shadow: 0 16px 36px -12px rgba(0, 0, 0, 0.6);
 }
 
-.reticle-card:hover::before,
-.reticle-card:hover::after {
-  width: 16px;
-  height: 16px;
-}
-
-/* High-Precision Reticle Button */
-.reticle-btn-primary {
-  position: relative;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 11px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  font-weight: 700;
-  color: #FFF3EA;
-  background: rgba(228, 181, 146, 0.12);
-  border: 1px solid #E4B592;
+/* Clean Brand Appart Pill Buttons */
+.reticle-btn-primary,
+.btn-brand-primary {
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  font-weight: 600;
+  color: #000000;
+  background: #FFB703;
+  border: none;
   border-radius: 9999px;
-  padding: 10px 22px;
-  backdrop-filter: blur(12px);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 12px 26px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.reticle-btn-primary:hover,
+.btn-brand-primary:hover {
+  background: #F59E0B;
+  color: #000000;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px -4px rgba(255, 183, 3, 0.3);
+}
+
+.reticle-btn-secondary,
+.btn-brand-secondary {
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  font-weight: 500;
+  color: #E5E5E5;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 9999px;
+  padding: 12px 24px;
+  transition: all 0.25s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
 }
 
-.reticle-btn-primary:hover {
-  background: #E4B592;
-  color: #000000;
-  box-shadow: 0 0 25px 2px rgba(228, 181, 146, 0.5);
-  transform: scale(1.02);
+.reticle-btn-secondary:hover,
+.btn-brand-secondary:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #FFFFFF;
+  transform: translateY(-1px);
 }
 
-.reticle-btn-secondary {
-  position: relative;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+/* Editorial Minimalist Label Badge */
+.reticle-badge {
+  font-family: inherit;
   font-size: 11px;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   font-weight: 600;
-  color: #DAD0C8;
-  background: rgba(0, 0, 0, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #A3A3A3;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 4px 10px;
   border-radius: 9999px;
-  padding: 10px 22px;
-  backdrop-filter: blur(12px);
-  transition: all 0.3s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.reticle-btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(228, 181, 146, 0.5);
-  color: #FFF3EA;
-}
-
-/* Monospace Technical Telemetry Badge */
-.reticle-badge {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 10px;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  font-weight: 700;
-  color: #E4B592;
-  background: rgba(228, 181, 146, 0.08);
-  border: 1px solid rgba(228, 181, 146, 0.28);
-  padding: 3px 8px;
-  border-radius: 2px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
 
-/* Technical Hairline Divider */
+/* Clean Editorial Hairline Divider */
 .telemetry-divider {
   width: 100%;
   height: 1px;
-  background: linear-gradient(90deg, transparent 0%, rgba(228, 181, 146, 0.35) 50%, transparent 100%);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 /* Map hardware acceleration */
@@ -319,27 +288,7 @@
   scrollbar-width: none;
 }
 
-/* Studio Optical Laser Sweep Animation */
-@keyframes laserSweep {
-  0% {
-    top: 6%;
-    opacity: 0;
-  }
-  15% {
-    opacity: 1;
-  }
-  85% {
-    opacity: 1;
-  }
-  100% {
-    top: 92%;
-    opacity: 0;
-  }
-}
 
-.animate-laser-sweep {
-  animation: laserSweep 2.4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
-}
 
 /* Motion accessibility */
 @media (prefers-reduced-motion: reduce) {

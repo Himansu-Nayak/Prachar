@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
 import { AuthProvider } from "@/lib/AuthContext";
 import HeaderNav from "@/components/HeaderNav";
+import { ArrowUpRight, ArrowRight } from "lucide-react";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -11,13 +12,19 @@ const inter = Inter({
   display: "swap",
 });
 
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-jakarta",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: {
-    default: "PRACHAR | Phygital Publicity Platform — Bhubaneswar, Odisha",
-    template: "%s | PRACHAR Phygital Platform",
+    default: "PRACHAR — Phygital Publicity Platform | Bhubaneswar, Odisha",
+    template: "%s | PRACHAR",
   },
   description:
-    "ଆମ ଅଂଚଳ ର ମାସିକ ବିଜ୍ଞାପନ ପୁସ୍ତିକା — PRACHAR bridges high-circulation physical advertising booklets and smart NFC business cards with responsive, search-optimized digital profiles across Bhubaneswar and Odisha.",
+    "ଆମ ଅଂଚଳ ର ମାସିକ ବିଜ୍ଞାପନ ପୁସ୍ତିକା — PRACHAR bridges high-circulation physical advertising booklets and smart NFC business cards with verified, search-optimized digital profiles across Bhubaneswar and Odisha.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
   keywords: [
     "Prachar Bhubaneswar",
@@ -32,12 +39,12 @@ export const metadata: Metadata = {
   authors: [{ name: "PRACHAR / Saroswati Khabar" }],
   creator: "Himansu Nayak",
   openGraph: {
-    title: "PRACHAR | Phygital Publicity Platform — Bhubaneswar, Odisha",
+    title: "PRACHAR — Phygital Publicity Platform | Bhubaneswar, Odisha",
     description:
       "Bridging physical advertising booklets and smart cards with verified digital profiles in Bhubaneswar, Odisha.",
     locale: "en_IN",
     type: "website",
-    siteName: "PRACHAR Phygital Platform",
+    siteName: "PRACHAR",
   },
   twitter: {
     card: "summary_large_image",
@@ -58,14 +65,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body className="font-sans antialiased flex flex-col min-h-screen bg-[#000000] text-[#FFF3EA] selection:bg-[#E4B592] selection:text-black space-grid-bg">
-        {/* 21hrs.space Fixed Viewfinder Perimeter Corners */}
-        <div className="fixed top-3 left-3 w-4 h-4 border-t border-l border-[#E4B592]/40 pointer-events-none z-50 hidden sm:block" />
-        <div className="fixed top-3 right-3 w-4 h-4 border-t border-r border-[#E4B592]/40 pointer-events-none z-50 hidden sm:block" />
-        <div className="fixed bottom-3 left-3 w-4 h-4 border-b border-l border-[#E4B592]/40 pointer-events-none z-50 hidden sm:block" />
-        <div className="fixed bottom-3 right-3 w-4 h-4 border-b border-r border-[#E4B592]/40 pointer-events-none z-50 hidden sm:block" />
-
+    <html lang="en" className={`${inter.variable} ${jakarta.variable}`}>
+      <body className="font-sans antialiased flex flex-col min-h-screen bg-[#0A0A0A] text-[#EDEDED] selection:bg-[#FFB703] selection:text-black">
         <SmoothScrollProvider>
           <AuthProvider>
             <HeaderNav />
@@ -75,151 +76,147 @@ export default function RootLayout({
           </AuthProvider>
         </SmoothScrollProvider>
 
-        {/* 21hrs.space Museum-Grade Master Aerospace Footer */}
-        <footer className="relative border-t border-[#E4B592]/20 bg-[#050811] text-xs text-slate-400 overflow-hidden">
-          {/* Top Hairline Telemetry Divider */}
-          <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-[#E4B592]/40 to-transparent" />
-
-          {/* Corner reticle brackets for footer */}
-          <div className="absolute top-3 left-3 w-3 h-3 border-t-2 border-l-2 border-[#E4B592]/60 pointer-events-none" />
-          <div className="absolute top-3 right-3 w-3 h-3 border-t-2 border-r-2 border-[#E4B592]/60 pointer-events-none" />
-
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-14">
-            {/* Top Telemetry Header Ribbon */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-10 border-b border-white/10 font-mono text-[11px]">
-              <div className="flex items-center gap-3">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-[#FFF3EA] font-bold tracking-wider">ODISHA PHYGITAL RADAR NETWORK</span>
-                <span className="text-white/20">/</span>
-                <span className="text-[#E4B592]">GRID: 20.2961°N, 85.8245°E</span>
+        {/* Brand Appart-Style Editorial Closing Footer */}
+        <footer className="relative border-t border-white/10 bg-[#0E0E10] text-sm text-neutral-400">
+          {/* Main Footer Content */}
+          <div className="max-w-7xl mx-auto px-4 sm:px-8 py-20 lg:py-28">
+            {/* Top Large Editorial Statement */}
+            <div className="pb-16 border-b border-white/10 flex flex-col lg:flex-row lg:items-end justify-between gap-10">
+              <div className="max-w-2xl">
+                <span className="text-xs uppercase tracking-[0.2em] font-semibold text-[#FFB703] block mb-4">
+                  PUT YOUR BUSINESS ON THE MAP
+                </span>
+                <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.05] font-display">
+                  Make your business visible across Odisha.
+                </h2>
+                <p className="text-base sm:text-lg text-neutral-400 mt-4 leading-relaxed font-normal">
+                  50,000+ monthly print copies distributed directly to doorsteps in Bhubaneswar, backed by permanent smart cloud profiles and instant WhatsApp conversion.
+                </p>
               </div>
-              <div className="flex items-center gap-4 text-slate-400 text-[10px]">
-                <span>CIRCULATION: 50,000+ COPIES</span>
-                <span>•</span>
-                <span>PRESS: CHANDAN PRINTERS, UNIT-3</span>
-                <span>•</span>
-                <span className="text-[#E4B592] font-semibold">18TH MONTHLY CUTOFF</span>
+
+              <div className="flex flex-wrap items-center gap-4 flex-shrink-0">
+                <Link
+                  href="/register"
+                  className="rounded-full bg-[#FFB703] hover:bg-amber-400 text-black font-bold text-sm px-7 py-3.5 transition-all inline-flex items-center gap-2 shadow-sm"
+                >
+                  <span>Claim Digital Profile</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link
+                  href="/advertise"
+                  className="rounded-full border border-white/20 hover:border-white/40 bg-white/5 hover:bg-white/10 text-white font-medium text-sm px-6 py-3.5 transition-all inline-flex items-center gap-2"
+                >
+                  <span>Explore Rate Card</span>
+                </Link>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-10 my-10">
-              {/* Brand & Mission Statement */}
-              <div className="md:col-span-1 space-y-4">
+            {/* Navigation & Business Credentials Columns */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 py-16 border-b border-white/10">
+              {/* Brand Col */}
+              <div className="lg:col-span-2 space-y-4">
                 <Link href="/" className="inline-block group">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl font-black tracking-[-0.03em] text-[#FFF3EA] group-hover:text-white transition">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl font-black tracking-tight text-white font-display">
                       PRACHAR
                     </span>
-                    <span className="font-mono text-[9px] font-bold text-[#E4B592] px-1.5 py-0.5 rounded-sm bg-[#E4B592]/10 border border-[#E4B592]/40 uppercase tracking-widest">
-                      PHYGITAL
+                    <span className="text-[10px] font-bold text-[#FFB703] px-2 py-0.5 rounded-full bg-[#FFB703]/10 border border-[#FFB703]/30 uppercase tracking-wider">
+                      ODISHA
                     </span>
                   </div>
                 </Link>
-                <p className="text-[13px] font-serif text-[#E4B592]/90">
+                <p className="text-sm font-serif text-[#FFB703]/90">
                   ଆମ ଅଂଚଳ ର ମାସିକ ବିଜ୍ଞାପନ ପୁସ୍ତିକା
                 </p>
-                <p className="text-xs text-slate-300 leading-relaxed font-sans">
-                  The unified phygital network bridging high-circulation physical advertising booklets and tactile smart cards with verified digital identity infrastructure across Bhubaneswar and Odisha.
+                <p className="text-xs sm:text-sm text-neutral-400 max-w-sm leading-relaxed">
+                  The unified phygital network bridging high-circulation physical advertising booklets and tactile smart cards with verified digital identity infrastructure.
                 </p>
-                <div className="pt-2 text-[10px] text-slate-400 space-y-1 font-mono border-t border-white/5">
-                  <p className="flex items-center gap-1.5">
-                    <span className="text-[#E4B592]">REG:</span>
-                    <span>PRGI ORORI/25/A3295</span>
-                  </p>
-                  <p className="flex items-center gap-1.5">
-                    <span className="text-[#E4B592]">UDYAM:</span>
-                    <span>UDYAM-OD-04-0039313</span>
-                  </p>
-                  <p className="flex items-center gap-1.5">
-                    <span className="text-[#E4B592]">UNIT:</span>
-                    <span>Saroswati Khabar, Bhubaneswar</span>
-                  </p>
+                <div className="pt-2 text-xs text-neutral-500 space-y-1 font-mono">
+                  <p>A Unit of <strong className="text-neutral-300">Saroswati Khabar</strong></p>
+                  <p>PRGI Registration: <span className="text-neutral-300">ORORI/25/A3295</span></p>
+                  <p>MSME Udyam: <span className="text-neutral-300">UDYAM-OD-04-0039313</span></p>
                 </div>
               </div>
 
-              {/* Platform Solutions */}
-              <div className="font-mono">
-                <h3 className="font-bold text-[#FFF3EA] text-xs tracking-widest uppercase mb-4 flex items-center gap-2">
-                  <span className="text-[#E4B592]">[01]</span> ARCHITECTURE
+              {/* Col 1: Platform */}
+              <div>
+                <h3 className="text-xs font-semibold text-white uppercase tracking-wider mb-4 font-mono">
+                  Platform
                 </h3>
-                <ul className="space-y-2.5 text-xs text-slate-400">
+                <ul className="space-y-3 text-xs sm:text-sm text-neutral-400">
                   <li>
-                    <Link href="/product" className="hover:text-[#E4B592] transition-colors flex items-center gap-1.5">
-                      <span>→</span> Phygital Smart Cards
+                    <Link href="/product" className="hover:text-white transition-colors">
+                      Phygital Smart Cards
                     </Link>
                   </li>
                   <li>
-                    <Link href="/advertise" className="hover:text-[#E4B592] transition-colors flex items-center gap-1.5">
-                      <span>→</span> Rate Matrix (P1–P5)
+                    <Link href="/advertise" className="hover:text-white transition-colors">
+                      Rate Matrix (P1–P5)
                     </Link>
                   </li>
                   <li>
-                    <Link href="/demo" className="hover:text-[#E4B592] transition-colors flex items-center gap-1.5">
-                      <span>→</span> Interactive Simulator
+                    <Link href="/demo" className="hover:text-white transition-colors">
+                      Interactive Simulator
                     </Link>
                   </li>
                   <li>
-                    <Link href="/services" className="hover:text-[#E4B592] transition-colors flex items-center gap-1.5">
-                      <span>→</span> Publicity Categories
+                    <Link href="/services" className="hover:text-white transition-colors">
+                      Publicity Categories
                     </Link>
                   </li>
                   <li>
-                    <Link href="/register" className="text-[#E4B592] hover:text-white transition-colors flex items-center gap-1.5 font-bold">
-                      <span>★</span> Claim Phygital Profile
+                    <Link href="/register" className="text-[#FFB703] hover:underline font-medium">
+                      Claim Free Profile →
                     </Link>
                   </li>
                 </ul>
               </div>
 
-              {/* Editorial & Circulation Grid */}
-              <div className="font-mono">
-                <h3 className="font-bold text-[#FFF3EA] text-xs tracking-widest uppercase mb-4 flex items-center gap-2">
-                  <span className="text-[#E4B592]">[02]</span> DISPATCH MATRIX
+              {/* Col 2: Logistics */}
+              <div>
+                <h3 className="text-xs font-semibold text-white uppercase tracking-wider mb-4 font-mono">
+                  Circulation
                 </h3>
-                <ul className="space-y-2.5 text-xs text-slate-400">
+                <ul className="space-y-3 text-xs sm:text-sm text-neutral-400">
                   <li>
-                    <span className="text-slate-300 font-semibold">Active Sector:</span>
-                    <span className="block text-[11px] text-slate-400">Bhubaneswar (8 Hub Corridors)</span>
+                    <span className="text-neutral-300 block font-medium">Distribution Hubs</span>
+                    <span className="text-xs text-neutral-500">8 Bhubaneswar Sectors</span>
                   </li>
                   <li>
-                    <span className="text-slate-300 font-semibold">Monthly Print Run:</span>
-                    <span className="block text-[11px] text-slate-400">50,000+ Direct Distribution</span>
+                    <span className="text-neutral-300 block font-medium">Monthly Circulation</span>
+                    <span className="text-xs text-neutral-500">50,000+ Door-to-Door</span>
                   </li>
                   <li>
-                    <span className="text-slate-300 font-semibold">Next Publication Cutoff:</span>
-                    <span className="block text-[11px] text-[#E4B592] font-bold">18th of Every Month // 18:00 IST</span>
+                    <span className="text-neutral-300 block font-medium">Next Press Cutoff</span>
+                    <span className="text-xs text-[#FFB703] font-semibold">18th of Every Month</span>
                   </li>
                   <li>
-                    <Link href="/about" className="hover:text-[#E4B592] transition-colors flex items-center gap-1.5 pt-1">
-                      <span>→</span> Historical Heritage &amp; Team
+                    <Link href="/about" className="hover:text-white transition-colors block pt-1">
+                      Historical Heritage &amp; Team
                     </Link>
                   </li>
                 </ul>
               </div>
 
-              {/* Mission Dispatch & Bookings */}
-              <div className="font-mono">
-                <h3 className="font-bold text-[#FFF3EA] text-xs tracking-widest uppercase mb-4 flex items-center gap-2">
-                  <span className="text-[#E4B592]">[03]</span> COMMUNICATOR
+              {/* Col 3: Direct Desks */}
+              <div>
+                <h3 className="text-xs font-semibold text-white uppercase tracking-wider mb-4 font-mono">
+                  Direct Desks
                 </h3>
-                <div className="space-y-3 text-xs">
-                  <p className="text-slate-300">
-                    A Unit of <strong className="text-[#FFF3EA]">Saroswati Khabar</strong>
-                  </p>
-                  <p className="text-slate-400 text-[11px]">
+                <div className="space-y-3 text-xs sm:text-sm text-neutral-400">
+                  <p className="text-neutral-300">
                     BJB Nagar, Bhubaneswar, Odisha — 751014
                   </p>
-                  <div className="pt-1 space-y-1">
-                    <span className="text-[10px] text-slate-500 uppercase tracking-wider block">Direct Desks:</span>
-                    <a href="tel:7077011733" className="block text-[#E4B592] hover:underline font-mono text-xs">
+                  <div className="space-y-1">
+                    <a href="tel:7077011733" className="block text-[#FFB703] hover:underline font-mono text-xs">
                       +91 70770 11733
                     </a>
-                    <a href="tel:9178898844" className="block text-[#E4B592] hover:underline font-mono text-xs">
+                    <a href="tel:9178898844" className="block text-[#FFB703] hover:underline font-mono text-xs">
                       +91 91788 98844
                     </a>
                   </div>
                   <div>
-                    <a href="mailto:pracharbbsr1@gmail.com" className="text-slate-400 hover:text-white text-[11px] break-all">
+                    <a href="mailto:pracharbbsr1@gmail.com" className="text-neutral-400 hover:text-white text-xs break-all">
                       pracharbbsr1@gmail.com
                     </a>
                   </div>
@@ -227,17 +224,21 @@ export default function RootLayout({
               </div>
             </div>
 
-            {/* Bottom Technical Telemetry Bar */}
-            <div className="pt-8 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4 text-[10px] font-mono text-slate-400">
+            {/* Bottom Bar */}
+            <div className="pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-neutral-500">
               <p>
-                &copy; {new Date().getFullYear()} PRACHAR PHYGITAL SYSTEM • SAROSWATI KHABAR • ALL RIGHTS RESERVED
+                &copy; {new Date().getFullYear()} PRACHAR. All rights reserved. Published by Saroswati Khabar, Bhubaneswar.
               </p>
-              <div className="flex items-center gap-3 text-slate-400">
-                <span className="text-[#E4B592]">FREE DISTRIBUTION</span>
-                <span>•</span>
-                <span>ODISHA STATEWIDE EXPANSION</span>
-                <span>•</span>
-                <span>ENGINEERED IN BHUBANESWAR</span>
+              <div className="flex items-center gap-6">
+                <Link href="/about" className="hover:text-neutral-300 transition-colors">
+                  About
+                </Link>
+                <Link href="/contact" className="hover:text-neutral-300 transition-colors">
+                  Contact
+                </Link>
+                <Link href="/advertise" className="hover:text-neutral-300 transition-colors">
+                  Rate Card
+                </Link>
               </div>
             </div>
           </div>

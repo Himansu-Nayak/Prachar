@@ -1,32 +1,19 @@
 import Link from "next/link";
 import MasterCinematicHero from "@/components/hero/MasterCinematicHero";
 import ProblemSection from "@/components/home/ProblemSection";
+import FeaturedPillarsSection from "@/components/home/FeaturedPillarsSection";
 import PhygitalJourney from "@/components/home/PhygitalJourney";
 import AdvertisingShowcase from "@/components/home/AdvertisingShowcase";
 import InteractiveCardSandbox from "@/components/home/InteractiveCardSandbox";
 import HowItWorksSection from "@/components/home/HowItWorksSection";
 import TrustSection from "@/components/home/TrustSection";
-import ReticleBox from "@/components/ui/ReticleBox";
 import { fetchHealth } from "@/lib/api";
 import {
   ArrowRight,
   BookOpen,
-  CheckCircle2,
   MapPin,
-  QrCode,
-  ShieldCheck,
-  Smartphone,
-  Sparkles,
-  TrendingUp,
-  Printer,
-  Calendar,
-  Layers,
-  ChevronRight,
-  Users,
-  Radio,
-  Cpu,
-  Radar,
-  Share2,
+  CheckCircle2,
+  Truck,
 } from "lucide-react";
 
 export default async function HomePage() {
@@ -44,276 +31,167 @@ export default async function HomePage() {
   ];
 
   return (
-    <div className="flex flex-col items-center overflow-x-hidden bg-[#000000] text-[#FFF3EA]">
-      {/* 01. FULL-SCREEN CINEMATIC HERO (Three.js 3D Odisha Moon + Accurate Vector Cartography + Bhubaneswar Beacon) */}
+    <div className="flex flex-col items-center overflow-x-hidden bg-[#0A0A0A] text-[#EDEDED]">
+      {/* 01. TYPOGRAPHY-FIRST EDITORIAL HERO (Odisha Vector Artwork + Bhubaneswar Focal Point) */}
       <MasterCinematicHero />
 
-      {/* 02. THE MARKET REALITY & PROBLEM (Light Warm Ivory Editorial Rhythm) */}
+      {/* 02. EDITORIAL MARKET REALITY & PROBLEM (Warm Light Ivory Contrast) */}
       <ProblemSection />
 
-      {/* 03. PRACHAR PHYGITAL DOCTRINE & FOUR PILLARS (Obsidian Technical #050811) */}
-      <section className="relative w-full border-t border-[#E4B592]/20 bg-[#050811] py-20 sm:py-28 px-4 sm:px-8 overflow-hidden">
-        {/* Ambient Cosmic Background Glow */}
-        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_50%_20%,rgba(228,181,146,0.05)_0%,transparent_60%)]" />
+      {/* 03. FEATURED PHYGITAL EXPERIENCE & 4 CASE STUDY PILLARS (Brand Appart Structure) */}
+      <FeaturedPillarsSection />
 
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <span className="reticle-badge">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#FF8800] animate-pulse" />
-                  [SYS.PHYGITAL.ARCH]
-                </span>
-                <span className="font-mono text-[10px] text-slate-400">
-                  SECTION 03 // FOUR PILLARS
-                </span>
-              </div>
-              <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-[#FFF3EA] tracking-tight">
-                The Phygital Publicity Architecture.
-              </h2>
-              <p className="text-xs sm:text-sm text-[#DAD0C8] font-mono mt-2 max-w-2xl leading-relaxed">
-                Physical print builds enduring neighborhood trust. Digital dynamic infrastructure delivers instant conversion. PRACHAR synchronizes both into one cohesive identity stack.
-              </p>
-            </div>
-
-            <div className="hidden lg:flex items-center gap-4 font-mono text-[11px] text-slate-400 border border-white/10 px-4 py-2 rounded-full bg-[#070B14]">
-              <span className="text-[#E4B592]">STATUS:</span>
-              <span className="text-emerald-400 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                BHUBANESWAR GRID ACTIVE
-              </span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Pillar 1: Monthly Print Booklet */}
-            <ReticleBox tag="SYS.PRINT.01" telemetry="50K+ COPIES" className="p-6 rounded-none flex flex-col justify-between">
-              <div>
-                <div className="w-12 h-12 rounded-sm bg-[#FF8800]/10 border border-[#FF8800]/40 flex items-center justify-center text-[#FF8800] mb-6 shadow-[0_0_15px_rgba(255,136,0,0.15)]">
-                  <Printer className="w-6 h-6" />
-                </div>
-                <h3 className="text-lg font-bold text-[#FFF3EA] mb-1 font-mono tracking-wide">Monthly Print Booklet</h3>
-                <p className="text-xs text-[#FF8800] font-serif mb-3">ମାସିକ ବିଜ୍ଞାପନ ପୁସ୍ତିକା</p>
-                <p className="text-xs text-slate-400 leading-relaxed font-sans mb-4">
-                  Delivered door-to-door free of charge across residential societies, clinics, and business centers in Bhubaneswar. Tangible presence with zero scroll fatigue.
-                </p>
-              </div>
-              <div className="pt-4 border-t border-white/5 font-mono text-[10px] text-slate-400 flex items-center justify-between">
-                <span>PRESS: CHANDAN PRINTERS</span>
-                <span className="text-[#E4B592]">UNIT-3 BBSR</span>
-              </div>
-            </ReticleBox>
-
-            {/* Pillar 2: Dynamic QR Telemetry */}
-            <ReticleBox tag="SYS.QR.02" telemetry="UUID ROUTER" className="p-6 rounded-none flex flex-col justify-between">
-              <div>
-                <div className="w-12 h-12 rounded-sm bg-sky-950/40 border border-sky-500/40 flex items-center justify-center text-sky-400 mb-6 shadow-[0_0_15px_rgba(14,165,233,0.15)]">
-                  <QrCode className="w-6 h-6" />
-                </div>
-                <h3 className="text-lg font-bold text-[#FFF3EA] mb-1 font-mono tracking-wide">Dynamic QR Engine</h3>
-                <p className="text-xs text-sky-400 font-serif mb-3">ସ୍ମାର୍ଟ ଡାଇନାମିକ କ୍ୟୁ.ଆର</p>
-                <p className="text-xs text-slate-400 leading-relaxed font-sans mb-4">
-                  Permanent cloud routing (<code className="text-sky-300 font-mono">/qr/:uuid</code>). If your phone, menu, or offers change, update your destination in real time with zero reprinting costs.
-                </p>
-              </div>
-              <div className="pt-4 border-t border-white/5 font-mono text-[10px] text-slate-400 flex items-center justify-between">
-                <span>TELEMETRY: SCAN TRACKING</span>
-                <span className="text-sky-400">ACTIVE</span>
-              </div>
-            </ReticleBox>
-
-            {/* Pillar 3: Verified Micro-Profile */}
-            <ReticleBox tag="SYS.PROFILE.03" telemetry="SEO INDEXED" className="p-6 rounded-none flex flex-col justify-between">
-              <div>
-                <div className="w-12 h-12 rounded-sm bg-emerald-950/40 border border-emerald-500/40 flex items-center justify-center text-emerald-400 mb-6 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
-                  <Smartphone className="w-6 h-6" />
-                </div>
-                <h3 className="text-lg font-bold text-[#FFF3EA] mb-1 font-mono tracking-wide">Verified Micro-Profile</h3>
-                <p className="text-xs text-emerald-400 font-serif mb-3">ଡିଜିଟାଲ ପ୍ରୋଫାଇଲ</p>
-                <p className="text-xs text-slate-400 leading-relaxed font-sans mb-4">
-                  Search-indexed public vanity URL (<code className="text-emerald-300 font-mono">/u/:username</code>). One-tap WhatsApp chat, direct vCard address book saving, and catalog display.
-                </p>
-              </div>
-              <div className="pt-4 border-t border-white/5 font-mono text-[10px] text-slate-400 flex items-center justify-between">
-                <span>OPENGRAPH READY</span>
-                <span className="text-emerald-400">VERIFIED</span>
-              </div>
-            </ReticleBox>
-
-            {/* Pillar 4: Contactless NFC Card */}
-            <ReticleBox tag="SYS.NFC.04" telemetry="13.56 MHz" className="p-6 rounded-none flex flex-col justify-between">
-              <div>
-                <div className="w-12 h-12 rounded-sm bg-[#E4B592]/10 border border-[#E4B592]/40 flex items-center justify-center text-[#E4B592] mb-6 shadow-[0_0_15px_rgba(228,181,146,0.15)]">
-                  <Sparkles className="w-6 h-6" />
-                </div>
-                <h3 className="text-lg font-bold text-[#FFF3EA] mb-1 font-mono tracking-wide">Tactile NFC Smart Card</h3>
-                <p className="text-xs text-[#E4B592] font-serif mb-3">ସ୍ମାର୍ଟ ବିଜିନେସ କାର୍ଡ</p>
-                <p className="text-xs text-slate-400 leading-relaxed font-sans mb-4">
-                  Precision matte-black card with integrated contactless NFC chip. Tap against any modern iPhone or Android for instant contact exchange without app installation.
-                </p>
-              </div>
-              <div className="pt-4 border-t border-white/5 font-mono text-[10px] text-slate-400 flex items-center justify-between">
-                <span>HARDWARE: TAP &amp; GO</span>
-                <span className="text-[#E4B592]">ZERO APPS</span>
-              </div>
-            </ReticleBox>
-          </div>
-        </div>
-      </section>
-
-      {/* 04. ODISHA NETWORK: BHUBANESWAR HYPER-LOCAL CORRIDOR GRID */}
-      <section className="relative w-full py-20 sm:py-28 border-t border-[#E4B592]/20 bg-[#000000] px-4 sm:px-8">
+      {/* 04. BHUBANESWAR HYPER-LOCAL DISTRIBUTION NETWORK */}
+      <section className="relative w-full py-24 sm:py-32 lg:py-40 bg-[#0E0E10] px-4 sm:px-8 border-b border-white/10">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="reticle-badge mb-3">
-              [SECTION 04 // GEO.BBSR.SATURATION]
-            </span>
-            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-[#FFF3EA] tracking-tight">
-              Bhubaneswar Hyper-Local Corridor Grid.
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-400 font-mono mt-3">
-              50,000+ monthly copies distributed directly to doorsteps across prime commercial and residential sectors.
-            </p>
+          {/* Section Header */}
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-16 lg:mb-20 gap-8">
+            <div>
+              <span className="text-xs uppercase tracking-[0.2em] font-semibold text-[#FFB703] block mb-3 font-mono">
+                Physical Distribution Grid
+              </span>
+              <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.04] font-display">
+                Bhubaneswar <br />
+                <span className="text-neutral-500">saturation corridors</span>
+              </h2>
+            </div>
+
+            <div className="max-w-md text-sm sm:text-base text-neutral-400 leading-relaxed font-normal">
+              50,000+ monthly copies distributed directly to doorsteps across prime commercial and residential sectors by dedicated delivery teams.
+            </div>
           </div>
 
-          {/* Editorial Logistical Corridor Ledger */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-px bg-white/10 border border-white/10 overflow-hidden shadow-2xl">
+          {/* Clean Editorial Distribution Ledger */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {distributionHubs.map((hub, idx) => (
               <div
                 key={idx}
-                className="bg-[#070B14] p-5 sm:p-6 flex items-center justify-between gap-4 transition-colors hover:bg-[#0B1222] group"
+                className="bg-[#121214] border border-white/10 rounded-2xl p-6 sm:p-7 flex items-center justify-between gap-4 hover:border-white/20 transition-all duration-200"
               >
                 <div className="flex items-center gap-4">
-                  <span className="font-mono text-xs font-bold text-[#E4B592] bg-white/5 border border-white/10 w-8 h-8 rounded-sm flex items-center justify-center flex-shrink-0 group-hover:border-[#FF8800]/50 group-hover:text-[#FF8800] transition-colors">
+                  <span className="font-mono text-sm font-bold text-[#FFB703] bg-white/5 border border-white/10 w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0">
                     0{idx + 1}
                   </span>
                   <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-sm sm:text-base font-bold text-[#FFF3EA] font-mono group-hover:text-white transition-colors">
-                        {hub.name}
-                      </h3>
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                    </div>
-                    <p className="text-xs text-slate-400 font-sans mt-0.5">{hub.type}</p>
-                    <span className="inline-block font-mono text-[10px] text-slate-500 mt-1">
+                    <h3 className="text-base sm:text-lg font-bold text-white font-display">
+                      {hub.name}
+                    </h3>
+                    <p className="text-xs text-neutral-400 font-sans mt-0.5">{hub.type}</p>
+                    <span className="inline-block font-mono text-[11px] text-neutral-500 mt-1">
                       {hub.coordinates}
                     </span>
                   </div>
                 </div>
 
                 <div className="text-right flex-shrink-0 font-mono">
-                  <span className="text-xs sm:text-sm font-bold text-[#E4B592] block">
+                  <span className="text-sm sm:text-base font-bold text-white block">
                     {hub.households}
                   </span>
-                  <span className="text-[10px] text-emerald-400 uppercase tracking-wider">
-                    DIRECT DROP
+                  <span className="text-[11px] text-emerald-400 uppercase tracking-wider font-semibold">
+                    Direct Drop
                   </span>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Guaranteed Proprietary Logistics Banner */}
-          <div className="mt-12 p-8 border border-[#E4B592]/30 bg-[#070B14] flex flex-col md:flex-row items-center justify-between gap-6 relative">
+          {/* Direct Handover Fleet Banner */}
+          <div className="mt-12 p-8 sm:p-10 rounded-2xl border border-white/10 bg-[#121214] flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-5">
-              <div className="w-14 h-14 rounded-sm bg-[#FF8800]/10 border border-[#FF8800]/50 flex items-center justify-center text-[#FF8800] flex-shrink-0 shadow-[0_0_20px_rgba(255,136,0,0.2)]">
-                <Radar className="w-7 h-7 animate-pulse" />
+              <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#FFB703] flex-shrink-0">
+                <Truck className="w-6 h-6" />
               </div>
               <div>
-                <h4 className="text-base sm:text-lg font-bold text-[#FFF3EA] font-mono">
+                <h4 className="text-lg font-bold text-white font-display">
                   Direct Hand-to-Hand Distribution Fleet
                 </h4>
-                <p className="text-xs text-slate-400 mt-1 max-w-xl font-sans">
-                  Executed by dedicated Prachar logistical teams. We do not insert into third-party newspapers; booklets are handed directly to store owners, clinics, and residential doorsteps.
+                <p className="text-sm text-neutral-400 mt-1 max-w-xl">
+                  Executed by dedicated Prachar logistical teams. We do not insert flyers into third-party newspapers; booklets are handed directly to store owners, clinics, and residential doorsteps.
                 </p>
               </div>
             </div>
 
             <Link
               href="/about"
-              className="reticle-btn-secondary whitespace-nowrap"
+              className="rounded-full border border-white/20 hover:border-white/40 bg-white/5 hover:bg-white/10 text-white font-medium text-sm px-6 py-3 transition-all whitespace-nowrap flex-shrink-0"
             >
-              <span>AUDIT PRINT FLEET &amp; PRESS</span>
+              Audit Fleet &amp; Press
             </Link>
           </div>
         </div>
       </section>
 
-      {/* 05. PHYGITAL CONVERSION JOURNEY (Physical -> Scan -> Cloud -> Lead) */}
+      {/* 05. PHYGITAL CONVERSION JOURNEY (Print -> Scan -> Connect -> Discover) */}
       <PhygitalJourney />
 
       {/* 06. REAL ADVERTISING CAMPAIGN SHOWCASE & RATE CARD (P1–P5) */}
       <AdvertisingShowcase />
 
-      {/* 07. HOW IT WORKS: PRESS SCHEDULE & LOGISTICAL CHOREOGRAPHY (Light Warm Ivory Editorial) */}
+      {/* 07. HOW IT WORKS: PRESS SCHEDULE & LOGISTICAL CHOREOGRAPHY */}
       <HowItWorksSection />
 
       {/* 08. TACTILE SMART CARD SANDBOX SIMULATOR */}
       <InteractiveCardSandbox />
 
-      {/* 09. INSTITUTIONAL TRUST & STATUTORY ACCREDITATION */}
+      {/* 09. INSTITUTIONAL TRUST & STATUTORY ACCREDITATION & TESTIMONIAL */}
       <TrustSection />
 
-      {/* 10. CONVERSION TERMINAL & MISSION REGISTRY (Radiant Light Container on Dark Canvas) */}
-      <section className="relative w-full py-24 border-t border-[#E4B592]/20 bg-gradient-to-b from-[#050811] via-[#000000] to-[#000000] px-4 sm:px-8 text-center">
-        <div className="max-w-4xl mx-auto p-10 sm:p-14 rounded-sm bg-gradient-to-br from-[#121A2D] to-[#090D18] border border-[#E4B592]/40 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#FF8800] via-[#E4B592] to-[#0EA5E9]" />
-          
-          <span className="reticle-badge mb-4">
-            [SECTION 10 // DEPLOYMENT.READY]
+      {/* 10. GRAND EDITORIAL CLOSING CALLOUT */}
+      <section className="relative w-full py-28 sm:py-36 px-4 sm:px-8 text-center bg-[#0A0A0A] border-b border-white/10">
+        <div className="max-w-4xl mx-auto space-y-8">
+          <span className="text-xs uppercase tracking-[0.2em] font-semibold text-[#FFB703] font-mono block">
+            Become Visible
           </span>
-          <h2 className="text-3xl sm:text-5xl font-black text-[#FFF3EA] tracking-tight mt-3 mb-4">
-            Claim Your Phygital Identity Today.
+          <h2 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.02] font-display">
+            Claim your phygital identity today.
           </h2>
-          <p className="text-sm text-[#DAD0C8] max-w-2xl mx-auto mb-10 leading-relaxed font-sans">
+          <p className="text-base sm:text-lg text-neutral-400 max-w-2xl mx-auto leading-relaxed">
             Connect your business directly to 50,000+ Bhubaneswar residents. Reserve your search-indexed digital profile and secure your slot in the upcoming monthly print release before the 18th cutoff.
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-5">
+
+          <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
             <Link
               href="/register"
-              className="reticle-btn-primary bg-[#FF8800] hover:bg-orange-500 text-black font-bold border-none"
+              className="rounded-full bg-[#FFB703] hover:bg-amber-400 text-black font-bold text-sm sm:text-base px-8 py-4 transition-all inline-flex items-center gap-2 shadow-sm"
             >
-              <span>GET STARTED WITH PHONE OTP</span>
+              <span>Get Started with Mobile OTP</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
               href="/demo"
-              className="reticle-btn-secondary"
+              className="rounded-full border border-white/20 hover:border-white/40 bg-white/5 hover:bg-white/10 text-white font-medium text-sm sm:text-base px-7 py-4 transition-all"
             >
-              <span>OPEN CARD SIMULATOR</span>
+              Open Card Simulator
             </Link>
           </div>
         </div>
       </section>
 
-      {/* 11. LIVE INFRASTRUCTURE TELEMETRY STRIP */}
-      <section className="w-full border-t border-white/10 bg-[#000000] py-4 px-4 sm:px-8">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-[10px] text-slate-400">
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="text-[#FF8800] font-bold">SYSTEM TELEMETRY:</span>
-            <span>NEXT.JS 14 (APP ROUTER)</span>
-            <span className="text-white/20">•</span>
-            <span>SPRING BOOT 3.3.4 (JAVA 21)</span>
-            <span className="text-white/20">•</span>
-            <span>POSTGRESQL 16 &amp; FLYWAY</span>
+      {/* 11. CLEAN SYSTEM HEALTH STRIP (PRESERVES API HEALTH CHECK CONTRACT) */}
+      <div className="w-full border-t border-white/5 bg-[#0A0A0A] py-3.5 px-4 sm:px-8">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-neutral-500 font-mono">
+          <div className="flex items-center gap-3">
+            <span>PRACHAR PHYGITAL SYSTEM</span>
+            <span className="text-neutral-700">•</span>
+            <span>EDITION 2026</span>
           </div>
 
-          <div className="flex items-center gap-3">
-            <span>BACKEND STATUS:</span>
+          <div className="flex items-center gap-2">
+            <span>API Status:</span>
             {healthResult.success ? (
-              <span className="inline-flex items-center gap-1.5 text-emerald-400 font-bold bg-emerald-950/40 border border-emerald-800/60 px-2 py-0.5 rounded-sm">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                ONLINE ({healthResult.data?.status || "HEALTHY"})
+              <span className="inline-flex items-center gap-1.5 text-emerald-400 font-medium">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                Online ({healthResult.data?.status || "HEALTHY"})
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1.5 text-[#FF8800] font-bold bg-[#FF8800]/10 border border-[#FF8800]/40 px-2 py-0.5 rounded-sm">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#FF8800]" />
-                API STANDBY (PORT 8080)
+              <span className="inline-flex items-center gap-1.5 text-neutral-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                Standby (Port 8080)
               </span>
             )}
           </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 }
