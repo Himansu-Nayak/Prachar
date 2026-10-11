@@ -10,6 +10,9 @@ public class ErrorResponse {
 
     private String code;
     private String message;
+    private Integer status;
+    private String path;
+    private String correlationId;
     private List<ValidationErrorDetail> details = new ArrayList<>();
 
     public ErrorResponse() {
@@ -23,6 +26,23 @@ public class ErrorResponse {
     public ErrorResponse(String code, String message, List<ValidationErrorDetail> details) {
         this.code = code;
         this.message = message;
+        this.details = details != null ? details : new ArrayList<>();
+    }
+
+    public ErrorResponse(String code, String message, Integer status, String path, String correlationId) {
+        this.code = code;
+        this.message = message;
+        this.status = status;
+        this.path = path;
+        this.correlationId = correlationId;
+    }
+
+    public ErrorResponse(String code, String message, Integer status, String path, String correlationId, List<ValidationErrorDetail> details) {
+        this.code = code;
+        this.message = message;
+        this.status = status;
+        this.path = path;
+        this.correlationId = correlationId;
         this.details = details != null ? details : new ArrayList<>();
     }
 
@@ -40,6 +60,30 @@ public class ErrorResponse {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public String getCorrelationId() {
+        return correlationId;
+    }
+
+    public void setCorrelationId(String correlationId) {
+        this.correlationId = correlationId;
     }
 
     public List<ValidationErrorDetail> getDetails() {

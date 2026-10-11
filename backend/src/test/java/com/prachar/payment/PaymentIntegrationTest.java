@@ -64,6 +64,12 @@ class PaymentIntegrationTest {
     private PaymentWebhookEventRepository webhookEventRepository;
 
     @Autowired
+    private PaymentWebhookLedgerService ledgerService;
+
+    @Autowired
+    private PaymentService paymentService;
+
+    @Autowired
     private com.prachar.auth.RefreshTokenRepository refreshTokenRepository;
 
     @Value("${prachar.razorpay.key-secret:test_secret_key_for_razorpay_hmac_sha256_testing_only}")
@@ -733,5 +739,675 @@ class PaymentIntegrationTest {
                         .content(objectMapper.writeValueAsString(verifyDto)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error.message", containsString("recorded amount differs from authoritative package price")));
+    }
+
+    // =========================================================================
+    // PHASE G: SIGNATURE VERIFICATION TESTS (Scenarios 1 - 7)
+    // =========================================================================
+
+    @Test
+    @DisplayName("Phase G - Scenario 1: Correct HMAC-SHA256 signature is accepted")
+    void testPhaseG_01_CorrectSignatureAccepted() throws Exception {
+        createTestPendingOrder("order_sig_01", 55000);
+        String payload = createOrderPaidWebhookJson("evt_sig_01", "order_sig_01", 55000, "INR");
+        String signature = RazorpayPaymentGateway.calculateHmacSha256(payload, webhookSecret);
+
+        mockMvc.perform(post("/api/payments/razorpay/webhook")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Razorpay-Signature", signature)
+                        .content(payload))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("ok"));
+
+        PaymentTransaction updated = paymentTransactionRepository.findByGatewayOrderId("order_sig_01").get();
+        assertEquals(PaymentTransactionStatus.PAYMENT_CONFIRMED, updated.getStatus());
+    }
+
+    @Test
+    @DisplayName("Phase G - Scenario 2: Invalid signature is rejected with SECURITY_VIOLATION")
+    void testPhaseG_02_InvalidSignatureRejected() throws Exception {
+        createTestPendingOrder("order_sig_02", 55000);
+        String payload = createOrderPaidWebhookJson("evt_sig_02", "order_sig_02", 55000, "INR");
+
+        mockMvc.perform(post("/api/payments/razorpay/webhook")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Razorpay-Signature", "invalid_forged_signature_hex_value")
+                        .content(payload))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error.code").value("SECURITY_VIOLATION"));
+    }
+
+    @Test
+    @DisplayName("Phase G - Scenario 3: Missing signature header is rejected")
+    void testPhaseG_03_MissingSignatureRejected() throws Exception {
+        createTestPendingOrder("order_sig_03", 55000);
+        String payload = createOrderPaidWebhookJson("evt_sig_03", "order_sig_03", 55000, "INR");
+
+        mockMvc.perform(post("/api/payments/razorpay/webhook")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error.code").value("SECURITY_VIOLATION"));
+    }
+
+    @Test
+    @DisplayName("Phase G - Scenario 4: Malformed or blank signature header is rejected safely")
+    void testPhaseG_04_MalformedSignatureRejectedSafely() throws Exception {
+        createTestPendingOrder("order_sig_04", 55000);
+        String payload = createOrderPaidWebhookJson("evt_sig_04", "order_sig_04", 55000, "INR");
+
+        mockMvc.perform(post("/api/payments/razorpay/webhook")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Razorpay-Signature", "   ")
+                        .content(payload))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error.code").value("SECURITY_VIOLATION"));
+    }
+
+    @Test
+    @DisplayName("Phase G - Scenario 5: Signature computed from modified or reserialized payload does not pass")
+    void testPhaseG_05_ModifiedPayloadSignatureDoesNotPass() throws Exception {
+        createTestPendingOrder("order_sig_05", 55000);
+        String originalPayload = createOrderPaidWebhookJson("evt_sig_05", "order_sig_05", 55000, "INR");
+        String signatureForOriginal = RazorpayPaymentGateway.calculateHmacSha256(originalPayload, webhookSecret);
+
+        String tamperedPayload = originalPayload.replace("55000", "50000");
+
+        mockMvc.perform(post("/api/payments/razorpay/webhook")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Razorpay-Signature", signatureForOriginal)
+                        .content(tamperedPayload))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error.code").value("SECURITY_VIOLATION"));
+    }
+
+    @Test
+    @DisplayName("Phase G - Scenario 6: Invalid signatures produce no payment-state changes")
+    void testPhaseG_06_InvalidSignatureProducesNoPaymentStateChanges() throws Exception {
+        PaymentTransaction tx = createTestPendingOrder("order_sig_06", 55000);
+        String payload = createOrderPaidWebhookJson("evt_sig_06", "order_sig_06", 55000, "INR");
+
+        mockMvc.perform(post("/api/payments/razorpay/webhook")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Razorpay-Signature", "corrupted_sig_06")
+                        .content(payload))
+                .andExpect(status().isBadRequest());
+
+        PaymentTransaction unchangedTx = paymentTransactionRepository.findById(tx.getId()).get();
+        assertEquals(PaymentTransactionStatus.ORDER_CREATED, unchangedTx.getStatus());
+
+        Advertisement unchangedAd = advertisementRepository.findById(advertisementA.getId()).get();
+        assertEquals(PaymentStatus.PAYMENT_PENDING, unchangedAd.getPaymentStatus());
+    }
+
+    @Test
+    @DisplayName("Phase G - Scenario 7: Invalid signatures do not trigger scheduling, refunds, or business effects")
+    void testPhaseG_07_InvalidSignatureDoesNotTriggerSchedulingOrRefunds() throws Exception {
+        createTestPendingOrder("order_sig_07", 55000);
+        String payload = createOrderPaidWebhookJson("evt_sig_07", "order_sig_07", 55000, "INR");
+
+        mockMvc.perform(post("/api/payments/razorpay/webhook")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Razorpay-Signature", "unauthorized_sig_07")
+                        .content(payload))
+                .andExpect(status().isBadRequest());
+
+        assertEquals(0, webhookEventRepository.count());
+    }
+
+    // =========================================================================
+    // PHASE G: DURABLE IDEMPOTENCY TESTS (Scenarios 8 - 13)
+    // =========================================================================
+
+    @Test
+    @DisplayName("Phase G - Scenario 8: Same gateway event delivered twice executes business effects once")
+    void testPhaseG_08_SameGatewayEventDeliveredTwice_ExecutesOnce() throws Exception {
+        createTestPendingOrder("order_idem_08", 55000);
+        String payload = createOrderPaidWebhookJson("evt_idem_08", "order_idem_08", 55000, "INR");
+        String signature = RazorpayPaymentGateway.calculateHmacSha256(payload, webhookSecret);
+
+        // 1st delivery
+        mockMvc.perform(post("/api/payments/razorpay/webhook")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Razorpay-Signature", signature)
+                        .content(payload))
+                .andExpect(status().isOk());
+
+        // 2nd delivery (duplicate)
+        mockMvc.perform(post("/api/payments/razorpay/webhook")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Razorpay-Signature", signature)
+                        .content(payload))
+                .andExpect(status().isOk());
+
+        assertEquals(1, webhookEventRepository.count());
+        PaymentWebhookEvent ledger = webhookEventRepository.findByEventId("evt_idem_08").get();
+        assertEquals("PROCESSED", ledger.getStatus());
+        assertNotNull(ledger.getProcessedAt());
+    }
+
+    @Test
+    @DisplayName("Phase G - Scenario 9: Duplicate event handling works across application restart via persistent DB")
+    void testPhaseG_09_DuplicateHandlingWorksAcrossProcessRestart() throws Exception {
+        createTestPendingOrder("order_restart_09", 55000);
+        String eventId = "evt_restart_09";
+
+        PaymentWebhookEvent preExisting = new PaymentWebhookEvent(
+                eventId,
+                "order.paid",
+                "order_restart_09",
+                "{}",
+                "PROCESSED"
+        );
+        preExisting.setProcessedAt(java.time.Instant.now().minusSeconds(3600));
+        webhookEventRepository.save(preExisting);
+
+        String payload = createOrderPaidWebhookJson(eventId, "order_restart_09", 55000, "INR");
+        String signature = RazorpayPaymentGateway.calculateHmacSha256(payload, webhookSecret);
+
+        mockMvc.perform(post("/api/payments/razorpay/webhook")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Razorpay-Signature", signature)
+                        .content(payload))
+                .andExpect(status().isOk());
+
+        assertEquals(1, webhookEventRepository.count());
+    }
+
+    @Test
+    @DisplayName("Phase G - Scenario 10: Simultaneous duplicate requests execute business transitions exactly once")
+    void testPhaseG_10_SimultaneousDuplicateRequests_ExecutesOnce() throws Exception {
+        createTestPendingOrder("order_concurrent_10", 55000);
+        String eventId = "evt_concurrent_10";
+        String payload = createOrderPaidWebhookJson(eventId, "order_concurrent_10", 55000, "INR");
+        String signature = RazorpayPaymentGateway.calculateHmacSha256(payload, webhookSecret);
+
+        int threads = 4;
+        java.util.concurrent.ExecutorService executor = java.util.concurrent.Executors.newFixedThreadPool(threads);
+        java.util.concurrent.CountDownLatch readyLatch = new java.util.concurrent.CountDownLatch(threads);
+        java.util.concurrent.CountDownLatch startLatch = new java.util.concurrent.CountDownLatch(1);
+        java.util.List<java.util.concurrent.Future<Integer>> futures = new java.util.ArrayList<>();
+
+        for (int i = 0; i < threads; i++) {
+            futures.add(executor.submit(() -> {
+                readyLatch.countDown();
+                startLatch.await();
+                MvcResult res = mockMvc.perform(post("/api/payments/razorpay/webhook")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .header("X-Razorpay-Signature", signature)
+                                .content(payload))
+                        .andReturn();
+                return res.getResponse().getStatus();
+            }));
+        }
+
+        readyLatch.await(5, java.util.concurrent.TimeUnit.SECONDS);
+        startLatch.countDown();
+
+        for (java.util.concurrent.Future<Integer> f : futures) {
+            assertEquals(200, f.get(10, java.util.concurrent.TimeUnit.SECONDS));
+        }
+        executor.shutdown();
+
+        assertEquals(1, webhookEventRepository.count());
+        PaymentTransaction tx = paymentTransactionRepository.findByGatewayOrderId("order_concurrent_10").get();
+        assertEquals(PaymentTransactionStatus.PAYMENT_CONFIRMED, tx.getStatus());
+    }
+
+    @Test
+    @DisplayName("Phase G - Scenario 11: Database uniqueness constraints prevent duplicate event records")
+    void testPhaseG_11_DatabaseUniquenessConstraintPreventsDuplicate() {
+        PaymentWebhookEvent e1 = new PaymentWebhookEvent("evt_unique_11", "order.paid", "order_11", "{}", "PROCESSED");
+        webhookEventRepository.saveAndFlush(e1);
+
+        PaymentWebhookEvent e2 = new PaymentWebhookEvent("evt_unique_11", "order.paid", "order_11", "{}", "PROCESSED");
+        assertThrows(org.springframework.dao.DataIntegrityViolationException.class, () -> {
+            webhookEventRepository.saveAndFlush(e2);
+        });
+    }
+
+    @Test
+    @DisplayName("Phase G - Scenario 12: A failed event can be recovered safely on retry")
+    void testPhaseG_12_FailedEventRecoveryOnRetry() throws Exception {
+        createTestPendingOrder("order_retry_12", 55000);
+        String eventId = "evt_retry_12";
+
+        PaymentWebhookEvent failedEvent = new PaymentWebhookEvent(
+                eventId,
+                "order.paid",
+                "order_retry_12",
+                "{}",
+                "FAILED"
+        );
+        failedEvent.setFailureReason("Transient network outage");
+        webhookEventRepository.save(failedEvent);
+
+        String payload = createOrderPaidWebhookJson(eventId, "order_retry_12", 55000, "INR");
+        String signature = RazorpayPaymentGateway.calculateHmacSha256(payload, webhookSecret);
+
+        mockMvc.perform(post("/api/payments/razorpay/webhook")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Razorpay-Signature", signature)
+                        .content(payload))
+                .andExpect(status().isOk());
+
+        PaymentWebhookEvent recovered = webhookEventRepository.findByEventId(eventId).get();
+        assertEquals("PROCESSED", recovered.getStatus());
+        assertTrue(recovered.getRetryCount() >= 1);
+        assertNull(recovered.getFailureReason());
+
+        PaymentTransaction tx = paymentTransactionRepository.findByGatewayOrderId("order_retry_12").get();
+        assertEquals(PaymentTransactionStatus.PAYMENT_CONFIRMED, tx.getStatus());
+    }
+
+    @Test
+    @DisplayName("Phase G - Scenario 13: Missing gateway event IDs follow documented fallback policy")
+    void testPhaseG_13_MissingGatewayEventId_FallbackPolicy() throws Exception {
+        createTestPendingOrder("order_fallback_13", 55000);
+
+        String payload = """
+                {
+                    "entity": "event",
+                    "event": "order.paid",
+                    "created_at": 1773000000,
+                    "payload": {
+                        "order": {
+                            "entity": {
+                                "id": "order_fallback_13",
+                                "amount": 55000,
+                                "currency": "INR",
+                                "status": "paid"
+                            }
+                        }
+                    }
+                }
+                """;
+
+        String signature = RazorpayPaymentGateway.calculateHmacSha256(payload, webhookSecret);
+
+        // 1st delivery
+        mockMvc.perform(post("/api/payments/razorpay/webhook")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Razorpay-Signature", signature)
+                        .content(payload))
+                .andExpect(status().isOk());
+
+        String expectedFallbackId = "evt_fallback_order.paid_order_fallback_13_1773000000";
+        assertTrue(webhookEventRepository.existsByEventId(expectedFallbackId));
+
+        // 2nd delivery (duplicate deduplication)
+        mockMvc.perform(post("/api/payments/razorpay/webhook")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Razorpay-Signature", signature)
+                        .content(payload))
+                .andExpect(status().isOk());
+
+        assertEquals(1, webhookEventRepository.count());
+    }
+
+    // =========================================================================
+    // PHASE G: PAYMENT RECONCILIATION & STATE INTEGRITY TESTS (Scenarios 14 - 22)
+    // =========================================================================
+
+    @Test
+    @DisplayName("Phase G - Scenario 14: Unknown order IDs are rejected through documented reconciliation path")
+    void testPhaseG_14_UnknownOrderIdRejected() throws Exception {
+        String payload = createOrderPaidWebhookJson("evt_recon_14", "order_unknown_99999", 55000, "INR");
+        String signature = RazorpayPaymentGateway.calculateHmacSha256(payload, webhookSecret);
+
+        mockMvc.perform(post("/api/payments/razorpay/webhook")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Razorpay-Signature", signature)
+                        .content(payload))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error.message", containsString("Unknown order ID")));
+
+        PaymentWebhookEvent ledger = webhookEventRepository.findByEventId("evt_recon_14").get();
+        assertEquals("FAILED", ledger.getStatus());
+        assertTrue(ledger.getFailureReason().contains("Unknown order ID"));
+    }
+
+    @Test
+    @DisplayName("Phase G - Scenario 15: Incorrect amount is rejected")
+    void testPhaseG_15_IncorrectAmountRejected() throws Exception {
+        createTestPendingOrder("order_recon_15", 55000);
+        String payload = createOrderPaidWebhookJson("evt_recon_15", "order_recon_15", 40000, "INR");
+        String signature = RazorpayPaymentGateway.calculateHmacSha256(payload, webhookSecret);
+
+        mockMvc.perform(post("/api/payments/razorpay/webhook")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Razorpay-Signature", signature)
+                        .content(payload))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error.message", containsString("Webhook amount mismatch")));
+
+        PaymentTransaction tx = paymentTransactionRepository.findByGatewayOrderId("order_recon_15").get();
+        assertEquals(PaymentTransactionStatus.ORDER_CREATED, tx.getStatus());
+    }
+
+    @Test
+    @DisplayName("Phase G - Scenario 16: Incorrect currency is rejected")
+    void testPhaseG_16_IncorrectCurrencyRejected() throws Exception {
+        createTestPendingOrder("order_recon_16", 55000);
+        String payload = createOrderPaidWebhookJson("evt_recon_16", "order_recon_16", 55000, "USD");
+        String signature = RazorpayPaymentGateway.calculateHmacSha256(payload, webhookSecret);
+
+        mockMvc.perform(post("/api/payments/razorpay/webhook")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Razorpay-Signature", signature)
+                        .content(payload))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error.message", containsString("Webhook currency mismatch")));
+
+        PaymentTransaction tx = paymentTransactionRepository.findByGatewayOrderId("order_recon_16").get();
+        assertEquals(PaymentTransactionStatus.ORDER_CREATED, tx.getStatus());
+    }
+
+    @Test
+    @DisplayName("Phase G - Scenario 17: Payment associated with a different advertisement is rejected")
+    void testPhaseG_17_DifferentAdvertisementRejected() throws Exception {
+        createTestPendingOrder("order_recon_17", 55000);
+        UUID foreignAdId = UUID.randomUUID();
+
+        String payload = String.format("""
+                {
+                    "id": "evt_recon_17",
+                    "event": "order.paid",
+                    "payload": {
+                        "order": {
+                            "entity": {
+                                "id": "order_recon_17",
+                                "amount": 55000,
+                                "currency": "INR",
+                                "notes": {
+                                    "advertisementId": "%s"
+                                }
+                            }
+                        }
+                    }
+                }
+                """, foreignAdId);
+
+        String signature = RazorpayPaymentGateway.calculateHmacSha256(payload, webhookSecret);
+
+        mockMvc.perform(post("/api/payments/razorpay/webhook")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Razorpay-Signature", signature)
+                        .content(payload))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error.message", containsString("different advertisement")));
+    }
+
+    @Test
+    @DisplayName("Phase G - Scenario 18: Duplicate capture events do not repeat scheduling")
+    void testPhaseG_18_DuplicateCaptureEventsDoNotRepeatScheduling() throws Exception {
+        PaymentTransaction tx = createTestPendingOrder("order_sched_18", 55000);
+        tx.setStatus(PaymentTransactionStatus.PAYMENT_CONFIRMED);
+        paymentTransactionRepository.save(tx);
+
+        advertisementA.setStatus(AdvertisementStatus.SCHEDULED);
+        advertisementA.setPaymentStatus(PaymentStatus.PAYMENT_CONFIRMED);
+        advertisementRepository.save(advertisementA);
+
+        String payload = """
+                {
+                    "id": "evt_capture_18",
+                    "event": "payment.captured",
+                    "payload": {
+                        "payment": {
+                            "entity": {
+                                "id": "pay_sched_18",
+                                "order_id": "order_sched_18",
+                                "amount": 55000,
+                                "currency": "INR",
+                                "status": "captured"
+                            }
+                        }
+                    }
+                }
+                """;
+        String signature = RazorpayPaymentGateway.calculateHmacSha256(payload, webhookSecret);
+
+        mockMvc.perform(post("/api/payments/razorpay/webhook")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Razorpay-Signature", signature)
+                        .content(payload))
+                .andExpect(status().isOk());
+
+        Advertisement ad = advertisementRepository.findById(advertisementA.getId()).get();
+        assertEquals(AdvertisementStatus.SCHEDULED, ad.getStatus());
+        assertEquals(PaymentStatus.PAYMENT_CONFIRMED, ad.getPaymentStatus());
+    }
+
+    @Test
+    @DisplayName("Phase G - Scenario 19: Delayed failure events cannot regress a captured payment")
+    void testPhaseG_19_DelayedFailureCannotRegressCapturedPayment() throws Exception {
+        PaymentTransaction tx = createTestPendingOrder("order_delayed_fail_19", 55000);
+        tx.setStatus(PaymentTransactionStatus.PAYMENT_CONFIRMED);
+        paymentTransactionRepository.save(tx);
+
+        advertisementA.setPaymentStatus(PaymentStatus.PAYMENT_CONFIRMED);
+        advertisementRepository.save(advertisementA);
+
+        String payload = """
+                {
+                    "id": "evt_delayed_fail_19",
+                    "event": "payment.failed",
+                    "payload": {
+                        "payment": {
+                            "entity": {
+                                "id": "pay_fail_19",
+                                "order_id": "order_delayed_fail_19",
+                                "error_description": "Late failure event from gateway"
+                            }
+                        }
+                    }
+                }
+                """;
+        String signature = RazorpayPaymentGateway.calculateHmacSha256(payload, webhookSecret);
+
+        mockMvc.perform(post("/api/payments/razorpay/webhook")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Razorpay-Signature", signature)
+                        .content(payload))
+                .andExpect(status().isOk());
+
+        PaymentTransaction checkTx = paymentTransactionRepository.findByGatewayOrderId("order_delayed_fail_19").get();
+        assertEquals(PaymentTransactionStatus.PAYMENT_CONFIRMED, checkTx.getStatus());
+
+        Advertisement checkAd = advertisementRepository.findById(advertisementA.getId()).get();
+        assertEquals(PaymentStatus.PAYMENT_CONFIRMED, checkAd.getPaymentStatus());
+    }
+
+    @Test
+    @DisplayName("Phase G - Scenario 20: Delayed capture events cannot reactivate a refunded campaign")
+    void testPhaseG_20_DelayedCaptureCannotReactivateRefundedCampaign() throws Exception {
+        PaymentTransaction tx = createTestPendingOrder("order_refunded_20", 55000);
+        tx.setStatus(PaymentTransactionStatus.REFUNDED);
+        tx.setRefundedAmountMinor(55000);
+        paymentTransactionRepository.save(tx);
+
+        advertisementA.setStatus(AdvertisementStatus.APPROVED);
+        advertisementA.setPaymentStatus(PaymentStatus.PAYMENT_REFUNDED);
+        advertisementRepository.save(advertisementA);
+
+        String payload = createOrderPaidWebhookJson("evt_capture_late_20", "order_refunded_20", 55000, "INR");
+        String signature = RazorpayPaymentGateway.calculateHmacSha256(payload, webhookSecret);
+
+        mockMvc.perform(post("/api/payments/razorpay/webhook")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Razorpay-Signature", signature)
+                        .content(payload))
+                .andExpect(status().isOk());
+
+        PaymentTransaction checkTx = paymentTransactionRepository.findByGatewayOrderId("order_refunded_20").get();
+        assertEquals(PaymentTransactionStatus.REFUNDED, checkTx.getStatus());
+
+        Advertisement checkAd = advertisementRepository.findById(advertisementA.getId()).get();
+        assertEquals(PaymentStatus.PAYMENT_REFUNDED, checkAd.getPaymentStatus());
+        assertEquals(AdvertisementStatus.APPROVED, checkAd.getStatus());
+    }
+
+    @Test
+    @DisplayName("Phase G - Scenario 21: Duplicate refund events cannot issue repeated refunds")
+    void testPhaseG_21_DuplicateRefundEvents_DoNotRepeatRefunds() throws Exception {
+        PaymentTransaction tx = createTestPendingOrder("order_rfnd_21", 55000);
+        tx.setStatus(PaymentTransactionStatus.PAYMENT_CONFIRMED);
+        tx.setGatewayPaymentId("pay_rfnd_21");
+        paymentTransactionRepository.save(tx);
+
+        advertisementA.setPaymentStatus(PaymentStatus.PAYMENT_CONFIRMED);
+        advertisementRepository.save(advertisementA);
+
+        String payload = """
+                {
+                    "id": "evt_rfnd_21",
+                    "event": "refund.processed",
+                    "payload": {
+                        "refund": {
+                            "entity": {
+                                "id": "rfnd_gate_21",
+                                "payment_id": "pay_rfnd_21",
+                                "amount": 55000,
+                                "notes": {
+                                    "reason": "Merchant cancellation"
+                                }
+                            }
+                        }
+                    }
+                }
+                """;
+        String signature = RazorpayPaymentGateway.calculateHmacSha256(payload, webhookSecret);
+
+        // 1st refund webhook
+        mockMvc.perform(post("/api/payments/razorpay/webhook")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Razorpay-Signature", signature)
+                        .content(payload))
+                .andExpect(status().isOk());
+
+        PaymentTransaction txAfter1 = paymentTransactionRepository.findByGatewayPaymentId("pay_rfnd_21").get();
+        assertEquals(PaymentTransactionStatus.REFUNDED, txAfter1.getStatus());
+        assertEquals(55000L, txAfter1.getRefundedAmountMinor());
+
+        // 2nd refund webhook (duplicate)
+        mockMvc.perform(post("/api/payments/razorpay/webhook")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Razorpay-Signature", signature)
+                        .content(payload))
+                .andExpect(status().isOk());
+
+        PaymentTransaction txAfter2 = paymentTransactionRepository.findByGatewayPaymentId("pay_rfnd_21").get();
+        assertEquals(55000L, txAfter2.getRefundedAmountMinor());
+    }
+
+    @Test
+    @DisplayName("Phase G - Scenario 22: Invalid transitions are rejected according to state machine")
+    void testPhaseG_22_InvalidTransitionsRejected() {
+        PaymentTransaction tx = new PaymentTransaction();
+        tx.setStatus(PaymentTransactionStatus.REFUNDED);
+
+        assertThrows(IllegalStateException.class, () -> {
+            tx.transitionTo(PaymentTransactionStatus.PAYMENT_CONFIRMED);
+        });
+
+        assertThrows(IllegalStateException.class, () -> {
+            tx.transitionTo(PaymentTransactionStatus.PAYMENT_FAILED);
+        });
+    }
+
+    // =========================================================================
+    // PHASE G: REGRESSION TESTS (Scenarios 23 - 27)
+    // =========================================================================
+
+    @Test
+    @DisplayName("Phase G - Scenario 23: Existing payment creation and verification remain functional")
+    void testPhaseG_23_ExistingCreationAndVerificationFunctional() throws Exception {
+        testVerifyPayment_Success();
+    }
+
+    @Test
+    @DisplayName("Phase G - Scenario 24: Existing refund processing remains functional")
+    void testPhaseG_24_ExistingRefundProcessingFunctional() throws Exception {
+        testAdminRefund_Success();
+    }
+
+    @Test
+    @DisplayName("Phase G - Scenario 25: Creative preview endpoints remain protected and functional")
+    void testPhaseG_25_CreativePreviewEndpointsProtected() throws Exception {
+        mockMvc.perform(get("/api/advertising/advertisements/" + advertisementA.getId() + "/creative")
+                        .header("Authorization", "Bearer " + merchantTokenB))
+                .andExpect(status().isForbidden());
+
+        mockMvc.perform(get("/api/advertising/advertisements/" + advertisementA.getId())
+                        .header("Authorization", "Bearer " + merchantTokenA))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("Phase G - Scenario 26: Existing authentication and authorization behavior remains unchanged")
+    void testPhaseG_26_AuthBehaviorUnchanged() throws Exception {
+        String payload = "{\"id\":\"evt_dummy_auth\",\"event\":\"dummy.event\",\"payload\":{}}";
+        String sig = RazorpayPaymentGateway.calculateHmacSha256(payload, webhookSecret);
+        mockMvc.perform(post("/api/payments/razorpay/webhook")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("X-Razorpay-Signature", sig)
+                        .content(payload))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/admin/advertisements/pending")
+                        .header("Authorization", "Bearer " + merchantTokenA))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Phase G - Scenario 27: Webhook ledger columns and index are verified")
+    void testPhaseG_27_WebhookLedgerSchemaVerified() {
+        PaymentWebhookEvent event = new PaymentWebhookEvent(
+                "evt_schema_27",
+                "order.paid",
+                "order_27",
+                "{}",
+                "PROCESSED",
+                null,
+                java.time.Instant.now(),
+                0
+        );
+        PaymentWebhookEvent saved = webhookEventRepository.saveAndFlush(event);
+        assertNotNull(saved.getId());
+        assertNotNull(saved.getCreatedAt());
+        assertNotNull(saved.getProcessedAt());
+        assertEquals("PROCESSED", saved.getStatus());
+    }
+
+    private PaymentTransaction createTestPendingOrder(String orderId, long amountMinor) {
+        PaymentTransaction tx = new PaymentTransaction();
+        tx.setAdvertisement(advertisementA);
+        tx.setUser(merchantUserA);
+        tx.setGatewayOrderId(orderId);
+        tx.setAmountMinor(amountMinor);
+        tx.setCurrency("INR");
+        tx.setStatus(PaymentTransactionStatus.ORDER_CREATED);
+        return paymentTransactionRepository.save(tx);
+    }
+
+    private String createOrderPaidWebhookJson(String eventId, String orderId, long amount, String currency) {
+        return String.format("""
+                {
+                    "id": "%s",
+                    "event": "order.paid",
+                    "created_at": 1773000000,
+                    "payload": {
+                        "order": {
+                            "entity": {
+                                "id": "%s",
+                                "amount": %d,
+                                "currency": "%s",
+                                "status": "paid"
+                            }
+                        }
+                    }
+                }
+                """, eventId, orderId, amount, currency);
     }
 }

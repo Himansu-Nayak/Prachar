@@ -69,6 +69,9 @@ class AdvertisementIntegrationTest {
     @Autowired
     private com.prachar.auth.RefreshTokenRepository refreshTokenRepository;
 
+    @Autowired
+    private CreativeStorageService creativeStorageService;
+
     private User merchantUserA;
     private String merchantTokenA;
 
@@ -546,6 +549,415 @@ class AdvertisementIntegrationTest {
                 .andExpect(jsonPath("$.data.drafts").value(1))
                 .andExpect(jsonPath("$.data.submitted").value(0))
                 .andExpect(jsonPath("$.data.paymentPending").value(1));
+    }
+
+    private Advertisement seedTestAd(User user) {
+        Advertisement ad = new Advertisement();
+        ad.setUser(user);
+        ad.setPackageCode("P1");
+        ad.setEditionCount(1);
+        ad.setAmount(BigDecimal.valueOf(550.00));
+        ad.setCurrency("INR");
+        ad.setTargetEdition("NOVEMBER_2026");
+        ad.setHeadline("Hardware Diwali Special Artwork Test");
+        ad.setContactPhone("+919937011111");
+        ad.setCity("Bhubaneswar");
+        ad.setStatus(AdvertisementStatus.DRAFT);
+        ad.setPaymentStatus(PaymentStatus.PAYMENT_PENDING);
+        return advertisementRepository.save(ad);
+    }
+
+    @Test
+    @DisplayName("Positive Case 1 & 4: Authorized administrator retrieves an uploaded PNG creative with secure headers")
+    void shouldAllowAdminToRetrieveUploadedPngCreativeWithSecureHeaders() throws Exception {
+        Advertisement ad = seedTestAd(merchantUserA);
+        byte[] pngContent = "PNG_SAMPLE_ARTWORK_PAYLOAD_123456789".getBytes();
+        MockMultipartFile multipartFile = new MockMultipartFile(
+                "file", "festival_offer.png", "image/png", pngContent
+        );
+
+        // Upload creative as merchant
+        mockMvc.perform(multipart("/api/advertising/advertisements/" + ad.getId() + "/creative")
+                        .file(multipartFile)
+                        .header("Authorization", "Bearer " + merchantTokenA))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.hasCreative").value(true))
+                .andExpect(jsonPath("$.data.creativeFilename").value("festival_offer.png"))
+                .andExpect(jsonPath("$.data.creativeContentType").value("image/png"));
+
+        // Retrieve creative as authorized admin
+        MvcResult result = mockMvc.perform(get("/api/admin/advertisements/" + ad.getId() + "/creative")
+                        .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Content-Type", "image/png"))
+                .andExpect(header().string("X-Content-Type-Options", "nosniff"))
+                .andExpect(header().string("Cache-Control", containsString("no-store")))
+                .andExpect(header().string("Cache-Control", containsString("no-cache")))
+                .andExpect(header().string("Pragma", "no-cache"))
+                .andExpect(header().string("Content-Disposition", containsString("inline")))
+                .andExpect(header().string("Content-Disposition", containsString("festival_offer.png")))
+                .andReturn();
+
+        assertArrayEquals(pngContent, result.getResponse().getContentAsByteArray());
+    }
+
+    @Test
+    @DisplayName("Positive Case 2: Authorized administrator retrieves an uploaded JPEG creative")
+    void shouldAllowAdminToRetrieveUploadedJpegCreative() throws Exception {
+        Advertisement ad = seedTestAd(merchantUserA);
+        byte[] jpegContent = "JPEG_SAMPLE_ARTWORK_PAYLOAD_987654321".getBytes();
+        MockMultipartFile multipartFile = new MockMultipartFile(
+                "file", "showroom_launch.jpg", "image/jpeg", jpegContent
+        );
+
+        mockMvc.perform(multipart("/api/advertising/advertisements/" + ad.getId() + "/creative")
+                        .file(multipartFile)
+                        .header("Authorization", "Bearer " + merchantTokenA))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.hasCreative").value(true));
+
+        MvcResult result = mockMvc.perform(get("/api/admin/advertisements/" + ad.getId() + "/creative")
+                        .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Content-Type", "image/jpeg"))
+                .andExpect(header().string("X-Content-Type-Options", "nosniff"))
+                .andExpect(header().string("Content-Disposition", containsString("inline")))
+                .andExpect(header().string("Content-Disposition", containsString("showroom_launch.jpg")))
+                .andReturn();
+
+        assertArrayEquals(jpegContent, result.getResponse().getContentAsByteArray());
+    }
+
+    @Test
+    @DisplayName("Positive Case 3: Authorized administrator retrieves an uploaded PDF creative")
+    void shouldAllowAdminToRetrieveUploadedPdfCreative() throws Exception {
+        Advertisement ad = seedTestAd(merchantUserA);
+        byte[] pdfContent = "%PDF-1.4 SAMPLE_EDITORIAL_PRINT_PROOF".getBytes();
+        MockMultipartFile multipartFile = new MockMultipartFile(
+                "file", "full_page_proof.pdf", "application/pdf", pdfContent
+        );
+
+        mockMvc.perform(multipart("/api/advertising/advertisements/" + ad.getId() + "/creative")
+                        .file(multipartFile)
+                        .header("Authorization", "Bearer " + merchantTokenA))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.hasCreative").value(true));
+
+        MvcResult result = mockMvc.perform(get("/api/admin/advertisements/" + ad.getId() + "/creative")
+                        .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Content-Type", "application/pdf"))
+                .andExpect(header().string("X-Content-Type-Options", "nosniff"))
+                .andExpect(header().string("Content-Disposition", containsString("inline")))
+                .andExpect(header().string("Content-Disposition", containsString("full_page_proof.pdf")))
+                .andReturn();
+
+        assertArrayEquals(pdfContent, result.getResponse().getContentAsByteArray());
+    }
+
+    @Test
+    @DisplayName("Negative Case 1: Unauthenticated request to retrieve creative is rejected with 401 UNAUTHORIZED")
+    void shouldRejectUnauthenticatedCreativeRetrievalWith401() throws Exception {
+        Advertisement ad = seedTestAd(merchantUserA);
+
+        mockMvc.perform(get("/api/admin/advertisements/" + ad.getId() + "/creative"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error.code").value("UNAUTHORIZED"));
+    }
+
+    @Test
+    @DisplayName("Negative Case 2: Authenticated non-admin merchant is denied access with 403 FORBIDDEN")
+    void shouldRejectNonAdminMerchantCreativeRetrievalWith403() throws Exception {
+        Advertisement ad = seedTestAd(merchantUserA);
+
+        mockMvc.perform(get("/api/admin/advertisements/" + ad.getId() + "/creative")
+                        .header("Authorization", "Bearer " + merchantTokenA))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error.code").value("FORBIDDEN"));
+    }
+
+    @Test
+    @DisplayName("Negative Case 3 & Positive Case 5: Missing advertisement ID returns 404 NOT_FOUND")
+    void shouldReturn404WhenAdvertisementDoesNotExist() throws Exception {
+        UUID nonExistentId = UUID.randomUUID();
+
+        mockMvc.perform(get("/api/admin/advertisements/" + nonExistentId + "/creative")
+                        .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error.code").value("NOT_FOUND"));
+    }
+
+    @Test
+    @DisplayName("Negative Case 4: Advertisement without uploaded creative returns 404 NOT_FOUND")
+    void shouldReturn404WhenAdvertisementHasNoCreativeAttached() throws Exception {
+        Advertisement ad = seedTestAd(merchantUserA);
+        // Advertisement exists but no creative uploaded yet
+
+        mockMvc.perform(get("/api/admin/advertisements/" + ad.getId() + "/creative")
+                        .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error.code").value("NOT_FOUND"));
+    }
+
+    @Test
+    @DisplayName("Negative Case 5: Path traversal sequences in storage key are rejected as SECURITY_VIOLATION")
+    void shouldRejectPathTraversalAttemptsInStorageKeyWithSecurityViolation() throws Exception {
+        Advertisement ad = seedTestAd(merchantUserA);
+        ad.setCreativeStorageKey("../../etc/passwd");
+        ad.setCreativeFilename("passwd");
+        ad.setCreativeContentType("image/png");
+        ad = advertisementRepository.save(ad);
+
+        mockMvc.perform(get("/api/admin/advertisements/" + ad.getId() + "/creative")
+                        .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error.code").value("SECURITY_VIOLATION"));
+    }
+
+    @Test
+    @DisplayName("Negative Case 6: Creative file missing from server disk returns 404 NOT_FOUND")
+    void shouldReturn404WhenCreativeFileIsMissingOnServerDisk() throws Exception {
+        Advertisement ad = seedTestAd(merchantUserA);
+        ad.setCreativeStorageKey(UUID.randomUUID() + "-deleted-file.png");
+        ad.setCreativeFilename("deleted-file.png");
+        ad.setCreativeContentType("image/png");
+        ad = advertisementRepository.save(ad);
+
+        mockMvc.perform(get("/api/admin/advertisements/" + ad.getId() + "/creative")
+                        .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error.code").value("NOT_FOUND"));
+    }
+
+    @Test
+    @DisplayName("Negative Case 7: One advertisement cannot expose another advertisement's creative")
+    void shouldPreventCrossAdvertisementCreativeExposure() throws Exception {
+        // Merchant A creates Ad 1 and uploads a creative
+        Advertisement ad1 = seedTestAd(merchantUserA);
+        byte[] ad1Content = "EXCLUSIVE_MERCHANT_A_CREATIVE".getBytes();
+        MockMultipartFile fileA = new MockMultipartFile("file", "brand_a.png", "image/png", ad1Content);
+        mockMvc.perform(multipart("/api/advertising/advertisements/" + ad1.getId() + "/creative")
+                        .file(fileA)
+                        .header("Authorization", "Bearer " + merchantTokenA))
+                .andExpect(status().isOk());
+
+        // Merchant B creates Ad 2 without creative
+        Advertisement ad2 = seedTestAd(merchantUserB);
+
+        // Accessing Ad 2 returns 404; it never leaks Ad 1's creative
+        mockMvc.perform(get("/api/admin/advertisements/" + ad2.getId() + "/creative")
+                        .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error.code").value("NOT_FOUND"));
+    }
+
+    // =========================================================================
+    // P1-TASK-02: MERCHANT CREATIVE RETRIEVAL & OWNERSHIP TESTS
+    // =========================================================================
+
+    @Test
+    @DisplayName("P1-TASK-02 Case 1: Authenticated merchant retrieves their own PNG creative with secure headers")
+    void shouldAllowMerchantToRetrieveOwnPngCreativeWithSecureHeaders() throws Exception {
+        Advertisement ad = seedTestAd(merchantUserA);
+        byte[] pngContent = "MERCHANT_A_PNG_ARTWORK_PAYLOAD_BIN".getBytes();
+        MockMultipartFile multipartFile = new MockMultipartFile(
+                "file", "merchant_banner.png", "image/png", pngContent
+        );
+
+        mockMvc.perform(multipart("/api/advertising/advertisements/" + ad.getId() + "/creative")
+                        .file(multipartFile)
+                        .header("Authorization", "Bearer " + merchantTokenA))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.hasCreative").value(true));
+
+        // Test GET /api/advertising/{id}/creative
+        MvcResult result1 = mockMvc.perform(get("/api/advertising/" + ad.getId() + "/creative")
+                        .header("Authorization", "Bearer " + merchantTokenA))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Content-Type", "image/png"))
+                .andExpect(header().string("X-Content-Type-Options", "nosniff"))
+                .andExpect(header().string("Cache-Control", containsString("no-store")))
+                .andExpect(header().string("Cache-Control", containsString("no-cache")))
+                .andExpect(header().string("Cache-Control", containsString("must-revalidate")))
+                .andExpect(header().string("Cache-Control", containsString("private")))
+                .andExpect(header().string("Pragma", "no-cache"))
+                .andExpect(header().string("Content-Disposition", containsString("inline")))
+                .andExpect(header().string("Content-Disposition", containsString("merchant_banner.png")))
+                .andReturn();
+
+        assertArrayEquals(pngContent, result1.getResponse().getContentAsByteArray());
+
+        // Test GET /api/advertising/advertisements/{id}/creative alias
+        MvcResult result2 = mockMvc.perform(get("/api/advertising/advertisements/" + ad.getId() + "/creative")
+                        .header("Authorization", "Bearer " + merchantTokenA))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Content-Type", "image/png"))
+                .andExpect(header().string("X-Content-Type-Options", "nosniff"))
+                .andReturn();
+
+        assertArrayEquals(pngContent, result2.getResponse().getContentAsByteArray());
+    }
+
+    @Test
+    @DisplayName("P1-TASK-02 Case 2: Authenticated merchant retrieves their own JPEG creative")
+    void shouldAllowMerchantToRetrieveOwnJpegCreative() throws Exception {
+        Advertisement ad = seedTestAd(merchantUserA);
+        byte[] jpegContent = "MERCHANT_A_JPEG_PHOTO_PAYLOAD".getBytes();
+        MockMultipartFile multipartFile = new MockMultipartFile(
+                "file", "store_front.jpg", "image/jpeg", jpegContent
+        );
+
+        mockMvc.perform(multipart("/api/advertising/advertisements/" + ad.getId() + "/creative")
+                        .file(multipartFile)
+                        .header("Authorization", "Bearer " + merchantTokenA))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.hasCreative").value(true));
+
+        MvcResult result = mockMvc.perform(get("/api/advertising/" + ad.getId() + "/creative")
+                        .header("Authorization", "Bearer " + merchantTokenA))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Content-Type", "image/jpeg"))
+                .andExpect(header().string("X-Content-Type-Options", "nosniff"))
+                .andExpect(header().string("Content-Disposition", containsString("inline")))
+                .andExpect(header().string("Content-Disposition", containsString("store_front.jpg")))
+                .andReturn();
+
+        assertArrayEquals(jpegContent, result.getResponse().getContentAsByteArray());
+    }
+
+    @Test
+    @DisplayName("P1-TASK-02 Case 3: Authenticated merchant retrieves their own PDF creative")
+    void shouldAllowMerchantToRetrieveOwnPdfCreative() throws Exception {
+        Advertisement ad = seedTestAd(merchantUserA);
+        byte[] pdfContent = "%PDF-1.4 MERCHANT_A_FULL_PAGE_BROCHURE".getBytes();
+        MockMultipartFile multipartFile = new MockMultipartFile(
+                "file", "brochure_print.pdf", "application/pdf", pdfContent
+        );
+
+        mockMvc.perform(multipart("/api/advertising/advertisements/" + ad.getId() + "/creative")
+                        .file(multipartFile)
+                        .header("Authorization", "Bearer " + merchantTokenA))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.hasCreative").value(true));
+
+        MvcResult result = mockMvc.perform(get("/api/advertising/" + ad.getId() + "/creative")
+                        .header("Authorization", "Bearer " + merchantTokenA))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Content-Type", "application/pdf"))
+                .andExpect(header().string("X-Content-Type-Options", "nosniff"))
+                .andExpect(header().string("Content-Disposition", containsString("inline")))
+                .andExpect(header().string("Content-Disposition", containsString("brochure_print.pdf")))
+                .andReturn();
+
+        assertArrayEquals(pdfContent, result.getResponse().getContentAsByteArray());
+    }
+
+    @Test
+    @DisplayName("P1-TASK-02 Case 4: Unauthenticated request to merchant creative endpoint is rejected with 401")
+    void shouldRejectUnauthenticatedRequestToMerchantCreativeEndpoint() throws Exception {
+        Advertisement ad = seedTestAd(merchantUserA);
+
+        mockMvc.perform(get("/api/advertising/" + ad.getId() + "/creative"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error.code").value("UNAUTHORIZED"));
+
+        mockMvc.perform(get("/api/advertising/advertisements/" + ad.getId() + "/creative"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error.code").value("UNAUTHORIZED"));
+    }
+
+    @Test
+    @DisplayName("P1-TASK-02 Case 5: Merchant A cannot retrieve Merchant B's creative (rejected with 403 FORBIDDEN)")
+    void shouldRejectCrossMerchantCreativeRetrievalWith403Forbidden() throws Exception {
+        // Merchant A owns Ad A with creative
+        Advertisement adA = seedTestAd(merchantUserA);
+        byte[] adAContent = "MERCHANT_A_PRIVATE_CREATIVE_CONTENT".getBytes();
+        MockMultipartFile fileA = new MockMultipartFile("file", "ad_a.png", "image/png", adAContent);
+        mockMvc.perform(multipart("/api/advertising/advertisements/" + adA.getId() + "/creative")
+                        .file(fileA)
+                        .header("Authorization", "Bearer " + merchantTokenA))
+                .andExpect(status().isOk());
+
+        // Merchant B attempts to retrieve Merchant A's creative via /api/advertising/{id}/creative
+        mockMvc.perform(get("/api/advertising/" + adA.getId() + "/creative")
+                        .header("Authorization", "Bearer " + merchantTokenB))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error.code").value("FORBIDDEN"));
+
+        // Merchant B also attempts via /api/advertising/advertisements/{id}/creative
+        mockMvc.perform(get("/api/advertising/advertisements/" + adA.getId() + "/creative")
+                        .header("Authorization", "Bearer " + merchantTokenB))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error.code").value("FORBIDDEN"));
+    }
+
+    @Test
+    @DisplayName("P1-TASK-02 Case 6: Missing advertisement returns 404 NOT_FOUND")
+    void shouldReturn404WhenMerchantRequestsNonExistentAdvertisementCreative() throws Exception {
+        UUID nonExistentId = UUID.randomUUID();
+
+        mockMvc.perform(get("/api/advertising/" + nonExistentId + "/creative")
+                        .header("Authorization", "Bearer " + merchantTokenA))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error.code").value("NOT_FOUND"));
+    }
+
+    @Test
+    @DisplayName("P1-TASK-02 Case 7: Advertisement without creative returns 404 NOT_FOUND")
+    void shouldReturn404WhenMerchantAdvertisementHasNoCreativeAttached() throws Exception {
+        Advertisement ad = seedTestAd(merchantUserA);
+
+        mockMvc.perform(get("/api/advertising/" + ad.getId() + "/creative")
+                        .header("Authorization", "Bearer " + merchantTokenA))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error.code").value("NOT_FOUND"));
+    }
+
+    @Test
+    @DisplayName("P1-TASK-02 Case 8: Missing creative file on server disk returns 404 NOT_FOUND without path leak")
+    void shouldReturn404WhenMerchantCreativeFileIsMissingOnServerDisk() throws Exception {
+        Advertisement ad = seedTestAd(merchantUserA);
+        ad.setCreativeStorageKey(UUID.randomUUID() + "-vanished-file.png");
+        ad.setCreativeFilename("vanished-file.png");
+        ad.setCreativeContentType("image/png");
+        ad = advertisementRepository.save(ad);
+
+        mockMvc.perform(get("/api/advertising/" + ad.getId() + "/creative")
+                        .header("Authorization", "Bearer " + merchantTokenA))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error.code").value("NOT_FOUND"))
+                .andExpect(jsonPath("$.error.message", not(containsString("C:\\"))))
+                .andExpect(jsonPath("$.error.message", not(containsString("/uploads/creatives/"))));
+    }
+
+    @Test
+    @DisplayName("P1-TASK-02 Case 9: Path traversal in storage key is rejected with SECURITY_VIOLATION")
+    void shouldRejectMerchantPathTraversalAttemptsInStorageKey() throws Exception {
+        Advertisement ad = seedTestAd(merchantUserA);
+        ad.setCreativeStorageKey("../../shadow/passwords.txt");
+        ad.setCreativeFilename("passwords.txt");
+        ad.setCreativeContentType("image/png");
+        ad = advertisementRepository.save(ad);
+
+        mockMvc.perform(get("/api/advertising/" + ad.getId() + "/creative")
+                        .header("Authorization", "Bearer " + merchantTokenA))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.success").value(false))
+                .andExpect(jsonPath("$.error.code").value("SECURITY_VIOLATION"));
     }
 }
 

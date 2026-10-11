@@ -12,16 +12,31 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.prachar.outbox.OutboxService;
+import com.prachar.outbox.payload.AdvertisementApprovedPayload;
+import com.prachar.outbox.payload.AdvertisementScheduledPayload;
+
 @Service
 public class AdminAdvertisementService {
 
     private final AdvertisementRepository advertisementRepository;
     private final AdvertisementService advertisementService;
+    private final CreativeStorageService creativeStorageService;
+    private final OutboxService outboxService;
 
     public AdminAdvertisementService(AdvertisementRepository advertisementRepository,
-                                     AdvertisementService advertisementService) {
+                                     AdvertisementService advertisementService,
+                                     CreativeStorageService creativeStorageService,
+                                     OutboxService outboxService) {
         this.advertisementRepository = advertisementRepository;
         this.advertisementService = advertisementService;
+        this.creativeStorageService = creativeStorageService;
+        this.outboxService = outboxService;
+    }
+
+    @Transactional(readOnly = true)
+    public StoredCreativeResource getCreativeResource(UUID adId) {
+        return creativeStorageService.loadCreativeResource(adId);
     }
 
     @Transactional(readOnly = true)
@@ -150,6 +165,32 @@ public class AdminAdvertisementService {
         }
 
         Advertisement saved = advertisementRepository.save(ad);
+
+        // Atomic Transactional Outbox: Enqueue moderation outcome notification
+        if ("APPROVE".equals(action)) {
+            AdvertisementApprovedPayload payload = new AdvertisementApprovedPayload(
+                    saved.getId(),
+                    saved.getUser().getId(),
+                    saved.getHeadline(),
+                    saved.getPackageCode(),
+                    saved.getTargetEdition(),
+                    saved.getContactPhone(),
+                    saved.getContactEmail()
+            );
+            outboxService.publish("ADVERTISEMENT_APPROVED", "Advertisement", saved.getId().toString(), payload);
+        } else if ("SCHEDULE".equals(action)) {
+            AdvertisementScheduledPayload payload = new AdvertisementScheduledPayload(
+                    saved.getId(),
+                    saved.getUser().getId(),
+                    saved.getHeadline(),
+                    saved.getTargetEdition(),
+                    saved.getScheduledAt(),
+                    saved.getContactPhone(),
+                    saved.getContactEmail()
+            );
+            outboxService.publish("ADVERTISEMENT_SCHEDULED", "Advertisement", saved.getId().toString(), payload);
+        }
+
         return advertisementService.mapToDto(saved);
     }
 

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { fetchPublicProfile } from "@/lib/api";
+import { ENV } from "@/lib/config/env";
 import ProfileClientActions from "@/components/profile/ProfileClientActions";
 
 interface ProfilePageProps {
@@ -58,7 +59,7 @@ export async function generateMetadata({ params }: ProfilePageProps): Promise<Me
     profile.bio ||
     `${profile.displayName} - ${profile.category} in ${locationStr}. Verified by PRACHAR Phygital Platform.`;
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://prachar.in";
+  const appUrl = ENV.APP_URL;
   const canonicalUrl = `${appUrl}/u/${profile.usernameSlug}`;
 
   return {
@@ -163,7 +164,7 @@ export default async function PublicProfilePage({ params }: ProfilePageProps) {
     .toUpperCase();
 
   const locationDisplay = [profile.city, profile.district, profile.state || "Odisha"].filter(Boolean).join(", ");
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://prachar.in";
+  const appUrl = ENV.APP_URL;
   const canonicalUrl = `${appUrl}/u/${profile.usernameSlug}`;
 
   // Safe external URL builders

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { AuthProvider } from "@/lib/AuthContext";
 import HeaderNav from "@/components/HeaderNav";
 import { ArrowUpRight, ArrowRight } from "lucide-react";
+import { ENV } from "@/lib/config/env";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -25,7 +26,7 @@ export const metadata: Metadata = {
   },
   description:
     "ଆମ ଅଂଚଳ ର ମାସିକ ବିଜ୍ଞାପନ ପୁସ୍ତିକା — PRACHAR bridges high-circulation physical advertising booklets and smart NFC business cards with verified, search-optimized digital profiles across Bhubaneswar and Odisha.",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
+  metadataBase: new URL(ENV.APP_URL),
   keywords: [
     "Prachar Bhubaneswar",
     "Odisha advertising booklet",
@@ -219,6 +220,15 @@ export default function RootLayout({
                     <a href="mailto:pracharbbsr1@gmail.com" className="text-neutral-400 hover:text-white text-xs break-all">
                       pracharbbsr1@gmail.com
                     </a>
+                  </div>
+                  <div className="pt-2">
+                    <Link
+                      href="/contact"
+                      className="text-[#FFB703] hover:underline font-medium text-xs inline-flex items-center gap-1"
+                    >
+                      <span>Booking Inquiry Desk &amp; FAQ</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </Link>
                   </div>
                 </div>
               </div>

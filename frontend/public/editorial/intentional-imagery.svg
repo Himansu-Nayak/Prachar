@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="skyGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#141824"/>
+      <stop offset="60%" stop-color="#0F111A"/>
+      <stop offset="100%" stop-color="#08080C"/>
+    </linearGradient>
+    <linearGradient id="facadeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2A2421"/>
+      <stop offset="50%" stop-color="#1A1816"/>
+      <stop offset="100%" stop-color="#11100F"/>
+    </linearGradient>
+    <linearGradient id="warmLight" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFB703" stop-opacity="0.85"/>
+      <stop offset="70%" stop-color="#E4B592" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="shadowPlate" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#050508" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#050508" stop-opacity="0.95"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect width="800" height="500" fill="url(#skyGrad2)"/>
+
+  <!-- Architectural Structure Composition (Real Building & Press Perspective) -->
+  <!-- Monolithic Architectural Facade Planes -->
+  <polygon points="120,440 280,120 440,120 440,440" fill="url(#facadeGrad)" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+  <polygon points="440,120 620,170 620,440 440,440" fill="#141315" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+  
+  <!-- Architectural Geometric Fenestration / Ribs -->
+  <g stroke="rgba(255,255,255,0.08)" stroke-width="1">
+    <line x1="200" y1="280" x2="440" y2="280"/>
+    <line x1="160" y1="360" x2="440" y2="360"/>
+    <line x1="240" y1="200" x2="440" y2="200"/>
+    <line x1="440" y1="230" x2="570" y2="260"/>
+    <line x1="440" y1="310" x2="590" y2="340"/>
+    <line x1="440" y1="390" x2="610" y2="415"/>
+  </g>
+
+  <!-- Directional Golden Hour Rim Light -->
+  <polygon points="278,118 284,118 442,118 440,124 282,124" fill="url(#warmLight)"/>
+  <line x1="280" y1="120" x2="120" y2="440" stroke="#FFB703" stroke-width="2" stroke-opacity="0.7"/>
+
+  <!-- Modern Concrete Pavement & Foundation Line -->
+  <polygon points="60,440 740,440 700,470 100,470" fill="#0A0A0E" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+
+  <!-- Atmospheric Dark Depth Overlay -->
+  <rect width="800" height="500" fill="url(#shadowPlate)"/>
+
+  <!-- Viewfinder Frame Overlay (Authentic 35mm Professional Camera Framing) -->
+  <g stroke="rgba(255,255,255,0.2)" stroke-width="1.2">
+    <!-- Viewfinder Corners -->
+    <path d="M 50 70 L 50 50 L 70 50" fill="none"/>
+    <path d="M 750 70 L 750 50 L 730 50" fill="none"/>
+    <path d="M 50 430 L 50 450 L 70 450" fill="none"/>
+    <path d="M 750 430 L 750 450 L 730 450" fill="none"/>
+  </g>
+
+  <!-- Rule of Thirds Grid Guidelines -->
+  <line x1="290" y1="50" x2="290" y2="450" stroke="rgba(255,255,255,0.07)" stroke-width="1" stroke-dasharray="4 6"/>
+  <line x1="510" y1="50" x2="510" y2="450" stroke="rgba(255,255,255,0.07)" stroke-width="1" stroke-dasharray="4 6"/>
+  <line x1="50" y1="183" x2="750" y2="183" stroke="rgba(255,255,255,0.07)" stroke-width="1" stroke-dasharray="4 6"/>
+  <line x1="50" y1="316" x2="750" y2="316" stroke="rgba(255,255,255,0.07)" stroke-width="1" stroke-dasharray="4 6"/>
+
+  <!-- Central Camera Autofocus Reticle Target -->
+  <g transform="translate(400, 250)">
+    <circle cx="0" cy="0" r="28" fill="none" stroke="#FFB703" stroke-width="1.5" stroke-dasharray="32 12"/>
+    <circle cx="0" cy="0" r="3" fill="#FFB703"/>
+    <line x1="-40" y1="0" x2="-32" y2="0" stroke="#FFB703" stroke-width="1.5"/>
+    <line x1="32" y1="0" x2="40" y2="0" stroke="#FFB703" stroke-width="1.5"/>
+    <line x1="0" y1="-40" x2="0" y2="-32" stroke="#FFB703" stroke-width="1.5"/>
+    <line x1="0" y1="32" x2="0" y2="40" stroke="#FFB703" stroke-width="1.5"/>
+    <!-- Focus Confirmation Marker -->
+    <text x="0" y="48" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" fill="#10B981" text-anchor="middle">AF-LOCK • PINPOINT</text>
+  </g>
+
+  <!-- Authentic Photographic Metadata Header -->
+  <rect x="70" y="34" width="660" height="24" rx="4" fill="#0A0A0E" fill-opacity="0.8"/>
+  <text x="84" y="50" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="600" fill="#FFFFFF" letter-spacing="1">ARCHITECTURAL SURVEY</text>
+  <text x="260" y="50" font-family="'JetBrains Mono', monospace" font-size="9" fill="#FFB703">ISO 100 • 50mm f/1.4 • 1/250s</text>
+  <text x="490" y="50" font-family="'JetBrains Mono', monospace" font-size="9" fill="#71717A">14-BIT RAW • NATURAL LIGHT</text>
+  <text x="690" y="50" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" fill="#E4B592">BBSR</text>
+
+  <!-- Offset Print Registration Mark (Bottom Left) -->
+  <g transform="translate(90, 410)">
+    <circle cx="0" cy="0" r="10" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+    <line x1="-14" y1="0" x2="14" y2="0" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+    <line x1="0" y1="-14" x2="0" y2="14" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+    <text x="20" y="4" font-family="'JetBrains Mono', monospace" font-size="8" fill="#71717A">PRESS REGISTRATION: CHANDAN UNIT-3</text>
+  </g>
+
+  <!-- Zero-AI Authenticity Seal Badge (Bottom Right) -->
+  <rect x="530" y="396" width="200" height="28" rx="6" fill="#0F0F14" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+  <circle cx="546" cy="410" r="4" fill="#10B981"/>
+  <text x="560" y="414" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="600" fill="#FFFFFF">INTENTIONAL SOURCING</text>
+</svg>

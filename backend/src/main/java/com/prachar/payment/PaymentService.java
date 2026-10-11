@@ -27,6 +27,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import com.prachar.outbox.OutboxService;
+import com.prachar.outbox.payload.PaymentConfirmedPayload;
+import com.prachar.outbox.payload.PaymentRefundedPayload;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,27 +39,33 @@ public class PaymentService {
 
     private final PaymentTransactionRepository paymentTransactionRepository;
     private final PaymentWebhookEventRepository webhookEventRepository;
+    private final PaymentWebhookLedgerService ledgerService;
     private final AdvertisementRepository advertisementRepository;
     private final AdvertisementPackageService packageService;
     private final PaymentGateway paymentGateway;
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
+    private final OutboxService outboxService;
 
     public PaymentService(
             PaymentTransactionRepository paymentTransactionRepository,
             PaymentWebhookEventRepository webhookEventRepository,
+            PaymentWebhookLedgerService ledgerService,
             AdvertisementRepository advertisementRepository,
             AdvertisementPackageService packageService,
             PaymentGateway paymentGateway,
             UserRepository userRepository,
-            ObjectMapper objectMapper) {
+            ObjectMapper objectMapper,
+            OutboxService outboxService) {
         this.paymentTransactionRepository = paymentTransactionRepository;
         this.webhookEventRepository = webhookEventRepository;
+        this.ledgerService = ledgerService;
         this.advertisementRepository = advertisementRepository;
         this.packageService = packageService;
         this.paymentGateway = paymentGateway;
         this.userRepository = userRepository;
         this.objectMapper = objectMapper;
+        this.outboxService = outboxService;
     }
 
     @Transactional
@@ -217,6 +226,21 @@ public class PaymentService {
         ad.setPaidAt(Instant.now());
         advertisementRepository.save(ad);
 
+        // Atomic Transactional Outbox: Enqueue payment confirmation notification
+        PaymentConfirmedPayload outboxPayload = new PaymentConfirmedPayload(
+                confirmedTx.getId(),
+                ad.getId(),
+                confirmedTx.getGatewayOrderId(),
+                confirmedTx.getGatewayPaymentId(),
+                confirmedTx.getAmountMinor(),
+                confirmedTx.getCurrency(),
+                confirmedTx.getUser().getId(),
+                ad.getContactPhone(),
+                ad.getContactEmail(),
+                ad.getHeadline()
+        );
+        outboxService.publish("PAYMENT_CONFIRMED", "Advertisement", ad.getId().toString(), outboxPayload);
+
         log.info("[PAYMENT_VERIFICATION_SUCCESS] Payment confirmed for ad={} tx={} paymentId={}",
                 ad.getId(), confirmedTx.getId(), request.getRazorpayPaymentId());
         return mapToDto(confirmedTx);
@@ -224,6 +248,11 @@ public class PaymentService {
 
     @Transactional
     public void processWebhook(String rawPayload, String signature) {
+        processWebhook(rawPayload, signature, null);
+    }
+
+    @Transactional
+    public void processWebhook(String rawPayload, String signature, String headerEventId) {
         log.info("[WEBHOOK_RECEIVED] Processing Razorpay webhook callback");
 
         if (signature == null || signature.isBlank()) {
@@ -237,78 +266,190 @@ public class PaymentService {
             throw new SecurityException("Invalid webhook cryptographic signature.");
         }
 
+        JsonNode root;
         try {
-            JsonNode root = objectMapper.readTree(rawPayload);
-            String event = root.path("event").asText("");
-            String eventId = root.path("id").asText(null);
-            if (eventId == null || eventId.isBlank()) {
-                // Fallback to event identifier from root if present
-                eventId = root.path("event_id").asText("evt_" + UUID.nameUUIDFromBytes(rawPayload.getBytes()));
-            }
-
-            log.info("[WEBHOOK_PROCESSING] eventId={} eventType={}", eventId, event);
-
-            // Deduplication via payment_webhook_events table
-            if (webhookEventRepository.existsByEventId(eventId)) {
-                log.info("[WEBHOOK_DUPLICATE] eventId={} already processed. Acknowledging idempotently.", eventId);
-                return;
-            }
-
-            JsonNode payloadNode = root.path("payload");
-
-            if ("order.paid".equals(event)) {
-                JsonNode orderNode = payloadNode.path("order").path("entity");
-                String orderId = orderNode.path("id").asText(null);
-                if (orderId != null) {
-                    confirmOrderFromWebhook(orderId, null, rawPayload);
-                }
-            } else if ("payment.captured".equals(event)) {
-                JsonNode paymentNode = payloadNode.path("payment").path("entity");
-                String orderId = paymentNode.path("order_id").asText(null);
-                String paymentId = paymentNode.path("id").asText(null);
-                if (orderId != null) {
-                    confirmOrderFromWebhook(orderId, paymentId, rawPayload);
-                }
-            } else if ("payment.failed".equals(event)) {
-                JsonNode paymentNode = payloadNode.path("payment").path("entity");
-                String orderId = paymentNode.path("order_id").asText(null);
-                String errorDesc = paymentNode.path("error_description").asText("Payment failed at gateway");
-                if (orderId != null) {
-                    failOrderFromWebhook(orderId, errorDesc);
-                }
-            } else {
-                log.info("[WEBHOOK_UNHANDLED] eventId={} eventType={} (idempotently acknowledged)", eventId, event);
-            }
-
-            // Persist webhook event in ledger for forensic auditing
-            PaymentWebhookEvent webhookEvent = new PaymentWebhookEvent(
-                    eventId,
-                    event,
-                    root.path("payload").path("payment").path("entity").path("id").asText(null),
-                    rawPayload,
-                    "PROCESSED"
-            );
-            webhookEventRepository.save(webhookEvent);
-            log.info("[WEBHOOK_PROCESSED] eventId={} successfully recorded in audit ledger", eventId);
-
-        } catch (SecurityException se) {
-            throw se;
+            root = objectMapper.readTree(rawPayload);
         } catch (Exception ex) {
-            log.error("[WEBHOOK_ERROR] Error parsing webhook payload: {}", ex.getMessage(), ex);
+            log.error("[WEBHOOK_ERROR] Failed to parse webhook JSON: {}", ex.getMessage());
             throw new IllegalArgumentException("Malformed webhook payload: " + ex.getMessage());
         }
-    }
 
-    private void confirmOrderFromWebhook(String orderId, String paymentId, String rawPayload) {
-        Optional<PaymentTransaction> optTx = paymentTransactionRepository.findByGatewayOrderId(orderId);
-        if (optTx.isEmpty()) {
-            log.warn("[WEBHOOK_UNKNOWN_ORDER] Webhook received for unknown order: {}", orderId);
+        String event = root.path("event").asText("");
+        JsonNode payloadNode = root.path("payload");
+
+        // Resolve primary entity ID for audit indexing & fallback identifier derivation
+        String entityId = resolveEntityId(event, payloadNode);
+
+        // Resolve event ID with deliberate, documented fallback policy
+        String eventId = resolveEventId(root, headerEventId, event, entityId);
+
+        log.info("[WEBHOOK_PROCESSING] eventId={} eventType={} entityId={}", eventId, event, entityId);
+
+        // Atomic claim via ledger service (REQUIRES_NEW + DB uniqueness constraint)
+        PaymentWebhookLedgerService.WebhookClaimResult claimResult =
+                ledgerService.claimEvent(eventId, event, entityId, rawPayload);
+
+        if (claimResult == PaymentWebhookLedgerService.WebhookClaimResult.ALREADY_PROCESSED) {
+            log.info("[WEBHOOK_DUPLICATE] eventId={} already processed. Acknowledging idempotently.", eventId);
             return;
         }
 
+        if (claimResult == PaymentWebhookLedgerService.WebhookClaimResult.IN_FLIGHT) {
+            log.info("[WEBHOOK_IN_FLIGHT] eventId={} is currently processing in another worker. Acknowledging idempotently.", eventId);
+            return;
+        }
+
+        // Event claimed: execute business transitions within transaction boundaries
+        try {
+            executeWebhookBusinessLogic(event, payloadNode, rawPayload);
+            ledgerService.markProcessed(eventId);
+            log.info("[WEBHOOK_COMPLETED] eventId={} successfully processed and marked in ledger", eventId);
+        } catch (Exception ex) {
+            log.error("[WEBHOOK_FAILED] eventId={} failed: {}", eventId, ex.getMessage());
+            ledgerService.markFailed(eventId, ex.getMessage());
+            throw ex;
+        }
+    }
+
+    private String resolveEntityId(String event, JsonNode payloadNode) {
+        if ("order.paid".equals(event)) {
+            return payloadNode.path("order").path("entity").path("id").asText(null);
+        } else if ("payment.captured".equals(event) || "payment.failed".equals(event)) {
+            String pId = payloadNode.path("payment").path("entity").path("id").asText(null);
+            if (pId != null && !pId.isBlank()) {
+                return pId;
+            }
+            return payloadNode.path("payment").path("entity").path("order_id").asText(null);
+        } else if ("payment.refunded".equals(event) || "refund.processed".equals(event)) {
+            String rId = payloadNode.path("refund").path("entity").path("id").asText(null);
+            if (rId != null && !rId.isBlank()) {
+                return rId;
+            }
+            return payloadNode.path("payment").path("entity").path("id").asText(null);
+        }
+        String id = payloadNode.path("payment").path("entity").path("id").asText(null);
+        if (id == null) {
+            id = payloadNode.path("order").path("entity").path("id").asText(null);
+        }
+        return id;
+    }
+
+    private String resolveEventId(JsonNode root, String headerEventId, String event, String entityId) {
+        // Priority 1: Top-level "id" (standard Razorpay event id e.g. "evt_xxxx")
+        String id = root.path("id").asText(null);
+        if (id != null && !id.isBlank()) {
+            return id.trim();
+        }
+
+        // Priority 2: Top-level "event_id"
+        String eventId = root.path("event_id").asText(null);
+        if (eventId != null && !eventId.isBlank()) {
+            return eventId.trim();
+        }
+
+        // Priority 3: Gateway header X-Razorpay-Event-Id
+        if (headerEventId != null && !headerEventId.isBlank()) {
+            return headerEventId.trim();
+        }
+
+        // Priority 4: Documented fallback policy
+        // Bound to domain entity, event type, and gateway timestamp.
+        // Never hash arbitrary payload bytes to avoid conflating distinct events or formatting differences.
+        long createdAt = root.path("created_at").asLong(0);
+        if (entityId != null && !entityId.isBlank()) {
+            return "evt_fallback_" + event + "_" + entityId + "_" + (createdAt > 0 ? createdAt : "0");
+        }
+
+        // If no entity identifier can be extracted, we cannot safely establish identity
+        throw new IllegalArgumentException("Missing required gateway event identifier and entity identifier: unable to identify event.");
+    }
+
+    private void executeWebhookBusinessLogic(String event, JsonNode payloadNode, String rawPayload) {
+        if ("order.paid".equals(event)) {
+            JsonNode orderNode = payloadNode.path("order").path("entity");
+            String orderId = orderNode.path("id").asText(null);
+            long amount = orderNode.path("amount").asLong(0);
+            String currency = orderNode.path("currency").asText(null);
+            String notesAdId = orderNode.path("notes").path("advertisementId").asText(null);
+            String paymentId = payloadNode.path("payment").path("entity").path("id").asText(null);
+            confirmOrderFromWebhook(orderId, paymentId, amount, currency, notesAdId, rawPayload);
+        } else if ("payment.captured".equals(event)) {
+            JsonNode paymentNode = payloadNode.path("payment").path("entity");
+            String orderId = paymentNode.path("order_id").asText(null);
+            String paymentId = paymentNode.path("id").asText(null);
+            long amount = paymentNode.path("amount").asLong(0);
+            String currency = paymentNode.path("currency").asText(null);
+            String notesAdId = paymentNode.path("notes").path("advertisementId").asText(null);
+            confirmOrderFromWebhook(orderId, paymentId, amount, currency, notesAdId, rawPayload);
+        } else if ("payment.failed".equals(event)) {
+            JsonNode paymentNode = payloadNode.path("payment").path("entity");
+            String orderId = paymentNode.path("order_id").asText(null);
+            String errorDesc = paymentNode.path("error_description").asText("Payment failed at gateway");
+            failOrderFromWebhook(orderId, errorDesc);
+        } else if ("payment.refunded".equals(event) || "refund.processed".equals(event)) {
+            JsonNode paymentNode = payloadNode.path("payment").path("entity");
+            String paymentId = paymentNode.path("id").asText(null);
+            JsonNode refundNode = payloadNode.path("refund").path("entity");
+            String refundId = refundNode.path("id").asText(null);
+            long refundAmount = refundNode.path("amount").asLong(0);
+            String reason = refundNode.path("notes").path("reason").asText(null);
+            if (paymentId == null || paymentId.isBlank()) {
+                paymentId = refundNode.path("payment_id").asText(null);
+            }
+            handleRefundFromWebhook(paymentId, refundId, refundAmount, reason, rawPayload);
+        } else {
+            log.info("[WEBHOOK_UNHANDLED_EVENT] eventType={} idempotently acknowledged without action", event);
+        }
+    }
+
+    private void confirmOrderFromWebhook(String orderId, String paymentId, long amountMinor, String currency, String payloadAdId, String rawPayload) {
+        if (orderId == null || orderId.isBlank()) {
+            throw new IllegalArgumentException("Order ID cannot be empty in webhook payload.");
+        }
+
+        Optional<PaymentTransaction> optTx = paymentTransactionRepository.findByGatewayOrderId(orderId);
+        if (optTx.isEmpty()) {
+            log.warn("[WEBHOOK_UNKNOWN_ORDER] Webhook received for unknown order: {}", orderId);
+            throw new IllegalArgumentException("Unknown order ID: " + orderId);
+        }
+
         PaymentTransaction tx = optTx.get();
+
+        // Amount reconciliation
+        if (amountMinor > 0 && tx.getAmountMinor() != amountMinor) {
+            log.error("[WEBHOOK_AMOUNT_MISMATCH] orderId={} storedMinor={} webhookMinor={}",
+                    orderId, tx.getAmountMinor(), amountMinor);
+            throw new IllegalArgumentException("Webhook amount mismatch: expected " + tx.getAmountMinor() + " but got " + amountMinor);
+        }
+
+        // Currency reconciliation
+        if (currency != null && !currency.isBlank() && !tx.getCurrency().equalsIgnoreCase(currency)) {
+            log.error("[WEBHOOK_CURRENCY_MISMATCH] orderId={} storedCurrency={} webhookCurrency={}",
+                    orderId, tx.getCurrency(), currency);
+            throw new IllegalArgumentException("Webhook currency mismatch: expected " + tx.getCurrency() + " but got " + currency);
+        }
+
+        // Advertisement association reconciliation
+        if (payloadAdId != null && !payloadAdId.isBlank()) {
+            if (!payloadAdId.equals(tx.getAdvertisement().getId().toString())) {
+                log.error("[WEBHOOK_AD_MISMATCH] orderId={} txAd={} webhookAd={}",
+                        orderId, tx.getAdvertisement().getId(), payloadAdId);
+                throw new IllegalArgumentException("Payment is associated with a different advertisement.");
+            }
+        }
+
+        Advertisement ad = tx.getAdvertisement();
+
+        // Anti-regression: Delayed capture/paid event MUST NOT reactivate an already-refunded campaign
+        if (tx.getStatus() == PaymentTransactionStatus.REFUNDED || ad.getPaymentStatus() == PaymentStatus.PAYMENT_REFUNDED) {
+            log.warn("[WEBHOOK_IGNORED_CAPTURE_ON_REFUND] Order {} / Ad {} is already REFUNDED. Ignoring delayed capture event.",
+                    orderId, ad.getId());
+            return;
+        }
+
+        // Idempotency: If already confirmed, do not repeat scheduling or side effects
         if (tx.getStatus() == PaymentTransactionStatus.PAYMENT_CONFIRMED) {
-            log.info("[WEBHOOK_DUPLICATE_ORDER] Order {} already confirmed", orderId);
+            log.info("[WEBHOOK_DUPLICATE_ORDER] Order {} already confirmed. Acknowledging idempotently.", orderId);
             return;
         }
 
@@ -320,7 +461,6 @@ public class PaymentService {
         tx.setGatewayPayload(rawPayload);
         paymentTransactionRepository.save(tx);
 
-        Advertisement ad = tx.getAdvertisement();
         ad.setPaymentStatus(PaymentStatus.PAYMENT_CONFIRMED);
         if (tx.getGatewayPaymentId() != null) {
             ad.setPaymentReference(tx.getGatewayPaymentId());
@@ -329,19 +469,46 @@ public class PaymentService {
             ad.setPaidAt(Instant.now());
         }
         advertisementRepository.save(ad);
+
+        // Atomic Transactional Outbox: Enqueue payment confirmation notification
+        PaymentConfirmedPayload outboxPayload = new PaymentConfirmedPayload(
+                tx.getId(),
+                ad.getId(),
+                tx.getGatewayOrderId(),
+                tx.getGatewayPaymentId(),
+                tx.getAmountMinor(),
+                tx.getCurrency(),
+                tx.getUser().getId(),
+                ad.getContactPhone(),
+                ad.getContactEmail(),
+                ad.getHeadline()
+        );
+        outboxService.publish("PAYMENT_CONFIRMED", "Advertisement", ad.getId().toString(), outboxPayload);
+
         log.info("[WEBHOOK_ORDER_CONFIRMED] Confirmed payment for ad={} orderId={}", ad.getId(), orderId);
     }
 
     private void failOrderFromWebhook(String orderId, String errorDescription) {
+        if (orderId == null || orderId.isBlank()) {
+            throw new IllegalArgumentException("Order ID cannot be empty in webhook payload.");
+        }
+
         Optional<PaymentTransaction> optTx = paymentTransactionRepository.findByGatewayOrderId(orderId);
         if (optTx.isEmpty()) {
-            return;
+            log.warn("[WEBHOOK_UNKNOWN_ORDER] Fail webhook received for unknown order: {}", orderId);
+            throw new IllegalArgumentException("Unknown order ID: " + orderId);
         }
 
         PaymentTransaction tx = optTx.get();
-        if (tx.getStatus() == PaymentTransactionStatus.PAYMENT_CONFIRMED) {
-            log.warn("[WEBHOOK_IGNORED_FAILURE] Ignored payment.failed webhook for already confirmed order: {}", orderId);
+
+        // Anti-regression: Delayed payment.failed cannot regress a confirmed or refunded payment
+        if (tx.getStatus() == PaymentTransactionStatus.PAYMENT_CONFIRMED || tx.getStatus() == PaymentTransactionStatus.REFUNDED) {
+            log.warn("[WEBHOOK_IGNORED_FAILURE] Ignored delayed payment.failed webhook for confirmed/refunded order: {}", orderId);
             return;
+        }
+
+        if (tx.getStatus() == PaymentTransactionStatus.PAYMENT_FAILED) {
+            return; // Idempotent same-state
         }
 
         tx.transitionTo(PaymentTransactionStatus.PAYMENT_FAILED);
@@ -351,6 +518,70 @@ public class PaymentService {
         Advertisement ad = tx.getAdvertisement();
         ad.setPaymentStatus(PaymentStatus.PAYMENT_FAILED);
         advertisementRepository.save(ad);
+        log.info("[WEBHOOK_ORDER_FAILED] Marked order={} ad={} as PAYMENT_FAILED: {}", orderId, ad.getId(), errorDescription);
+    }
+
+    private void handleRefundFromWebhook(String paymentId, String refundId, long refundAmountMinor, String reason, String rawPayload) {
+        if (paymentId == null || paymentId.isBlank()) {
+            log.warn("[WEBHOOK_REFUND_NO_PAYMENT_ID] Webhook refund missing payment ID");
+            return;
+        }
+
+        Optional<PaymentTransaction> optTx = paymentTransactionRepository.findByGatewayPaymentId(paymentId);
+        if (optTx.isEmpty()) {
+            log.warn("[WEBHOOK_REFUND_UNKNOWN_PAYMENT] Webhook refund for unknown payment ID: {}", paymentId);
+            return;
+        }
+
+        PaymentTransaction tx = optTx.get();
+
+        // Idempotency: Duplicate refund events cannot issue repeated refunds
+        if (tx.getStatus() == PaymentTransactionStatus.REFUNDED) {
+            log.info("[WEBHOOK_REFUND_DUPLICATE] Transaction {} already REFUNDED. Acknowledging idempotently.", tx.getId());
+            return;
+        }
+
+        if (tx.getStatus() != PaymentTransactionStatus.PAYMENT_CONFIRMED && tx.getStatus() != PaymentTransactionStatus.REFUND_PENDING) {
+            log.warn("[WEBHOOK_REFUND_INVALID_STATE] Cannot refund transaction {} in state {}", tx.getId(), tx.getStatus());
+            return;
+        }
+
+        long amountToRefund = (refundAmountMinor > 0) ? refundAmountMinor : tx.getAmountMinor();
+        tx.setRefundedAmountMinor(tx.getRefundedAmountMinor() + amountToRefund);
+        if (refundId != null && tx.getRefundId() == null) {
+            tx.setRefundId(refundId);
+        }
+        if (reason != null && tx.getRefundReason() == null) {
+            tx.setRefundReason(reason);
+        }
+        tx.transitionTo(PaymentTransactionStatus.REFUNDED);
+        paymentTransactionRepository.save(tx);
+
+        Advertisement ad = tx.getAdvertisement();
+        ad.setPaymentStatus(PaymentStatus.PAYMENT_REFUNDED);
+
+        // Preserve refund-related descheduling behavior
+        if (ad.getStatus() == AdvertisementStatus.SCHEDULED) {
+            ad.setStatus(AdvertisementStatus.APPROVED);
+            log.info("[WEBHOOK_REFUND_DESCHEDULED] Descheduled advertisement {} due to refund webhook", ad.getId());
+        }
+        advertisementRepository.save(ad);
+
+        // Atomic Transactional Outbox: Enqueue refund notification
+        PaymentRefundedPayload outboxPayload = new PaymentRefundedPayload(
+                tx.getId(),
+                ad.getId(),
+                tx.getGatewayPaymentId(),
+                tx.getRefundId(),
+                amountToRefund,
+                reason,
+                ad.getContactPhone(),
+                ad.getContactEmail(),
+                ad.getHeadline()
+        );
+        outboxService.publish("PAYMENT_REFUNDED", "Advertisement", ad.getId().toString(), outboxPayload);
+
+        log.info("[WEBHOOK_REFUND_PROCESSED] Successfully processed refund from webhook for tx={}", tx.getId());
     }
 
     @Transactional
@@ -412,6 +643,20 @@ public class PaymentService {
             }
 
             advertisementRepository.save(ad);
+
+            // Atomic Transactional Outbox: Enqueue refund notification
+            PaymentRefundedPayload outboxPayload = new PaymentRefundedPayload(
+                    savedTx.getId(),
+                    ad.getId(),
+                    savedTx.getGatewayPaymentId(),
+                    savedTx.getRefundId(),
+                    requestedRefundMinor,
+                    refundRequest.getReason(),
+                    ad.getContactPhone(),
+                    ad.getContactEmail(),
+                    ad.getHeadline()
+            );
+            outboxService.publish("PAYMENT_REFUNDED", "Advertisement", ad.getId().toString(), outboxPayload);
 
             log.info("[REFUND_COMPLETED] refundId={} tx={} amountMinor={}", refundResult.getRefundId(), tx.getId(), requestedRefundMinor);
             return mapToDto(savedTx);

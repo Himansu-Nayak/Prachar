@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="bgGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B0B0E"/>
+      <stop offset="100%" stop-color="#060608"/>
+    </linearGradient>
+    <pattern id="baselineGrid" width="100" height="16" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="16" x2="100" y2="16" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect width="800" height="500" fill="url(#bgGrad3)"/>
+  <rect width="800" height="500" fill="url(#baselineGrid)"/>
+
+  <!-- Top Metadata Ledger -->
+  <text x="64" y="58" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="600" fill="#FFB703" letter-spacing="2">TYPOGRAPHY SPECIMEN &amp; BASELINE GRID</text>
+  <text x="590" y="58" font-family="'JetBrains Mono', monospace" font-size="10" fill="#71717A">SCALE: 1.250 MAJOR THIRD</text>
+  <line x1="64" y1="72" x2="736" y2="72" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+
+  <!-- Left Main Typographic Specimen Anatomy -->
+  <g transform="translate(64, 100)">
+    <!-- Monumental Typography Display "Aa" -->
+    <text x="30" y="190" font-family="'Playfair Display', 'Plus Jakarta Sans', serif" font-size="170" font-weight="900" fill="#FFFFFF" letter-spacing="-6">Aa</text>
+    
+    <!-- Paired Odia Script Glyph "ପ୍ର" (Prachar Heritage) -->
+    <text x="260" y="180" font-family="'Plus Jakarta Sans', serif" font-size="110" font-weight="700" fill="#FFB703" opacity="0.9">ପ୍ର</text>
+
+    <!-- Typographic Metric Guidelines -->
+    <!-- Ascender Line -->
+    <line x1="10" y1="36" x2="380" y2="36" stroke="#0EA5E9" stroke-width="1" stroke-dasharray="3 3"/>
+    <text x="390" y="40" font-family="'JetBrains Mono', monospace" font-size="8" fill="#0EA5E9">ASCENDER +180</text>
+
+    <!-- Cap Height Line -->
+    <line x1="10" y1="62" x2="380" y2="62" stroke="#FFB703" stroke-width="1"/>
+    <text x="390" y="66" font-family="'JetBrains Mono', monospace" font-size="8" fill="#FFB703">CAP HEIGHT 72PX</text>
+
+    <!-- Mean Line (x-Height) -->
+    <line x1="10" y1="108" x2="380" y2="108" stroke="rgba(255,255,255,0.3)" stroke-width="1" stroke-dasharray="2 2"/>
+    <text x="390" y="112" font-family="'JetBrains Mono', monospace" font-size="8" fill="#A1A1AA">X-HEIGHT 52PX</text>
+
+    <!-- Baseline -->
+    <line x1="10" y1="192" x2="380" y2="192" stroke="#E11D48" stroke-width="1.5"/>
+    <text x="390" y="196" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" fill="#E11D48">BASELINE 0PX</text>
+
+    <!-- Descender Line -->
+    <line x1="10" y1="236" x2="380" y2="236" stroke="#8B5CF6" stroke-width="1" stroke-dasharray="3 3"/>
+    <text x="390" y="240" font-family="'JetBrains Mono', monospace" font-size="8" fill="#8B5CF6">DESCENDER -40</text>
+
+    <!-- Stem Measurement Caliper Brackets -->
+    <line x1="72" y1="204" x2="108" y2="204" stroke="#FFB703" stroke-width="1"/>
+    <line x1="72" y1="200" x2="72" y2="208" stroke="#FFB703" stroke-width="1"/>
+    <line x1="108" y1="200" x2="108" y2="208" stroke="#FFB703" stroke-width="1"/>
+    <text x="90" y="218" font-family="'JetBrains Mono', monospace" font-size="8" fill="#FFB703" text-anchor="middle">STEM: 36PX</text>
+  </g>
+
+  <!-- Right Structured Grid & Typographic Scale Matrix -->
+  <g transform="translate(520, 100)">
+    <!-- Column Rulers Card -->
+    <rect x="0" y="0" width="216" height="236" rx="12" fill="#111116" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <text x="18" y="26" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="600" fill="#FFFFFF" letter-spacing="1">TYPE SCALE HIERARCHY</text>
+
+    <!-- Step 1: Display H1 -->
+    <text x="18" y="58" font-family="'Plus Jakarta Sans', sans-serif" font-size="20" font-weight="800" fill="#FFFFFF">Heading 56px</text>
+    <text x="175" y="58" font-family="'JetBrains Mono', monospace" font-size="8" fill="#FFB703">1.04lh</text>
+
+    <!-- Step 2: H2 -->
+    <text x="18" y="90" font-family="'Plus Jakarta Sans', sans-serif" font-size="16" font-weight="700" fill="#D4D4D8">Subhead 32px</text>
+    <text x="175" y="90" font-family="'JetBrains Mono', monospace" font-size="8" fill="#A1A1AA">1.15lh</text>
+
+    <!-- Step 3: Body Lead -->
+    <text x="18" y="122" font-family="'Inter', sans-serif" font-size="13" font-weight="500" fill="#A1A1AA">Body Large 18px</text>
+    <text x="175" y="122" font-family="'JetBrains Mono', monospace" font-size="8" fill="#71717A">1.60lh</text>
+
+    <!-- Step 4: Body Regular -->
+    <text x="18" y="152" font-family="'Inter', sans-serif" font-size="11" font-weight="400" fill="#71717A">Body Regular 15px</text>
+    <text x="175" y="152" font-family="'JetBrains Mono', monospace" font-size="8" fill="#52525B">1.65lh</text>
+
+    <!-- Step 5: Caption / Mono -->
+    <text x="18" y="180" font-family="'JetBrains Mono', monospace" font-size="9" fill="#FFB703">Caption Mono 11px</text>
+    <text x="175" y="180" font-family="'JetBrains Mono', monospace" font-size="8" fill="#52525B">1.40lh</text>
+
+    <!-- Line Length Guidance Meter -->
+    <rect x="18" y="200" width="180" height="16" rx="4" fill="#08080B" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+    <rect x="18" y="200" width="120" height="16" rx="4" fill="#FFB703" fill-opacity="0.15"/>
+    <text x="24" y="212" font-family="'JetBrains Mono', monospace" font-size="8" fill="#FFB703">MEASURE: 45–75 CPL OPTIMAL</text>
+  </g>
+
+  <!-- Bottom Rhythm Verification Ledger -->
+  <line x1="64" y1="448" x2="736" y2="448" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+  <text x="64" y="468" font-family="'JetBrains Mono', monospace" font-size="9" fill="#52525B">OPTICAL KERNING • ZERO HORIZONTAL DRIFT • 8PT VERTICAL RHYTHM</text>
+  <text x="660" y="468" font-family="'JetBrains Mono', monospace" font-size="9" fill="#FFB703">PRECISION</text>
+</svg>

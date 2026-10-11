@@ -325,41 +325,57 @@ export default function AdvertisingShowcase() {
 
           {/* Right: Print Creative Preview Simulation */}
           <div className="lg:col-span-6 flex flex-col justify-center">
-            <div className="w-full bg-[#18181B] border border-white/15 rounded-2xl p-6 sm:p-8 shadow-2xl relative">
-              <div className="pb-4 border-b border-white/10 flex items-center justify-between text-xs font-mono text-neutral-400">
-                <span className="text-[#FFB703] font-bold">DIRECTORY PRINT PREVIEW</span>
-                <span>{selectedTier.dimensions}</span>
-              </div>
+            {/* Physical Print Sheet Layered Mockup */}
+            <div className="relative group">
+              {/* Stacked Sheet Underlayer for authentic physical paper depth */}
+              <div className="absolute -inset-1.5 translate-y-1.5 translate-x-1.5 bg-white/[0.02] border border-white/5 rounded-2xl -z-10 blur-[1px]" />
+              
+              <div className="w-full bg-[#141418] border border-white/10 rounded-2xl p-6 sm:p-8 shadow-[0_20px_45px_-10px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.1)] relative overflow-hidden transition-all duration-300 hover:-translate-y-0.5">
+                {/* Subtle paper top edge sheen */}
+                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
-              <div className="my-6 space-y-3">
-                <span className="text-[10px] uppercase tracking-widest text-[#FFB703] font-mono block">
-                  {selectedTier.printCreative.themeBadge}
-                </span>
+                <div className="pb-4 border-b border-white/10 flex items-center justify-between text-xs font-mono text-neutral-400">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[#FFB703] font-semibold tracking-wide">DIRECTORY PRINT PREVIEW</span>
+                    <span className="text-white/20">•</span>
+                    <span>{selectedTier.dimensions}</span>
+                  </div>
 
-                <h4 className="text-xl sm:text-2xl font-bold text-white font-display">
-                  {selectedTier.printCreative.brandTitle}
-                </h4>
-
-                <p className="text-xs text-[#FFB703] font-serif">
-                  {selectedTier.printCreative.odiaSubtitle}
-                </p>
-
-                <p className="text-sm font-semibold text-neutral-200 pt-1">
-                  {selectedTier.printCreative.headline}
-                </p>
-
-                <p className="text-xs text-neutral-400 leading-relaxed">
-                  {selectedTier.printCreative.bodyCopy}
-                </p>
-
-                <div className="p-3 bg-black/40 rounded-xl border border-white/5 text-xs text-neutral-300 font-mono">
-                  {selectedTier.printCreative.locationPhone}
+                  <span className="text-[11px] text-neutral-400 font-mono">
+                    {selectedTier.paperStock.split(" ")[0]} GSM Coated
+                  </span>
                 </div>
-              </div>
 
-              <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-neutral-500">
-                <span>{selectedTier.printCreative.registrationToken}</span>
-                <span className="text-[#FFB703]">Verified Slot</span>
+                <div className="my-6 space-y-3">
+                  <span className="text-[10px] uppercase tracking-widest text-[#FFB703] font-mono block">
+                    {selectedTier.printCreative.themeBadge}
+                  </span>
+
+                  <h4 className="text-xl sm:text-2xl font-bold text-white font-display">
+                    {selectedTier.printCreative.brandTitle}
+                  </h4>
+
+                  <p className="text-xs text-[#FFB703] font-serif">
+                    {selectedTier.printCreative.odiaSubtitle}
+                  </p>
+
+                  <p className="text-sm font-semibold text-neutral-200 pt-1">
+                    {selectedTier.printCreative.headline}
+                  </p>
+
+                  <p className="text-xs text-neutral-400 leading-relaxed">
+                    {selectedTier.printCreative.bodyCopy}
+                  </p>
+
+                  <div className="p-3 bg-black/40 rounded-xl border border-white/5 text-xs text-neutral-300 font-mono">
+                    {selectedTier.printCreative.locationPhone}
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-neutral-500">
+                  <span>{selectedTier.printCreative.registrationToken}</span>
+                  <span className="text-[#FFB703]">Verified Slot</span>
+                </div>
               </div>
             </div>
 

@@ -23,11 +23,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final com.prachar.user.UserRepository userRepository;
+    private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
 
     public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider,
-                                   com.prachar.user.UserRepository userRepository) {
+                                   com.prachar.user.UserRepository userRepository,
+                                   com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
         this.jwtTokenProvider = jwtTokenProvider;
         this.userRepository = userRepository;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -48,7 +51,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     || userOpt.get().getAccountStatus() == com.prachar.user.AccountStatus.SUSPENDED) {
                 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                 response.setContentType(org.springframework.http.MediaType.APPLICATION_JSON_VALUE);
-                response.getWriter().write("{\"success\":false,\"error\":{\"code\":\"ACCOUNT_INACTIVE\",\"message\":\"User account is disabled or suspended.\"}}");
+                String correlationId = request.getHeader("X-Correlation-Id");
+                if (correlationId == null || correlationId.isBlank()) {
+                    correlationId = UUID.randomUUID().toString();
+                }
+                com.prachar.common.ErrorResponse error = new com.prachar.common.ErrorResponse(
+                        "ACCOUNT_INACTIVE",
+                        "User account is disabled or suspended.",
+                        HttpServletResponse.SC_FORBIDDEN,
+                        request.getRequestURI(),
+                        correlationId
+                );
+                objectMapper.writeValue(response.getWriter(), com.prachar.common.ApiResponse.error(error));
                 return;
             }
 

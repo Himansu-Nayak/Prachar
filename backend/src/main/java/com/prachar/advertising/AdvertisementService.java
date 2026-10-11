@@ -247,6 +247,25 @@ public class AdvertisementService {
         return mapToDto(saved, pkg.getName(), pkg.getFormatDescription());
     }
 
+    @Transactional(readOnly = true)
+    public StoredCreativeResource getMerchantCreativeResource(UUID userId, UUID adId) {
+        if (userId == null) {
+            throw new org.springframework.security.access.AccessDeniedException("Authentication required to access advertisement creative.");
+        }
+        if (adId == null) {
+            throw new IllegalArgumentException("Advertisement ID cannot be null.");
+        }
+
+        Advertisement ad = advertisementRepository.findById(adId)
+                .orElseThrow(() -> new EntityNotFoundException("Advertisement with ID " + adId + " was not found."));
+
+        if (!ad.getUser().getId().equals(userId)) {
+            throw new org.springframework.security.access.AccessDeniedException("Access denied: You do not have permission to access this advertisement creative.");
+        }
+
+        return creativeStorageService.loadCreativeResource(ad);
+    }
+
     public AdvertisementResponseDto mapToDto(Advertisement ad) {
         AdvertisementPackage pkg = packageService.getPackage(ad.getPackageCode());
         return mapToDto(ad, pkg != null ? pkg.getName() : ad.getPackageCode(), pkg != null ? pkg.getFormatDescription() : null);

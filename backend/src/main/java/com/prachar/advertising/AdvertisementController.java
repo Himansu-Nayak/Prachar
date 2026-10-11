@@ -10,8 +10,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
 
 @RestController
 @RequestMapping("/api/advertising/advertisements")
@@ -99,6 +103,51 @@ public class AdvertisementController {
         }
         AdvertisementResponseDto response = advertisementService.attachCreative(userId, id, file);
         return ResponseEntity.ok(ApiResponse.success(response, "Advertisement creative uploaded successfully."));
+    }
+
+    @GetMapping("/{id}/creative")
+    public ResponseEntity<Resource> getAdvertisementCreative(
+            @AuthenticationPrincipal UUID userId,
+            @PathVariable UUID id) {
+        if (userId == null) {
+            throw new org.springframework.security.access.AccessDeniedException("Authentication required to access advertisement creative.");
+        }
+        StoredCreativeResource creative = advertisementService.getMerchantCreativeResource(userId, id);
+        return toCreativeResponseEntity(creative);
+    }
+
+    public static ResponseEntity<Resource> toCreativeResponseEntity(StoredCreativeResource creative) {
+        MediaType mediaType;
+        try {
+            mediaType = MediaType.parseMediaType(creative.contentType());
+        } catch (Exception e) {
+            mediaType = MediaType.APPLICATION_OCTET_STREAM;
+        }
+
+        boolean isInlineSafe = MediaType.IMAGE_PNG.equals(mediaType)
+                || MediaType.IMAGE_JPEG.equals(mediaType)
+                || MediaType.APPLICATION_PDF.equals(mediaType);
+
+        ContentDisposition disposition = isInlineSafe
+                ? ContentDisposition.inline().filename(creative.filename(), StandardCharsets.UTF_8).build()
+                : ContentDisposition.attachment().filename(creative.filename(), StandardCharsets.UTF_8).build();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentDisposition(disposition);
+        headers.set("X-Content-Type-Options", "nosniff");
+        headers.set(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate, private");
+        headers.setPragma("no-cache");
+        headers.setExpires(0L);
+
+        ResponseEntity.BodyBuilder responseBuilder = ResponseEntity.ok()
+                .headers(headers)
+                .contentType(mediaType);
+
+        if (creative.contentLength() > 0) {
+            responseBuilder.contentLength(creative.contentLength());
+        }
+
+        return responseBuilder.body(creative.resource());
     }
 
     @PostMapping("/{id}/cancel")

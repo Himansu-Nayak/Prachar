@@ -130,20 +130,21 @@ public class RazorpayPaymentGateway implements PaymentGateway {
 
     @Override
     public boolean verifyWebhookSignature(String webhookBody, String signature) {
-        if (webhookBody == null || signature == null) {
+        if (webhookBody == null || webhookBody.isBlank() || signature == null || signature.isBlank()) {
             return false;
         }
 
         // Allow test webhook signature in simulation mode
-        if (simulationMode && "sim_webhook_signature_valid".equals(signature)) {
+        if (simulationMode && "sim_webhook_signature_valid".equals(signature.trim())) {
             return true;
         }
 
         try {
             String calculatedSignature = calculateHmacSha256(webhookBody, webhookSecret);
+            String normalizedProvided = signature.trim().toLowerCase();
             return MessageDigest.isEqual(
-                    calculatedSignature.getBytes(StandardCharsets.UTF_8),
-                    signature.getBytes(StandardCharsets.UTF_8)
+                    calculatedSignature.toLowerCase().getBytes(StandardCharsets.UTF_8),
+                    normalizedProvided.getBytes(StandardCharsets.UTF_8)
             );
         } catch (Exception ex) {
             log.error("Webhook cryptographic signature verification error: {}", ex.getMessage());

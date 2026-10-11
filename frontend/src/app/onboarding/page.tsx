@@ -10,31 +10,8 @@ import {
 } from "@/lib/api";
 import { OnboardingStatusData, CreateProfileInput } from "@/types";
 
-/* ─── Constants ───────────────────────────────────────────────── */
-
-const PRESET_CATEGORIES = [
-  "Retail Store & Supermarket",
-  "Restaurant, Cafe & Sweets",
-  "Printing, Media & Publishing",
-  "Tuition, School & Coaching",
-  "Clinic, Pharmacy & Healthcare",
-  "Automobile & Repair Workshop",
-  "Real Estate & Construction",
-  "Professional Services & Consulting",
-  "Beauty Salon & Spa",
-  "Festival & Personal Greeting",
-  "Jewellery & Accessories",
-  "Electronics & Mobile Repair",
-];
-
-const THEME_COLORS = [
-  { name: "Slate Navy", value: "#0F172A" },
-  { name: "Odisha Saffron", value: "#EA580C" },
-  { name: "Emerald Forest", value: "#059669" },
-  { name: "Crimson Rose", value: "#E11D48" },
-  { name: "Royal Purple", value: "#7C3AED" },
-  { name: "Amber Gold", value: "#D97706" },
-];
+import { THEME_COLORS } from "@/lib/constants/themes";
+import { PRESET_CATEGORIES } from "@/lib/constants/categories";
 
 const STEP_META = [
   { step: 1, label: "Verified",  icon: "✅", title: "Phone Verified",      description: "Your Odisha mobile identity is confirmed." },

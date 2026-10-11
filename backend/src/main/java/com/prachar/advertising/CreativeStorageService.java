@@ -1,9 +1,16 @@
 package com.prachar.advertising;
 
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -27,14 +34,27 @@ public class CreativeStorageService {
     );
 
     private final Path storageDirectory;
+    private final AdvertisementRepository advertisementRepository;
 
-    public CreativeStorageService() {
-        this.storageDirectory = Paths.get("uploads", "creatives").toAbsolutePath().normalize();
+    @Autowired
+    public CreativeStorageService(
+            AdvertisementRepository advertisementRepository,
+            @Value("${app.storage.creatives-dir:uploads/creatives}") String configuredDir) {
+        this.advertisementRepository = advertisementRepository;
+        this.storageDirectory = Paths.get(configuredDir).toAbsolutePath().normalize();
         try {
             Files.createDirectories(this.storageDirectory);
         } catch (IOException e) {
             throw new RuntimeException("Failed to initialize creative upload storage directory", e);
         }
+    }
+
+    public CreativeStorageService(AdvertisementRepository advertisementRepository) {
+        this(advertisementRepository, "uploads/creatives");
+    }
+
+    public Path getStorageDirectory() {
+        return this.storageDirectory;
     }
 
     public CreativeMetadata storeCreative(MultipartFile file) {
@@ -78,6 +98,106 @@ public class CreativeStorageService {
         }
 
         return new CreativeMetadata(storageKey, sanitizedFilename, contentType, file.getSize());
+    }
+
+    public StoredCreativeResource loadCreativeResource(UUID advertisementId) {
+        if (advertisementId == null) {
+            throw new IllegalArgumentException("Advertisement ID cannot be null.");
+        }
+        Advertisement ad = advertisementRepository.findById(advertisementId)
+                .orElseThrow(() -> new EntityNotFoundException("Advertisement with ID " + advertisementId + " was not found."));
+        return loadCreativeResource(ad);
+    }
+
+    public StoredCreativeResource loadCreativeResource(Advertisement ad) {
+        if (ad == null) {
+            throw new IllegalArgumentException("Advertisement entity cannot be null.");
+        }
+        String storageKey = ad.getCreativeStorageKey();
+        if (storageKey == null || storageKey.isBlank()) {
+            throw new EntityNotFoundException("No creative artwork is attached to advertisement with ID " + ad.getId());
+        }
+
+        // Strict traversal checks: reject traversal sequences or disallowed characters
+        if (storageKey.contains("..") || storageKey.contains("/") || storageKey.contains("\\") || storageKey.contains(":") || !storageKey.matches("^[a-zA-Z0-9._-]+$")) {
+            throw new SecurityException("Illegal file storage key detected: invalid characters or path traversal attempt.");
+        }
+
+        Path targetPath = this.storageDirectory.resolve(storageKey).normalize();
+
+        // Enforce path traversal protection against configured root
+        if (!targetPath.startsWith(this.storageDirectory)) {
+            throw new SecurityException("Illegal file storage path detected: target path escapes root directory.");
+        }
+
+        if (!Files.exists(targetPath) || !Files.isRegularFile(targetPath) || !Files.isReadable(targetPath)) {
+            throw new EntityNotFoundException("Creative artwork file for advertisement " + ad.getId() + " is missing or inaccessible on server storage.");
+        }
+
+        Resource resource;
+        try {
+            resource = new UrlResource(targetPath.toUri());
+            if (!resource.exists() || !resource.isReadable()) {
+                throw new EntityNotFoundException("Creative resource could not be read for advertisement " + ad.getId());
+            }
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Malformed URI for creative file: " + targetPath, e);
+        }
+
+        long fileSize;
+        try {
+            fileSize = Files.size(targetPath);
+        } catch (IOException e) {
+            fileSize = ad.getCreativeFileSize() != null ? ad.getCreativeFileSize() : -1L;
+        }
+
+        String rawContentType = ad.getCreativeContentType();
+        String validatedContentType = determineSafeContentType(rawContentType, targetPath);
+
+        String originalFilename = ad.getCreativeFilename();
+        if (originalFilename == null || originalFilename.isBlank()) {
+            originalFilename = "creative-" + ad.getId() + getExtensionForContentType(validatedContentType);
+        }
+        String sanitizedFilename = sanitizeDownloadFilename(originalFilename);
+
+        return new StoredCreativeResource(resource, sanitizedFilename, validatedContentType, fileSize);
+    }
+
+    private String determineSafeContentType(String rawContentType, Path targetPath) {
+        if (rawContentType != null) {
+            String lower = rawContentType.trim().toLowerCase();
+            if ("image/png".equals(lower)) return "image/png";
+            if ("image/jpeg".equals(lower) || "image/jpg".equals(lower)) return "image/jpeg";
+            if ("application/pdf".equals(lower)) return "application/pdf";
+        }
+
+        try {
+            String probed = Files.probeContentType(targetPath);
+            if (probed != null) {
+                String probedLower = probed.trim().toLowerCase();
+                if ("image/png".equals(probedLower)) return "image/png";
+                if ("image/jpeg".equals(probedLower) || "image/jpg".equals(probedLower)) return "image/jpeg";
+                if ("application/pdf".equals(probedLower)) return "application/pdf";
+            }
+        } catch (IOException ignored) {}
+
+        return MediaType.APPLICATION_OCTET_STREAM_VALUE;
+    }
+
+    private String sanitizeDownloadFilename(String filename) {
+        String clean = Paths.get(filename).getFileName().toString();
+        clean = clean.replaceAll("[^a-zA-Z0-9._-]", "_").trim();
+        if (clean.isBlank()) {
+            clean = "creative_artwork.bin";
+        }
+        return clean;
+    }
+
+    private String getExtensionForContentType(String contentType) {
+        if ("image/png".equalsIgnoreCase(contentType)) return ".png";
+        if ("image/jpeg".equalsIgnoreCase(contentType)) return ".jpg";
+        if ("application/pdf".equalsIgnoreCase(contentType)) return ".pdf";
+        return ".bin";
     }
 
     private String sanitizeFilename(String filename) {

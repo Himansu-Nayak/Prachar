@@ -1,93 +1,46 @@
 package com.prachar.card;
 
+import com.prachar.card.dto.DigitalCardResponseDto;
+import com.prachar.card.dto.UpdateCardStatusDto;
+import com.prachar.card.dto.UpdateDigitalCardDto;
 import com.prachar.common.ApiResponse;
-import com.prachar.profile.Profile;
-import com.prachar.profile.ProfileRepository;
-import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/card")
 public class DigitalCardController {
 
-    private final DigitalCardRepository digitalCardRepository;
-    private final ProfileRepository profileRepository;
+    private final DigitalCardService digitalCardService;
 
-    public DigitalCardController(DigitalCardRepository digitalCardRepository,
-                                 ProfileRepository profileRepository) {
-        this.digitalCardRepository = digitalCardRepository;
-        this.profileRepository = profileRepository;
+    public DigitalCardController(DigitalCardService digitalCardService) {
+        this.digitalCardService = digitalCardService;
     }
 
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<DigitalCard>> getMyCard(@AuthenticationPrincipal UUID userId) {
-        if (userId == null) {
-            throw new IllegalArgumentException("Authentication required.");
-        }
-        Profile profile = profileRepository.findByUserId(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Profile not found."));
-
-        DigitalCard card = digitalCardRepository.findByProfileId(profile.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Digital card not found."));
-
+    public ResponseEntity<ApiResponse<DigitalCardResponseDto>> getMyCard(
+            @AuthenticationPrincipal UUID userId) {
+        DigitalCardResponseDto card = digitalCardService.getCardByUserId(userId);
         return ResponseEntity.ok(ApiResponse.success(card, "Digital card retrieved."));
     }
 
     @PutMapping("/me")
-    public ResponseEntity<ApiResponse<DigitalCard>> updateMyCard(
+    public ResponseEntity<ApiResponse<DigitalCardResponseDto>> updateMyCard(
             @AuthenticationPrincipal UUID userId,
-            @RequestBody Map<String, String> payload) {
-        if (userId == null) {
-            throw new IllegalArgumentException("Authentication required.");
-        }
-        Profile profile = profileRepository.findByUserId(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Profile not found."));
-
-        DigitalCard card = digitalCardRepository.findByProfileId(profile.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Digital card not found."));
-
-        if (payload.containsKey("themeColor") && payload.get("themeColor") != null) {
-            card.setThemeColor(payload.get("themeColor").trim());
-        }
-        if (payload.containsKey("layoutType") && payload.get("layoutType") != null) {
-            card.setLayoutType(payload.get("layoutType").trim());
-        }
-        if (payload.containsKey("isNfcEnabled") && payload.get("isNfcEnabled") != null) {
-            card.setNfcEnabled(Boolean.parseBoolean(payload.get("isNfcEnabled")));
-        }
-        if (payload.containsKey("status") && payload.get("status") != null) {
-            card.setStatus(CardStatus.valueOf(payload.get("status").trim().toUpperCase()));
-        }
-
-        DigitalCard updated = digitalCardRepository.save(card);
+            @Valid @RequestBody UpdateDigitalCardDto request) {
+        DigitalCardResponseDto updated = digitalCardService.updateCard(userId, request);
         return ResponseEntity.ok(ApiResponse.success(updated, "Digital card updated."));
     }
 
     @PatchMapping("/me/status")
-    public ResponseEntity<ApiResponse<DigitalCard>> updateCardStatus(
+    public ResponseEntity<ApiResponse<DigitalCardResponseDto>> updateCardStatus(
             @AuthenticationPrincipal UUID userId,
-            @RequestBody Map<String, String> payload) {
-        if (userId == null) {
-            throw new IllegalArgumentException("Authentication required.");
-        }
-        String statusStr = payload.get("status");
-        if (statusStr == null || statusStr.isBlank()) {
-            throw new IllegalArgumentException("Card status is required.");
-        }
-
-        Profile profile = profileRepository.findByUserId(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Profile not found."));
-
-        DigitalCard card = digitalCardRepository.findByProfileId(profile.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Digital card not found."));
-
-        card.setStatus(CardStatus.valueOf(statusStr.trim().toUpperCase()));
-        DigitalCard updated = digitalCardRepository.save(card);
+            @Valid @RequestBody UpdateCardStatusDto request) {
+        DigitalCardResponseDto updated = digitalCardService.updateCardStatus(userId, request);
         return ResponseEntity.ok(ApiResponse.success(updated, "Digital card status updated to " + updated.getStatus()));
     }
 }

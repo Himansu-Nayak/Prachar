@@ -10,45 +10,57 @@
 
 **PRACHAR** is a hybrid **Phygital Publicity & Digital Identity Platform** that bridges high-circulation physical advertising booklets and smart NFC business cards with responsive, search-optimized digital micro-profiles (`/u/:username`). 
 
-Headquartered in Bhubaneswar, Odisha, PRACHAR empowers local retail merchants, healthcare clinics, home service contractors, and business professionals to claim a verified digital footprint while benefiting from physical neighborhood distribution.
+Headquartered in Bhubaneswar, Odisha, PRACHAR empowers local retail merchants, healthcare clinics, home service contractors, and business professionals to claim a verified digital footprint while benefiting from physical neighborhood distribution across 50,000+ monthly copies printed at Chandan Printers (Unit-3, Bhubaneswar).
 
 ---
 
-## 2. Technology Stack & Finalized Versions
+## 2. Technology Stack
 
 | Layer | Technology | Version | Purpose |
 |---|---|---|---|
-| **Frontend** | Next.js (App Router) | 14.2.x | Server Components, SEO, responsive micro-sites |
-| **Styling** | Tailwind CSS | 3.4.x | Design tokens, utility-first layout |
+| **Frontend** | Next.js (App Router) | 14.2.14 | Server Components, SEO, responsive micro-sites |
+| **Styling** | Tailwind CSS | 3.4.x | Design tokens, editorial typography, utility layouts |
 | **Backend** | Spring Boot | 3.3.4 | REST API, security, transactional integrity |
 | **Language** | Java | 21 (LTS) | Type-safe, enterprise concurrency |
 | **Database** | PostgreSQL | 16-alpine | Relational persistence, JSONB, ACID transactions |
-| **Migrations**| Flyway | 10.x | Deterministic, version-controlled schema evolution |
-| **Cache** | Redis | 7.2-alpine | Fast 302 QR redirection, rate-limiting |
+| **Migrations**| Flyway | 10.x | Deterministic, version-controlled schema evolution (V1–V8) |
+| **Cache & Gate** | Redis & Spring Security | 7.2 / 6.3 | Fast dynamic redirection, rate-limiting, stateless JWT |
 | **Container** | Docker & Compose | Modern | Local dev & production container orchestration |
-
-*For forensic justification of version selections, see [`docs/VERSION_DECISION.md`](docs/VERSION_DECISION.md).*
 
 ---
 
 ## 3. Repository Structure
 
-```
+```text
 prachar/
-├── frontend/             # Next.js 14 App Router, React, TypeScript, Tailwind CSS
+├── frontend/             # Next.js 14 App Router, React 18, TypeScript 5, Tailwind CSS
+│   ├── src/
+│   │   ├── app/          # 16 routes: (public), (auth), dashboard, advertise, admin, u/[username], qr/[uuid]
+│   │   ├── components/   # ui/ (Modal, StatusBadge, Spinner, Skeleton), feedback/, layout/, home/
+│   │   ├── features/     # advertising/, payment/, profile/, admin/ (modular domain UI & logic)
+│   │   ├── lib/          # api/ (modular domain clients & resilient HTTP client), config/env, constants/
+│   │   └── types/        # Complete TypeScript domain contracts
 ├── backend/              # Spring Boot 3.3.4 (Java 21), Flyway, Spring Security
-├── infrastructure/       # Docker configuration, Nginx configs, environment templates
-├── docs/                 # Architectural specifications, domain models, setup guides
-│   ├── ARCHITECTURE.md
-│   ├── DATABASE_DOMAIN_MODEL.md
-│   ├── API_ARCHITECTURE.md
-│   ├── SECURITY_ARCHITECTURE.md
-│   ├── DEVELOPMENT_SETUP.md
-│   └── VERSION_DECISION.md
-├── scripts/              # Automation and deployment scripts
+│   ├── src/main/java/com/prachar/
+│   │   ├── config/       # SecurityConfig, ProductionSecurityValidator, CorsConfig
+│   │   ├── common/       # ApiResponse, ErrorResponse, domain exception hierarchy
+│   │   ├── security/     # JwtAuthenticationFilter, JwtTokenProvider, UserPrincipal
+│   │   ├── auth/         # Phone-first OTP authentication, rate limiting, DevOtpProvider
+│   │   ├── user/         # UserAccount domain & lifecycle
+│   │   ├── profile/      # Merchant profile & vanity slug routing
+│   │   ├── card/         # Digital card domain (Controller, Service, DTOs)
+│   │   ├── qr/           # Permanent dynamic QR redirect gate & hashed telemetry
+│   │   ├── advertising/  # Print rate cards (P1-P5), monthly 18th cutoff, bookings
+│   │   └── payment/      # Razorpay order generation, HMAC verification, idempotent ledger
+│   └── src/main/resources/
+│       ├── db/migration/ # Flyway migrations V1 through V8
+│       └── application*.yml
+├── docs/                 # Architectural specifications, engineering standards, API guides
+│   ├── architecture/     # System architecture specification & tier diagrams
+│   ├── api/              # RESTful API guidelines & endpoint catalog
+│   └── engineering/      # Audit findings, progress logs, conventions, setup, error & test guides
 ├── docker-compose.yml    # Development containers (PostgreSQL 16 & Redis 7.2)
-├── .gitignore            # Git exclusion rules
-└── README.md             # Project overview & quickstart
+└── README.md             # Project overview & developer guide
 ```
 
 ---
@@ -65,7 +77,7 @@ Starts PostgreSQL on port `5432` and Redis on port `6379`.
 ```bash
 cd backend
 mvn clean test
-mvn spring-boot:run
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 Available at `http://localhost:8080`. Health check: `http://localhost:8080/api/health`.
 
@@ -79,38 +91,46 @@ Available at `http://localhost:3000`.
 
 ---
 
-## 5. Documentation Directory
+## 5. Engineering & Architecture Documentation
 
-- [`PHASE_0_PRODUCT_SPECIFICATION.md`](PHASE_0_PRODUCT_SPECIFICATION.md): Core business requirements, rate cards (P1–P5), Odisha map hero specification.
-- [`PHASE_0_AUDIT_REPORT.md`](PHASE_0_AUDIT_REPORT.md): Phase 0 audit sign-off (Score: 98.4%).
-- [`PHASE_1_COMPLETION_REPORT.md`](PHASE_1_COMPLETION_REPORT.md): Phase 1 foundational architecture completion.
-- [`PHASE_1_AUDIT_REPORT.md`](PHASE_1_AUDIT_REPORT.md): Phase 1 forensic audit sign-off (Score: 98.0%).
-- [`PHASE_2_IMPLEMENTATION_PLAN.md`](PHASE_2_IMPLEMENTATION_PLAN.md): Phase 2 complete vertical slice architecture and roadmap.
-- [`PHASE_2_COMPLETION_REPORT.md`](PHASE_2_COMPLETION_REPORT.md): Phase 2 implementation summary and verification evidence.
-- [`PHASE_2_AUDIT_REPORT.md`](PHASE_2_AUDIT_REPORT.md): Phase 2 comprehensive forensic audit report.
-- [`PHASE_3_PRE_IMPLEMENTATION_AUDIT.md`](PHASE_3_PRE_IMPLEMENTATION_AUDIT.md): Phase 3 pre-implementation forensic audit and gap analysis.
-- [`PHASE_3_IMPLEMENTATION_REPORT.md`](PHASE_3_IMPLEMENTATION_REPORT.md): Phase 3 public digital profile, dynamic QR, and lifecycle management implementation report.
-- [`PHASE_4_PRE_IMPLEMENTATION_AUDIT.md`](PHASE_4_PRE_IMPLEMENTATION_AUDIT.md): Phase 4 forensic pre-audit covering auth hardening, account lifecycle, and onboarding state requirements.
-- [`PHASE_4_IMPLEMENTATION_REPORT.md`](PHASE_4_IMPLEMENTATION_REPORT.md): Phase 4 authentication hardening, merchant onboarding state machine, account management API, and security headers implementation report.
-- [`PHASE_5_COMPLETION_REPORT.md`](PHASE_5_COMPLETION_REPORT.md): Phase 5 public phygital profile, digital card, and QR experience.
-- [`PHASE_6_COMPLETION_REPORT.md`](PHASE_6_COMPLETION_REPORT.md): Phase 6 advertising engine, rate cards, cutoff enforcement, and campaign workflow.
-- [`PHASE_7_PRE_IMPLEMENTATION_ASSESSMENT.md`](PHASE_7_PRE_IMPLEMENTATION_ASSESSMENT.md): Phase 7 payment engine forensic audit and gap analysis.
-- [`PHASE_7_COMPLETION_REPORT.md`](PHASE_7_COMPLETION_REPORT.md): Phase 7 payment engine, Razorpay integration, transaction lifecycle, and audit reconciliation.
-- [`PHASE_8_PRE_IMPLEMENTATION_ASSESSMENT.md`](PHASE_8_PRE_IMPLEMENTATION_ASSESSMENT.md): Phase 8 payment hardening pre-implementation assessment and forensic gap analysis.
-- [`PHASE_8_COMPLETION_REPORT.md`](PHASE_8_COMPLETION_REPORT.md): Phase 8 payment hardening, state machine enforcement, webhook deduplication, and production verification report.
-- [`PHASE_9_COMPLETION_REPORT.md`](PHASE_9_COMPLETION_REPORT.md): Phase 9+ premium UI/UX transformation, authentic Odisha hero map, responsive browser QA, and production readiness report.
+### Core Specifications & Standards
+- [`docs/architecture/ARCHITECTURE.md`](docs/architecture/ARCHITECTURE.md): Complete system architecture, domain models, and tier diagrams.
+- [`docs/api/API_GUIDELINES.md`](docs/api/API_GUIDELINES.md): Unified REST API guidelines, endpoint catalog, and response envelope contracts.
+- [`docs/engineering/REFACTORING_AUDIT.md`](docs/engineering/REFACTORING_AUDIT.md): Comprehensive 8-part codebase audit findings and severity matrix.
+- [`docs/engineering/REFACTORING_PROGRESS.md`](docs/engineering/REFACTORING_PROGRESS.md): Autonomous refactoring execution log across all completed batches.
+- [`docs/engineering/CODE_CONVENTIONS.md`](docs/engineering/CODE_CONVENTIONS.md): TypeScript/React and Java/Spring Boot code conventions and architectural rules.
+- [`docs/engineering/ENVIRONMENT_SETUP.md`](docs/engineering/ENVIRONMENT_SETUP.md): Environment separation, secret handling, and `ProductionSecurityValidator`.
+- [`docs/engineering/ERROR_HANDLING.md`](docs/engineering/ERROR_HANDLING.md): Unified error model, domain exceptions, and frontend error resilience.
+- [`docs/engineering/TESTING.md`](docs/engineering/TESTING.md): QA test strategy, 96 passing backend tests, and frontend verification suite.
+
+### Historical Phase Reports & Architecture Records
 - [`docs/PAYMENT_STATE_MACHINE.md`](docs/PAYMENT_STATE_MACHINE.md): Formally enforced payment transaction state machine and lifecycle specification.
 - [`docs/PAYMENT_OPERATIONS.md`](docs/PAYMENT_OPERATIONS.md): Razorpay webhook operations, deduplication ledger, structured log markers, and incident response runbook.
 - [`docs/PRODUCTION_SECURITY_CHECKLIST.md`](docs/PRODUCTION_SECURITY_CHECKLIST.md): 19-point production security and cryptographic compliance checklist.
 - [`docs/VERSION_DECISION.md`](docs/VERSION_DECISION.md): Evaluation of Spring Boot 3.3 vs 4.x and PostgreSQL 16 vs 17.
-- [`docs/DATABASE_DOMAIN_MODEL.md`](docs/DATABASE_DOMAIN_MODEL.md): Entity relationships, constraints, and lifecycle definitions (V1 & V2 migrations).
+- [`docs/DATABASE_DOMAIN_MODEL.md`](docs/DATABASE_DOMAIN_MODEL.md): Entity relationships, constraints, and lifecycle definitions (V1–V8 migrations).
 - [`docs/API_ARCHITECTURE.md`](docs/API_ARCHITECTURE.md): `ApiResponse<T>` envelopes, REST endpoints, and contracts.
 - [`docs/SECURITY_ARCHITECTURE.md`](docs/SECURITY_ARCHITECTURE.md): JWT, OTP provider abstraction, RBAC, and DPDP Act 2023 compliance.
 - [`docs/AUTHENTICATION_ARCHITECTURE.md`](docs/AUTHENTICATION_ARCHITECTURE.md): Phone-first OTP authentication, token rotation, and rate limits.
 - [`docs/PROFILE_ARCHITECTURE.md`](docs/PROFILE_ARCHITECTURE.md): Digital profiles, reserved vanity URL slug governance, and companion cards.
 - [`docs/QR_ARCHITECTURE.md`](docs/QR_ARCHITECTURE.md): Stable UUID dynamic routing (`/qr/:uuid` -> 302 -> `/u/:slug`) and ZXing rendering.
-- [`docs/HERO_ARCHITECTURE.md`](docs/HERO_ARCHITECTURE.md): Vector Odisha SVG map, Bhubaneswar radar pulse, and motion accessibility.
 - [`docs/DEVELOPMENT_SETUP.md`](docs/DEVELOPMENT_SETUP.md): Step-by-step developer onboarding instructions.
+
+---
+
+## 6. Continuous Verification Suite
+
+```bash
+# Frontend Verification
+cd frontend
+npm run typecheck    # Strict TypeScript checks (0 errors)
+npm run lint         # Next.js ESLint (0 warnings, 0 errors)
+npm run build        # Compiles and optimizes all 16 static/dynamic routes
+
+# Backend Verification
+cd backend
+mvn clean test       # 96 automated tests passing with 0 failures, 0 errors
+```
 
 ---
 

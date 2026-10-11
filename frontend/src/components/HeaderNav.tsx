@@ -43,29 +43,43 @@ export default function HeaderNav() {
     { href: "/about", label: "About" },
   ];
 
+  const isHomeTop = pathname === "/" && !isScrolled;
+
   return (
     <header
       className={`sticky top-0 z-50 transition-all duration-300 ${
         isScrolled
           ? "border-b border-white/10 bg-[#0A0A0A]/90 backdrop-blur-md py-3.5"
+          : isHomeTop
+          ? "border-b border-black/5 bg-[#F7F7F4] py-4 sm:py-5"
           : "border-b border-transparent bg-transparent py-5"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-8 flex items-center justify-between">
         {/* Brand Wordmark (Brand Appart simplicity) */}
         <Link href="/" className="flex items-center gap-2.5 group">
-          <span className="text-xl sm:text-2xl font-black tracking-tight text-white font-display group-hover:text-neutral-200 transition-colors">
+          <span
+            className={`text-xl sm:text-2xl font-black tracking-tight font-display transition-colors ${
+              isHomeTop
+                ? "text-black group-hover:text-neutral-700"
+                : "text-white group-hover:text-neutral-200"
+            }`}
+          >
             PRACHAR
           </span>
           <span className="w-1.5 h-1.5 rounded-full bg-[#FFB703]" />
-          <span className="text-[10px] uppercase font-mono tracking-widest text-neutral-400 hidden sm:inline-block">
+          <span
+            className={`text-[10px] uppercase font-mono tracking-widest hidden sm:inline-block ${
+              isHomeTop ? "text-neutral-600" : "text-neutral-400"
+            }`}
+          >
             Odisha
           </span>
         </Link>
 
         {/* Desktop Editorial Navigation Links */}
         <nav
-          className="hidden md:flex items-center gap-8 text-sm font-medium text-neutral-300"
+          className="hidden md:flex items-center gap-8 text-sm font-medium"
           aria-label="Main Navigation"
         >
           {navLinks.map((link) => {
@@ -74,10 +88,14 @@ export default function HeaderNav() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`transition-colors duration-200 ${
-                  isActive
+                className={`transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FFB703] focus-visible:ring-offset-2 rounded-md px-1 py-0.5 ${
+                  isHomeTop
+                    ? isActive
+                      ? "text-[#B45309] font-bold"
+                      : "text-neutral-700 hover:text-black"
+                    : isActive
                     ? "text-[#FFB703] font-semibold"
-                    : "hover:text-white text-neutral-400"
+                    : "text-neutral-400 hover:text-white"
                 }`}
               >
                 {link.label}
@@ -93,7 +111,11 @@ export default function HeaderNav() {
               {user.usernameSlug && (
                 <Link
                   href={`/u/${user.usernameSlug}`}
-                  className="text-xs text-neutral-400 hover:text-white font-mono transition-colors"
+                  className={`text-xs font-mono transition-colors rounded ${
+                    isHomeTop
+                      ? "text-neutral-600 hover:text-black"
+                      : "text-neutral-400 hover:text-white"
+                  }`}
                   title="View your public profile"
                 >
                   /u/{user.usernameSlug}
@@ -101,14 +123,22 @@ export default function HeaderNav() {
               )}
               <Link
                 href="/dashboard"
-                className="rounded-full bg-white/10 hover:bg-white/20 border border-white/15 text-white text-xs font-semibold px-4 py-2 transition-all"
+                className={`rounded-full text-xs font-semibold px-4 py-2 transition-all ${
+                  isHomeTop
+                    ? "bg-black/10 hover:bg-black/15 text-black border border-black/15"
+                    : "bg-white/10 hover:bg-white/20 text-white border border-white/15"
+                }`}
               >
                 Dashboard
               </Link>
               <button
                 type="button"
                 onClick={() => logout()}
-                className="text-xs text-neutral-400 hover:text-rose-400 transition-colors"
+                className={`text-xs transition-colors rounded ${
+                  isHomeTop
+                    ? "text-neutral-600 hover:text-rose-600"
+                    : "text-neutral-400 hover:text-rose-400"
+                }`}
               >
                 Logout
               </button>
@@ -117,13 +147,21 @@ export default function HeaderNav() {
             <>
               <Link
                 href="/login"
-                className="text-sm font-medium text-neutral-300 hover:text-white px-2 py-1 transition-colors"
+                className={`text-sm font-medium px-2 py-1 transition-colors rounded-md ${
+                  isHomeTop
+                    ? "text-neutral-700 hover:text-black"
+                    : "text-neutral-300 hover:text-white"
+                }`}
               >
                 Sign In
               </Link>
               <Link
                 href="/register"
-                className="rounded-full bg-white hover:bg-neutral-200 text-black text-xs sm:text-sm font-semibold px-5 py-2.5 transition-all inline-flex items-center gap-1.5 shadow-sm"
+                className={`rounded-full text-xs sm:text-sm font-semibold px-5 py-2.5 transition-all inline-flex items-center gap-1.5 shadow-sm ${
+                  isHomeTop
+                    ? "bg-black hover:bg-neutral-800 text-white"
+                    : "bg-white hover:bg-neutral-200 text-black"
+                }`}
               >
                 <span>Claim Profile</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -137,7 +175,11 @@ export default function HeaderNav() {
           {!user && (
             <Link
               href="/register"
-              className="text-xs font-semibold text-black bg-[#FFB703] hover:bg-amber-400 px-3.5 py-1.5 rounded-full transition-all"
+              className={`text-xs font-semibold px-3.5 py-1.5 rounded-full transition-all ${
+                isHomeTop
+                  ? "bg-black text-white hover:bg-neutral-800"
+                  : "text-black bg-[#FFB703] hover:bg-amber-400"
+              }`}
             >
               Get Started
             </Link>
@@ -153,7 +195,11 @@ export default function HeaderNav() {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="flex items-center gap-1.5 text-xs uppercase tracking-wider font-semibold text-neutral-300 hover:text-white px-2 py-1 transition-colors"
+            className={`flex items-center gap-1.5 text-xs uppercase tracking-wider font-semibold px-2 py-1 transition-colors rounded ${
+              isHomeTop
+                ? "text-neutral-800 hover:text-black"
+                : "text-neutral-300 hover:text-white"
+            }`}
             aria-expanded={mobileMenuOpen}
             aria-label="Toggle Navigation Menu"
           >
@@ -165,7 +211,7 @@ export default function HeaderNav() {
 
       {/* Mobile Editorial Menu Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-x-0 top-[60px] bg-[#0A0A0A]/98 border-b border-white/10 backdrop-blur-2xl px-6 py-8 shadow-2xl transition-all">
+        <div className="md:hidden fixed inset-x-0 top-full bg-[#0A0A0A]/98 border-b border-white/10 backdrop-blur-2xl px-6 py-8 shadow-2xl transition-all max-h-[calc(100vh-80px)] overflow-y-auto">
           <div className="flex flex-col space-y-5">
             {navLinks.map((link, idx) => {
               const isActive = pathname === link.href;
@@ -173,6 +219,7 @@ export default function HeaderNav() {
                 <Link
                   key={link.href}
                   href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
                   className={`text-2xl font-bold tracking-tight transition-colors font-display flex items-center justify-between ${
                     isActive ? "text-[#FFB703]" : "text-neutral-300 hover:text-white"
                   }`}
@@ -190,6 +237,7 @@ export default function HeaderNav() {
                 {user.usernameSlug && (
                   <Link
                     href={`/u/${user.usernameSlug}`}
+                    onClick={() => setMobileMenuOpen(false)}
                     className="text-xs text-neutral-400 font-mono py-2 text-center"
                   >
                     Public Profile: /u/{user.usernameSlug}
@@ -197,13 +245,17 @@ export default function HeaderNav() {
                 )}
                 <Link
                   href="/dashboard"
+                  onClick={() => setMobileMenuOpen(false)}
                   className="w-full py-3 text-center text-sm font-semibold rounded-full bg-white text-black"
                 >
                   Go to Dashboard
                 </Link>
                 <button
                   type="button"
-                  onClick={() => logout()}
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    logout();
+                  }}
                   className="w-full py-2.5 text-center text-xs text-rose-400 hover:text-rose-300"
                 >
                   Logout
@@ -213,12 +265,14 @@ export default function HeaderNav() {
               <div className="flex flex-col gap-3">
                 <Link
                   href="/register"
+                  onClick={() => setMobileMenuOpen(false)}
                   className="w-full py-3 text-center text-sm font-bold rounded-full bg-[#FFB703] text-black"
                 >
                   Claim Digital Profile
                 </Link>
                 <Link
                   href="/login"
+                  onClick={() => setMobileMenuOpen(false)}
                   className="w-full py-2.5 text-center text-sm font-medium text-neutral-300 border border-white/15 rounded-full hover:bg-white/5"
                 >
                   Sign In

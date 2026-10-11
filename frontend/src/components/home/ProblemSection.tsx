@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export default function ProblemSection() {
   return (
-    <section className="relative w-full bg-[#F9F8F5] text-[#121212] py-24 sm:py-32 lg:py-40 px-4 sm:px-8 border-b border-black/10">
+    <section id="reality" className="relative w-full bg-[#F9F8F5] text-[#121212] py-24 sm:py-32 lg:py-40 px-4 sm:px-8 border-b border-black/10">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-16 lg:mb-24 gap-8">
@@ -28,7 +28,9 @@ export default function ProblemSection() {
         {/* Editorial Side-by-Side Comparison */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           {/* Card 1: The Digital Trap */}
-          <div className="bg-white border border-neutral-200/90 rounded-2xl p-8 sm:p-12 flex flex-col justify-between shadow-sm">
+          <div className="group bg-white/95 backdrop-blur-sm border border-neutral-200 rounded-2xl p-8 sm:p-12 flex flex-col justify-between shadow-[0_4px_24px_-4px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.03)] hover:shadow-[0_16px_36px_-8px_rgba(0,0,0,0.08)] transition-all duration-300 hover:-translate-y-0.5 relative overflow-hidden">
+            {/* Subtle top edge paper highlight */}
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-neutral-300/60 to-transparent" />
             <div>
               <div className="flex items-center justify-between pb-6 border-b border-neutral-100">
                 <div className="flex items-center gap-2.5 text-rose-600">
@@ -86,8 +88,13 @@ export default function ProblemSection() {
           </div>
 
           {/* Card 2: The Phygital Model */}
-          <div className="bg-[#121214] text-white border border-neutral-800 rounded-2xl p-8 sm:p-12 flex flex-col justify-between shadow-xl">
-            <div>
+          <div className="group bg-gradient-to-b from-[#18181D] via-[#141417] to-[#0E0E11] text-white border border-neutral-800/80 rounded-2xl p-8 sm:p-12 flex flex-col justify-between shadow-[0_24px_50px_-12px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.06),inset_0_1px_0_rgba(255,255,255,0.12)] hover:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6),0_0_0_1px_rgba(255,183,3,0.2),inset_0_1px_0_rgba(255,255,255,0.2)] transition-all duration-300 hover:-translate-y-0.5 relative overflow-hidden">
+            {/* Warm top rim specular highlight */}
+            <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-[#FFB703]/50 to-transparent" />
+            {/* Subtle atmospheric ambient glow */}
+            <div className="absolute -top-24 -right-24 w-60 h-60 rounded-full bg-[#FFB703]/5 blur-3xl pointer-events-none" />
+
+            <div className="relative z-10">
               <div className="flex items-center justify-between pb-6 border-b border-white/10">
                 <div className="flex items-center gap-2.5 text-[#FFB703]">
                   <ShieldCheck className="w-5 h-5" />
@@ -95,7 +102,9 @@ export default function ProblemSection() {
                     The PRACHAR Phygital Model
                   </span>
                 </div>
-                <span className="text-xs font-mono text-[#FFB703]">30-Day Tabletop Life</span>
+                <span className="text-xs font-mono text-[#FFB703] bg-[#FFB703]/10 px-2 py-0.5 rounded border border-[#FFB703]/20">
+                  30-Day Tabletop Life
+                </span>
               </div>
 
               <div className="mt-8 space-y-8">
@@ -137,7 +146,7 @@ export default function ProblemSection() {
               </div>
             </div>
 
-            <div className="mt-10 pt-6 border-t border-white/10 flex items-center justify-between text-xs font-mono text-neutral-400">
+            <div className="mt-10 pt-6 border-t border-white/10 flex items-center justify-between text-xs font-mono text-neutral-400 relative z-10">
               <span>Audience Retention</span>
               <span className="text-[#FFB703] font-bold">30 Days Physical Presence</span>
             </div>

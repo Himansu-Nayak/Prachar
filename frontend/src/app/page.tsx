@@ -1,5 +1,6 @@
 import Link from "next/link";
 import MasterCinematicHero from "@/components/hero/MasterCinematicHero";
+import PhygitalShowcaseCanvas from "@/components/home/PhygitalShowcaseCanvas";
 import ProblemSection from "@/components/home/ProblemSection";
 import FeaturedPillarsSection from "@/components/home/FeaturedPillarsSection";
 import PhygitalJourney from "@/components/home/PhygitalJourney";
@@ -7,6 +8,7 @@ import AdvertisingShowcase from "@/components/home/AdvertisingShowcase";
 import InteractiveCardSandbox from "@/components/home/InteractiveCardSandbox";
 import HowItWorksSection from "@/components/home/HowItWorksSection";
 import TrustSection from "@/components/home/TrustSection";
+import EditorialStandardSection from "@/components/home/EditorialStandardSection";
 import { fetchHealth } from "@/lib/api";
 import {
   ArrowRight,
@@ -32,17 +34,20 @@ export default async function HomePage() {
 
   return (
     <div className="flex flex-col items-center overflow-x-hidden bg-[#0A0A0A] text-[#EDEDED]">
-      {/* 01. TYPOGRAPHY-FIRST EDITORIAL HERO (Odisha Vector Artwork + Bhubaneswar Focal Point) */}
+      {/* 01. TYPOGRAPHY-FIRST EDITORIAL HERO (Brand Appart Monumental Typography) */}
       <MasterCinematicHero />
 
-      {/* 02. EDITORIAL MARKET REALITY & PROBLEM (Warm Light Ivory Contrast) */}
+      {/* 02. COLOSSAL ROUNDED SHOWCASE CANVAS (Brand Appart Section 2 Hallmark) */}
+      <PhygitalShowcaseCanvas />
+
+      {/* 03. EDITORIAL MARKET REALITY & PROBLEM (Warm Light Ivory Contrast) */}
       <ProblemSection />
 
-      {/* 03. FEATURED PHYGITAL EXPERIENCE & 4 CASE STUDY PILLARS (Brand Appart Structure) */}
+      {/* 04. FEATURED PHYGITAL EXPERIENCE & 4 CASE STUDY PILLARS (Brand Appart Structure) */}
       <FeaturedPillarsSection />
 
-      {/* 04. BHUBANESWAR HYPER-LOCAL DISTRIBUTION NETWORK */}
-      <section className="relative w-full py-24 sm:py-32 lg:py-40 bg-[#0E0E10] px-4 sm:px-8 border-b border-white/10">
+      {/* 05. BHUBANESWAR HYPER-LOCAL DISTRIBUTION NETWORK */}
+      <section id="corridors" className="relative w-full py-24 sm:py-32 lg:py-40 bg-[#0E0E10] px-4 sm:px-8 border-b border-white/10">
         <div className="max-w-7xl mx-auto">
           {/* Section Header */}
           <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-16 lg:mb-20 gap-8">
@@ -136,7 +141,10 @@ export default async function HomePage() {
       {/* 09. INSTITUTIONAL TRUST & STATUTORY ACCREDITATION & TESTIMONIAL */}
       <TrustSection />
 
-      {/* 10. GRAND EDITORIAL CLOSING CALLOUT */}
+      {/* 10. EDITORIAL DESIGN STANDARDS & CRAFT PRINCIPLES */}
+      <EditorialStandardSection />
+
+      {/* 11. GRAND EDITORIAL CLOSING CALLOUT */}
       <section className="relative w-full py-28 sm:py-36 px-4 sm:px-8 text-center bg-[#0A0A0A] border-b border-white/10">
         <div className="max-w-4xl mx-auto space-y-8">
           <span className="text-xs uppercase tracking-[0.2em] font-semibold text-[#FFB703] font-mono block">

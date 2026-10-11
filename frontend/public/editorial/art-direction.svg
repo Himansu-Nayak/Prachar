@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="bgGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0E0E12"/>
+      <stop offset="50%" stop-color="#070709"/>
+      <stop offset="100%" stop-color="#040405"/>
+    </linearGradient>
+    <linearGradient id="cardGrad1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1A1A22" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#101016" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="amberGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFB703"/>
+      <stop offset="100%" stop-color="#E4B592"/>
+    </linearGradient>
+    <pattern id="gridPattern1" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M 32 0 L 0 0 0 32" fill="none" stroke="rgba(255,255,255,0.035)" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect width="800" height="500" fill="url(#bgGrad1)"/>
+  <rect width="800" height="500" fill="url(#gridPattern1)"/>
+
+  <!-- Museum Outer Crop Marks (┌ ┐ └ ┘) -->
+  <path d="M 28 44 L 28 28 L 44 28" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+  <path d="M 772 44 L 772 28 L 756 28" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+  <path d="M 28 456 L 28 472 L 44 472" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+  <path d="M 772 456 L 772 472 L 756 472" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+
+  <!-- Top Metadata Ledger -->
+  <text x="64" y="58" font-family="'JetBrains Mono', monospace, ui-monospace" font-size="10" font-weight="600" fill="#FFB703" letter-spacing="2.5">PRACHAR / EDITORIAL ART DIRECTION</text>
+  <text x="560" y="58" font-family="'JetBrains Mono', monospace, ui-monospace" font-size="10" font-weight="500" fill="#71717A" letter-spacing="1.5">SPECIMEN • 01 / 04</text>
+  <line x1="64" y1="72" x2="736" y2="72" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+
+  <!-- Asymmetric Editorial Composition Canvas -->
+  <!-- Left Large Visual Focal Block -->
+  <g transform="translate(64, 96)">
+    <!-- Main Card Plate -->
+    <rect x="0" y="0" width="410" height="330" rx="14" fill="url(#cardGrad1)" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+    
+    <!-- Editorial Composition Layout inside Plate -->
+    <rect x="24" y="24" width="70" height="4" rx="2" fill="#FFB703"/>
+    <text x="24" y="52" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="11" font-weight="700" fill="#A1A1AA" letter-spacing="2">VISUAL SYNTAX</text>
+    
+    <!-- Monumental Editorial Typography -->
+    <text x="24" y="118" font-family="'Plus Jakarta Sans', 'Playfair Display', serif" font-size="44" font-weight="900" fill="#FFFFFF" letter-spacing="-1.5">EDITORIAL</text>
+    <text x="24" y="162" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="40" font-weight="300" fill="#71717A" letter-spacing="-1">DISCIPLINE.</text>
+
+    <!-- Controlled Color Palette Chips -->
+    <g transform="translate(24, 210)">
+      <text x="0" y="-12" font-family="'JetBrains Mono', monospace" font-size="9" fill="#71717A" letter-spacing="1">CONTROLLED PALETTE</text>
+      <!-- Swatch 1: Obsidian -->
+      <rect x="0" y="0" width="42" height="36" rx="6" fill="#000000" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+      <text x="21" y="50" font-family="'JetBrains Mono', monospace" font-size="8" fill="#71717A" text-anchor="middle">#000000</text>
+      <!-- Swatch 2: Saffron -->
+      <rect x="52" y="0" width="42" height="36" rx="6" fill="#FFB703"/>
+      <text x="73" y="50" font-family="'JetBrains Mono', monospace" font-size="8" fill="#FFB703" text-anchor="middle">#FFB703</text>
+      <!-- Swatch 3: Warm Ivory -->
+      <rect x="104" y="0" width="42" height="36" rx="6" fill="#F8F7F4"/>
+      <text x="125" y="50" font-family="'JetBrains Mono', monospace" font-size="8" fill="#D4D4D8" text-anchor="middle">#F8F7F4</text>
+      <!-- Swatch 4: Copper -->
+      <rect x="156" y="0" width="42" height="36" rx="6" fill="#E4B592"/>
+      <text x="177" y="50" font-family="'JetBrains Mono', monospace" font-size="8" fill="#E4B592" text-anchor="middle">#E4B592</text>
+      <!-- Swatch 5: Slate Void -->
+      <rect x="208" y="0" width="42" height="36" rx="6" fill="#18181B" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+      <text x="229" y="50" font-family="'JetBrains Mono', monospace" font-size="8" fill="#71717A" text-anchor="middle">#18181B</text>
+    </g>
+
+    <line x1="24" y1="284" x2="386" y2="284" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+    <text x="24" y="304" font-family="'JetBrains Mono', monospace" font-size="9" fill="#52525B">GRID: 8PT BASELINE • WHITESPACE RATIO: 1.618</text>
+  </g>
+
+  <!-- Right Composition Structure & Balance Grid -->
+  <g transform="translate(498, 96)">
+    <!-- Upper Structural Card -->
+    <rect x="0" y="0" width="238" height="154" rx="14" fill="#121217" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <circle cx="28" cy="28" r="6" fill="#FFB703"/>
+    <text x="44" y="32" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="600" fill="#FFFFFF">ONE CLEAR IDEA</text>
+    <text x="28" y="64" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="12" fill="#A1A1AA" font-weight="400">Restrained hierarchy over visual decoration.</text>
+    <!-- Geometric framing lines -->
+    <line x1="28" y1="92" x2="210" y2="92" stroke="rgba(255,183,3,0.3)" stroke-width="1" stroke-dasharray="4 4"/>
+    <line x1="28" y1="112" x2="160" y2="112" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+    <text x="28" y="136" font-family="'JetBrains Mono', monospace" font-size="9" fill="#71717A">DELIBERATE PACING</text>
+
+    <!-- Lower Golden Ratio / Composition Blueprint Card -->
+    <rect x="0" y="174" width="238" height="152" rx="14" fill="#0D0D12" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <!-- Technical Blueprint Guides -->
+    <path d="M 28 290 Q 140 290 140 220 T 210 200" fill="none" stroke="url(#amberGlow)" stroke-width="1.5"/>
+    <circle cx="28" cy="290" r="3" fill="#FFB703"/>
+    <circle cx="140" cy="220" r="3" fill="#E4B592"/>
+    <circle cx="210" cy="200" r="3" fill="#FFFFFF"/>
+    <text x="28" y="202" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="600" fill="#EDEDED">SPATIAL BALANCE</text>
+    <text x="28" y="312" font-family="'JetBrains Mono', monospace" font-size="8" fill="#52525B">GOLDEN SECTION • 1 : 1.618</text>
+  </g>
+
+  <!-- Bottom Coordinate / Quality Stamp -->
+  <line x1="64" y1="448" x2="736" y2="448" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+  <text x="64" y="468" font-family="'JetBrains Mono', monospace" font-size="9" fill="#52525B">AUTHENTIC EDITORIAL FOUNDATION • BHUBANESWAR 2026</text>
+  <text x="670" y="468" font-family="'JetBrains Mono', monospace" font-size="9" fill="#FFB703">100% VECTOR</text>
+</svg>

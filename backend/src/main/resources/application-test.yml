@@ -26,4 +26,12 @@ prachar:
     key-secret: "test_secret_key_for_razorpay_hmac_sha256_testing_only"
     webhook-secret: "test_webhook_secret_for_razorpay_hmac_sha256_testing_only"
     simulation-mode: true
+  outbox:
+    enabled: false
+    batch-size: 10
+    fixed-delay-ms: 1000
+    max-attempts: 3
+    stale-lock-timeout-seconds: 10
+    base-retry-delay-seconds: 1
+    max-retry-delay-seconds: 60
 

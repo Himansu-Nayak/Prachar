@@ -55,16 +55,13 @@ import {
   Share2,
   ArrowRight,
   Sparkles,
+  Eye,
 } from "lucide-react";
-
-const THEME_COLORS = [
-  { name: "Slate Navy", value: "#0F172A" },
-  { name: "Odisha Saffron", value: "#EA580C" },
-  { name: "Emerald Forest", value: "#059669" },
-  { name: "Crimson Rose", value: "#E11D48" },
-  { name: "Royal Purple", value: "#7C3AED" },
-  { name: "Amber Gold", value: "#D97706" },
-];
+import { THEME_COLORS } from "@/lib/constants/themes";
+import PaymentCheckoutModal from "@/features/payment/components/PaymentCheckoutModal";
+import CreativePreviewModal from "@/features/advertising/components/CreativePreviewModal";
+import DigitalCardPreview from "@/features/profile/components/DigitalCardPreview";
+import ProfileEditorForm from "@/features/profile/components/ProfileEditorForm";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -83,6 +80,7 @@ export default function DashboardPage() {
   const [adSummary, setAdSummary] = useState<AdvertisementSummary | null>(null);
   const [adLoading, setAdLoading] = useState(false);
   const [adActionMessage, setAdActionMessage] = useState<string | null>(null);
+  const [selectedCreativeAd, setSelectedCreativeAd] = useState<Advertisement | null>(null);
 
   // Payment engine state (Phase 7)
   const [payingAdId, setPayingAdId] = useState<string | null>(null);
@@ -753,63 +751,10 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* Left Column: Digital Card Presentation */}
             <div className="lg:col-span-5 space-y-6">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Companion Digital Card</h2>
-                <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase ${
-                  isCardActive ? "bg-emerald-950 text-emerald-400 border border-emerald-800" : "bg-slate-800 text-slate-400"
-                }`}>
-                  {profile.cardStatus || "ACTIVE"}
-                </span>
-              </div>
-
-              {/* Premium Realistic Phygital Card */}
-              <div
-                style={{ backgroundColor: profile.themeColor || "#0F172A" }}
-                className="rounded-3xl p-6 sm:p-7 shadow-2xl border border-white/15 text-white relative overflow-hidden transition-all duration-300 hover:scale-[1.01] hover:shadow-orange-950/30"
-              >
-                {/* Glossy gradient reflection overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/15 via-transparent to-black/30 pointer-events-none" />
-
-                <div className="absolute top-0 right-0 p-4 opacity-10 font-black text-7xl select-none pointer-events-none">
-                  P
-                </div>
-
-                <div className="flex items-center justify-between mb-8 relative z-10">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-black tracking-widest uppercase bg-white/20 px-3 py-1 rounded-full backdrop-blur-md border border-white/20">
-                      PRACHAR CARD
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-white/80 bg-black/20 px-2.5 py-1 rounded-full backdrop-blur-md">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping mr-1" />
-                    <span>{profile.isNfcEnabled ? "NFC Active" : "NFC Ready"}</span>
-                  </div>
-                </div>
-
-                <div className="mb-6 relative z-10">
-                  <h3 className="text-xl sm:text-2xl font-black leading-tight tracking-tight">{profile.displayName}</h3>
-                  {profile.businessName && (
-                    <p className="text-xs text-white/90 font-medium mt-1">{profile.businessName}</p>
-                  )}
-                  <p className="text-xs text-white/80 mt-1.5 font-medium">{profile.category}</p>
-                  {profile.tagline && (
-                    <p className="text-[11px] text-white/70 italic mt-2.5 line-clamp-2">&quot;{profile.tagline}&quot;</p>
-                  )}
-                </div>
-
-                <div className="pt-4 border-t border-white/15 flex items-center justify-between text-[11px] relative z-10">
-                  <div>
-                    <p className="text-white/60 text-[9px] uppercase font-bold tracking-wider">
-                      {profile.city}, {profile.state || "Odisha"}
-                    </p>
-                    <p className="font-mono text-white/95 mt-0.5">{profile.primaryPhone}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-white/60 text-[9px] uppercase font-bold tracking-wider">Vanity URL</p>
-                    <p className="font-mono text-amber-300 font-semibold mt-0.5">/u/{profile.usernameSlug}</p>
-                  </div>
-                </div>
-              </div>
+              <DigitalCardPreview
+                profile={profile}
+                isCardActive={isCardActive}
+              />
 
               {/* Business meta attributes */}
               <div className="p-5 rounded-2xl border border-slate-800 bg-slate-900/40 text-xs text-slate-400 space-y-2.5 backdrop-blur-sm">
@@ -968,262 +913,15 @@ export default function DashboardPage() {
 
               {/* Profile Editor (Conditional) */}
               {isEditing ? (
-                <div className="p-6 sm:p-7 rounded-3xl border border-slate-800/80 bg-slate-900/90 shadow-2xl backdrop-blur-xl">
-                  <div className="flex items-center justify-between mb-5 pb-3 border-b border-slate-800">
-                    <div>
-                      <span className="text-[11px] font-bold text-orange-400 uppercase tracking-widest block">Profile Settings</span>
-                      <h3 className="text-lg font-bold text-white">Edit Phygital Profile</h3>
-                    </div>
-                    <span className="text-xs text-slate-400 font-mono bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800">
-                      /u/{profile.usernameSlug}
-                    </span>
-                  </div>
-
-                  <form onSubmit={handleSaveProfile} className="space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label htmlFor="edit-name" className="block text-xs font-semibold text-slate-300 mb-1">
-                          Display Name *
-                        </label>
-                        <input
-                          id="edit-name"
-                          type="text"
-                          value={editForm.displayName || ""}
-                          onChange={(e) => setEditForm({ ...editForm, displayName: e.target.value })}
-                          required
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700/80 text-sm text-white focus:outline-none focus:border-orange-500 transition"
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="edit-business" className="block text-xs font-semibold text-slate-300 mb-1">
-                          Business Name
-                        </label>
-                        <input
-                          id="edit-business"
-                          type="text"
-                          value={editForm.businessName || ""}
-                          onChange={(e) => setEditForm({ ...editForm, businessName: e.target.value })}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700/80 text-sm text-white focus:outline-none focus:border-orange-500 transition"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label htmlFor="edit-category" className="block text-xs font-semibold text-slate-300 mb-1">
-                          Category *
-                        </label>
-                        <input
-                          id="edit-category"
-                          type="text"
-                          value={editForm.category || ""}
-                          onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
-                          required
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700/80 text-sm text-white focus:outline-none focus:border-orange-500 transition"
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="edit-tagline" className="block text-xs font-semibold text-slate-300 mb-1">
-                          Tagline
-                        </label>
-                        <input
-                          id="edit-tagline"
-                          type="text"
-                          value={editForm.tagline || ""}
-                          onChange={(e) => setEditForm({ ...editForm, tagline: e.target.value })}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700/80 text-sm text-white focus:outline-none focus:border-orange-500 transition"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label htmlFor="edit-bio" className="block text-xs font-semibold text-slate-300 mb-1">
-                        Bio / Business Summary
-                      </label>
-                      <textarea
-                        id="edit-bio"
-                        rows={3}
-                        value={editForm.bio || ""}
-                        onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
-                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700/80 text-sm text-white focus:outline-none focus:border-orange-500 transition"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                      <div>
-                        <label htmlFor="edit-phone" className="block text-xs font-semibold text-slate-300 mb-1">
-                          Primary Phone *
-                        </label>
-                        <input
-                          id="edit-phone"
-                          type="tel"
-                          value={editForm.primaryPhone || ""}
-                          onChange={(e) => setEditForm({ ...editForm, primaryPhone: e.target.value })}
-                          required
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700/80 text-sm text-white focus:outline-none focus:border-orange-500 transition font-mono"
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="edit-whatsapp" className="block text-xs font-semibold text-slate-300 mb-1">
-                          WhatsApp Number
-                        </label>
-                        <input
-                          id="edit-whatsapp"
-                          type="tel"
-                          value={editForm.whatsappNumber || ""}
-                          onChange={(e) => setEditForm({ ...editForm, whatsappNumber: e.target.value })}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700/80 text-sm text-white focus:outline-none focus:border-orange-500 transition font-mono"
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="edit-email" className="block text-xs font-semibold text-slate-300 mb-1">
-                          Email Address
-                        </label>
-                        <input
-                          id="edit-email"
-                          type="email"
-                          value={editForm.email || ""}
-                          onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700/80 text-sm text-white focus:outline-none focus:border-orange-500 transition"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                      <div>
-                        <label htmlFor="edit-city" className="block text-xs font-semibold text-slate-300 mb-1">
-                          City
-                        </label>
-                        <input
-                          id="edit-city"
-                          type="text"
-                          value={editForm.city || ""}
-                          onChange={(e) => setEditForm({ ...editForm, city: e.target.value })}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700/80 text-sm text-white focus:outline-none focus:border-orange-500 transition"
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="edit-district" className="block text-xs font-semibold text-slate-300 mb-1">
-                          District (Odisha)
-                        </label>
-                        <input
-                          id="edit-district"
-                          type="text"
-                          value={editForm.district || ""}
-                          onChange={(e) => setEditForm({ ...editForm, district: e.target.value })}
-                          placeholder="e.g. Khordha, Cuttack"
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700/80 text-sm text-white focus:outline-none focus:border-orange-500 transition"
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="edit-state" className="block text-xs font-semibold text-slate-300 mb-1">
-                          State
-                        </label>
-                        <input
-                          id="edit-state"
-                          type="text"
-                          value={editForm.state || "Odisha"}
-                          onChange={(e) => setEditForm({ ...editForm, state: e.target.value })}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700/80 text-sm text-white focus:outline-none focus:border-orange-500 transition"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label htmlFor="edit-website" className="block text-xs font-semibold text-slate-300 mb-1">
-                          Website URL
-                        </label>
-                        <input
-                          id="edit-website"
-                          type="url"
-                          value={editForm.websiteUrl || ""}
-                          onChange={(e) => setEditForm({ ...editForm, websiteUrl: e.target.value })}
-                          placeholder="https://..."
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700/80 text-sm text-white focus:outline-none focus:border-orange-500 transition"
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="edit-address" className="block text-xs font-semibold text-slate-300 mb-1">
-                          Street Address
-                        </label>
-                        <input
-                          id="edit-address"
-                          type="text"
-                          value={editForm.addressText || ""}
-                          onChange={(e) => setEditForm({ ...editForm, addressText: e.target.value })}
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700/80 text-sm text-white focus:outline-none focus:border-orange-500 transition"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Social Links */}
-                    <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
-                      <span className="text-xs font-bold text-slate-300 block">Social Profiles</span>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                          <label htmlFor="edit-ig" className="block text-[11px] text-slate-400 mb-1">Instagram (@handle or URL)</label>
-                          <input
-                            id="edit-ig"
-                            type="text"
-                            value={editForm.socialInstagram || ""}
-                            onChange={(e) => setEditForm({ ...editForm, socialInstagram: e.target.value })}
-                            placeholder="@username"
-                            className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 text-xs text-white focus:outline-none focus:border-orange-500"
-                          />
-                        </div>
-                        <div>
-                          <label htmlFor="edit-fb" className="block text-[11px] text-slate-400 mb-1">Facebook URL</label>
-                          <input
-                            id="edit-fb"
-                            type="text"
-                            value={editForm.socialFacebook || ""}
-                            onChange={(e) => setEditForm({ ...editForm, socialFacebook: e.target.value })}
-                            placeholder="facebook.com/..."
-                            className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-800 text-xs text-white focus:outline-none focus:border-orange-500"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-300 mb-2">
-                        Card Theme Accent Color
-                      </label>
-                      <div className="flex items-center gap-3">
-                        {THEME_COLORS.map((tc) => (
-                          <button
-                            key={tc.value}
-                            type="button"
-                            onClick={() => setEditForm({ ...editForm, themeColor: tc.value })}
-                            style={{ backgroundColor: tc.value }}
-                            className={`w-7 h-7 rounded-full border-2 transition-transform ${
-                              editForm.themeColor === tc.value ? "scale-110 shadow-lg ring-2 ring-white/50 border-white" : "border-transparent opacity-75 hover:opacity-100"
-                            }`}
-                            title={tc.name}
-                          />
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 pt-4 border-t border-slate-800">
-                      <button
-                        type="submit"
-                        disabled={saveStatus === "SAVING"}
-                        className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold text-xs transition disabled:opacity-50 shadow-md shadow-orange-950/40"
-                      >
-                        {saveStatus === "SAVING" ? "Saving Changes..." : "Save Profile Updates"}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setIsEditing(false)}
-                        className="px-4 py-2.5 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 text-xs font-semibold transition"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </form>
-                </div>
+                <ProfileEditorForm
+                  isOpen={isEditing}
+                  editForm={editForm}
+                  setEditForm={setEditForm}
+                  saveStatus={saveStatus}
+                  usernameSlug={profile.usernameSlug}
+                  onSave={handleSaveProfile}
+                  onCancel={() => setIsEditing(false)}
+                />
               ) : (
                 <div className="p-6 sm:p-7 rounded-3xl border border-slate-800/80 bg-slate-900/40 backdrop-blur-sm">
                   <div className="flex items-center gap-2 mb-2">
@@ -1383,9 +1081,21 @@ export default function DashboardPage() {
                               </Link>
                             )}
                             {ad.hasCreative && (
-                              <span className="inline-flex items-center gap-1 text-[10px] text-emerald-400 mt-1">
-                                📎 {ad.creativeFilename || "Artwork Attached"}
-                              </span>
+                              <div className="mt-2 flex items-center gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => setSelectedCreativeAd(ad)}
+                                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-orange-950/70 hover:bg-orange-900/70 border border-orange-800/80 text-[10px] font-semibold text-orange-300 hover:text-orange-200 transition shadow-sm"
+                                  title="View Uploaded Creative Proof"
+                                  aria-label="View Uploaded Creative"
+                                >
+                                  <Eye className="w-3 h-3 text-orange-400" />
+                                  <span>View Uploaded Creative</span>
+                                </button>
+                                <span className="text-[10px] text-slate-500 font-mono truncate max-w-[120px]">
+                                  {ad.creativeFilename || "Artwork"}
+                                </span>
+                              </div>
                             )}
                             {ad.rejectionReason && (
                               <div className="mt-2 p-2.5 rounded-xl bg-rose-950/80 border border-rose-800 text-rose-300 text-[11px]">
@@ -1482,6 +1192,18 @@ export default function DashboardPage() {
                                 </button>
                               )}
 
+                            {ad.hasCreative && (
+                              <button
+                                type="button"
+                                onClick={() => setSelectedCreativeAd(ad)}
+                                className="px-3 py-1.5 rounded-lg border border-slate-700 hover:border-orange-600/60 bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-orange-300 text-[10px] font-semibold transition block ml-auto flex items-center justify-end gap-1.5"
+                                title="Inspect uploaded creative proof"
+                              >
+                                <Eye className="w-3 h-3 text-orange-400" />
+                                <span>View Creative</span>
+                              </button>
+                            )}
+
                             {(isDraft || isRejected) && (
                               <button
                                 type="button"
@@ -1513,96 +1235,25 @@ export default function DashboardPage() {
         </div>
       )}
 
+      {/* Creative Proof Preview & Safe Download Modal */}
+      <CreativePreviewModal
+        isOpen={!!selectedCreativeAd}
+        activeAd={selectedCreativeAd}
+        onClose={() => setSelectedCreativeAd(null)}
+      />
+
       {/* Payment Checkout Fallback / Simulation Modal */}
-      {showPaymentModal && paymentOrder && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-gradient-to-b from-[#0F172A] to-[#0A0F1D] border border-slate-800 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 via-amber-400 to-orange-600" />
-            <div className="flex items-center justify-between mb-5 pb-3 border-b border-slate-800">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-orange-950/80 border border-orange-800/60 flex items-center justify-center text-orange-400 font-bold">
-                  💳
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-white">Razorpay Secure Checkout</h3>
-                  <span className="text-[10px] text-slate-400">PRACHAR Phygital Platform Gate</span>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowPaymentModal(false);
-                  setPayingAdId(null);
-                }}
-                className="text-slate-400 hover:text-white text-lg p-1"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-xs mb-5 space-y-2 font-mono">
-              <div className="flex justify-between">
-                <span className="text-slate-400 font-sans">Order ID:</span>
-                <span className="text-white font-semibold">{paymentOrder.razorpayOrderId}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400 font-sans">Package:</span>
-                <span className="text-orange-400 font-bold">{paymentOrder.packageCode}</span>
-              </div>
-              <div className="flex justify-between items-center pt-2 border-t border-slate-800">
-                <span className="text-slate-400 font-sans">Payable Amount:</span>
-                <span className="text-emerald-400 font-black text-base">₹{paymentOrder.amount.toLocaleString("en-IN")}</span>
-              </div>
-              <div className="flex justify-between text-[11px]">
-                <span className="text-slate-500 font-sans">Currency:</span>
-                <span className="text-slate-400">{paymentOrder.currency}</span>
-              </div>
-            </div>
-
-            {paymentFeedback && (
-              <div className="mb-4 p-3 rounded-xl bg-rose-950/80 border border-rose-800 text-rose-300 text-xs flex items-center gap-2">
-                <span>⚠️</span>
-                <span>{paymentFeedback}</span>
-              </div>
-            )}
-
-            <p className="text-[11px] text-slate-400 mb-6 leading-relaxed">
-              Standard Razorpay script was either blocked or running in an offline environment. You can complete verification using the secure verification API.
-            </p>
-
-            <div className="flex flex-col gap-2.5">
-              <button
-                type="button"
-                onClick={handleSimulatePayment}
-                disabled={verifyingPayment}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:opacity-50 text-white font-bold text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/50"
-              >
-                {verifyingPayment ? (
-                  <>
-                    <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                    <span>Verifying Cryptographic Signature...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Confirm &amp; Verify Payment (₹{paymentOrder.amount.toLocaleString("en-IN")})</span>
-                  </>
-                )}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setShowPaymentModal(false);
-                  setPayingAdId(null);
-                }}
-                className="w-full py-2.5 rounded-xl border border-slate-700 hover:bg-slate-800 text-slate-300 text-xs font-semibold transition"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <PaymentCheckoutModal
+        isOpen={showPaymentModal && !!paymentOrder}
+        paymentOrder={paymentOrder}
+        verifyingPayment={verifyingPayment}
+        paymentFeedback={paymentFeedback}
+        onConfirm={handleSimulatePayment}
+        onClose={() => {
+          setShowPaymentModal(false);
+          setPayingAdId(null);
+        }}
+      />
     </div>
   );
 }

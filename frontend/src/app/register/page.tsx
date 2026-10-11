@@ -16,28 +16,9 @@ import {
   Palette,
   Check,
 } from "lucide-react";
-
-const PRESET_CATEGORIES = [
-  "Retail Store & Supermarket",
-  "Restaurant, Cafe & Sweets",
-  "Printing, Media & Publishing",
-  "Tuition, School & Coaching",
-  "Clinic, Pharmacy & Healthcare",
-  "Automobile & Repair Workshop",
-  "Real Estate & Construction",
-  "Professional Services & Consulting",
-  "Beauty Salon & Spa",
-  "Festival & Personal Greeting",
-];
-
-const THEME_COLORS = [
-  { name: "Slate Navy", value: "#0F172A", border: "border-slate-500" },
-  { name: "Odisha Saffron", value: "#EA580C", border: "border-orange-500" },
-  { name: "Emerald Forest", value: "#059669", border: "border-emerald-500" },
-  { name: "Crimson Rose", value: "#E11D48", border: "border-rose-500" },
-  { name: "Royal Purple", value: "#7C3AED", border: "border-purple-500" },
-  { name: "Amber Gold", value: "#D97706", border: "border-amber-500" },
-];
+import { THEME_COLORS } from "@/lib/constants/themes";
+import { PRESET_CATEGORIES } from "@/lib/constants/categories";
+import { normalizeIndianPhoneNumber, isValidIndianPhoneNumber } from "@/lib/utils/phone";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -66,15 +47,14 @@ export default function RegisterPage() {
   const handleRequestOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    const cleanPhone = phone.trim();
-    if (!cleanPhone || cleanPhone.length < 10) {
+    if (!isValidIndianPhoneNumber(phone)) {
       setError("Please enter a valid 10-digit Indian mobile number.");
       return;
     }
 
     setLoading(true);
     try {
-      const formatted = cleanPhone.startsWith("+91") ? cleanPhone : `+91${cleanPhone.replace(/^0+/, "")}`;
+      const formatted = normalizeIndianPhoneNumber(phone);
       const res = await requestOtp(formatted);
       if (res.success) {
         setStep("OTP");

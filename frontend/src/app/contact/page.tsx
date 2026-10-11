@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import ReticleBox from "@/components/ui/ReticleBox";
 import {
   Phone,
   Mail,
@@ -12,10 +11,10 @@ import {
   CheckCircle2,
   AlertCircle,
   MessageCircle,
-  HelpCircle,
   ChevronDown,
   ArrowRight,
-  Radio,
+  ShieldCheck,
+  Building2,
 } from "lucide-react";
 
 export default function ContactPage() {
@@ -29,8 +28,12 @@ export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // FAQ open/close state
+  // FAQ accordion state
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+  useEffect(() => {
+    document.title = "Contact & Editorial Booking Desk | PRACHAR";
+  }, []);
 
   const faqs = [
     {
@@ -66,7 +69,7 @@ export default function ContactPage() {
     }
 
     setLoading(true);
-    // Simulate brief processing
+    // Simulate immediate smooth intake confirmation
     setTimeout(() => {
       setLoading(false);
       setSubmitted(true);
@@ -74,281 +77,365 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24 text-[#FFF3EA]">
-      {/* Header */}
-      <div className="text-center max-w-4xl mx-auto mb-20">
-        <span className="reticle-badge mb-4">
-          [COMMUNICATOR // MISSION_DISPATCH]
-        </span>
-        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-[#FFF3EA] tracking-tight leading-tight mt-3 mb-6">
-          Connect with the Editorial &amp; Booking Desk.
-        </h1>
-        <p className="text-sm sm:text-base text-[#DAD0C8] font-mono leading-relaxed max-w-2xl mx-auto">
-          Have inquiries regarding print booklet placements, rate cards, or your smart NFC business card? Connect directly with our Bhubaneswar operations team.
-        </p>
-      </div>
+    <div className="min-h-screen bg-[#0A0A0A] text-[#EDEDED] py-16 sm:py-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8">
+        {/* Header Title Section */}
+        <div className="max-w-3xl mb-16 sm:mb-20">
+          <span className="text-xs uppercase tracking-[0.2em] font-semibold text-[#FFB703] font-mono block mb-4">
+            COMMUNICATION DESK
+          </span>
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.05] font-display">
+            Connect with the Editorial &amp; Booking Desk.
+          </h1>
+          <p className="text-base sm:text-lg text-neutral-400 mt-5 leading-relaxed font-normal">
+            Have questions regarding print placements, P1–P5 rate cards, or your contactless NFC business card? Connect directly with our Bhubaneswar operations desk.
+          </p>
+        </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 mb-24">
-        {/* Contact Info Sidebar */}
-        <div className="lg:col-span-5 space-y-6">
-          <ReticleBox tag="CHANNELS.DIRECT" telemetry="HOTLINE 24/7" className="p-8 space-y-6">
-            <h2 className="text-lg font-bold text-[#FFF3EA] font-mono mb-4 flex items-center gap-2">
-              <span className="text-[#E4B592]">[01]</span> DIRECT DESKS
-            </h2>
-
-            <div className="space-y-4 font-mono text-xs text-slate-300">
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-sm bg-[#E4B592]/10 border border-[#E4B592]/40 flex items-center justify-center text-[#E4B592] flex-shrink-0">
-                  <Phone className="w-5 h-5" />
-                </div>
-                <div>
-                  <span className="text-slate-400 block text-[10px] uppercase">Telephone Hotlines</span>
-                  <a href="tel:7077011733" className="text-sm font-bold text-white hover:text-[#E4B592] block transition">
-                    +91 70770 11733
-                  </a>
-                  <a href="tel:9178898844" className="text-sm font-bold text-white hover:text-[#E4B592] block transition">
-                    +91 91788 98844
-                  </a>
-                </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-24">
+          {/* Direct Desks Column */}
+          <div className="lg:col-span-5 space-y-6">
+            <div className="bg-[#121214] border border-white/10 rounded-2xl p-7 sm:p-8 space-y-6">
+              <div className="flex items-center justify-between pb-4 border-b border-white/10">
+                <h2 className="text-lg font-bold text-white font-display">
+                  Direct Operational Channels
+                </h2>
+                <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-[#FFB703]/10 text-[#FFB703] font-semibold border border-[#FFB703]/20">
+                  Bhubaneswar
+                </span>
               </div>
 
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-sm bg-emerald-950/40 border border-emerald-500/40 flex items-center justify-center text-emerald-400 flex-shrink-0">
-                  <MessageCircle className="w-5 h-5" />
+              <div className="space-y-5 text-sm text-neutral-300">
+                {/* Phones */}
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#FFB703] flex-shrink-0">
+                    <Phone className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-neutral-400 block text-xs uppercase tracking-wider font-mono">
+                      Telephone Hotlines
+                    </span>
+                    <a
+                      href="tel:7077011733"
+                      className="text-base font-bold text-white hover:text-[#FFB703] block transition mt-0.5"
+                    >
+                      +91 70770 11733
+                    </a>
+                    <a
+                      href="tel:9178898844"
+                      className="text-sm font-semibold text-neutral-300 hover:text-[#FFB703] block transition"
+                    >
+                      +91 91788 98844
+                    </a>
+                  </div>
                 </div>
-                <div>
-                  <span className="text-slate-400 block text-[10px] uppercase">WhatsApp Booking Desk</span>
-                  <a
-                    href="https://wa.me/917077011733?text=Hello%20Prachar%20Team%2C%20I%20would%20like%20to%20inquire%20about%20advertising%20in%20the%20upcoming%20Bhubaneswar%20edition."
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs font-bold text-emerald-400 hover:underline"
-                  >
-                    Chat on WhatsApp (+91 70770 11733) &rarr;
-                  </a>
-                </div>
-              </div>
 
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-sm bg-sky-950/40 border border-sky-500/40 flex items-center justify-center text-sky-400 flex-shrink-0">
-                  <Mail className="w-5 h-5" />
+                {/* WhatsApp */}
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 flex-shrink-0">
+                    <MessageCircle className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-neutral-400 block text-xs uppercase tracking-wider font-mono">
+                      WhatsApp Booking Desk
+                    </span>
+                    <a
+                      href="https://wa.me/917077011733?text=Hello%20Prachar%20Team%2C%20I%20would%20like%20to%20inquire%20about%20advertising%20in%20the%20upcoming%20Bhubaneswar%20edition."
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm font-semibold text-emerald-400 hover:underline inline-flex items-center gap-1 mt-0.5"
+                    >
+                      <span>Chat on WhatsApp (+91 70770 11733)</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </a>
+                  </div>
                 </div>
-                <div>
-                  <span className="text-slate-400 block text-[10px] uppercase">Official Dispatch Email</span>
-                  <a href="mailto:pracharbbsr1@gmail.com" className="text-xs font-bold text-white hover:text-sky-400 transition">
-                    pracharbbsr1@gmail.com
-                  </a>
-                </div>
-              </div>
 
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-sm bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 flex-shrink-0">
-                  <MapPin className="w-5 h-5 text-[#E4B592]" />
+                {/* Email */}
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-sky-400 flex-shrink-0">
+                    <Mail className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-neutral-400 block text-xs uppercase tracking-wider font-mono">
+                      Official Dispatch Email
+                    </span>
+                    <a
+                      href="mailto:pracharbbsr1@gmail.com"
+                      className="text-sm font-semibold text-white hover:text-sky-300 transition mt-0.5 block break-all"
+                    >
+                      pracharbbsr1@gmail.com
+                    </a>
+                  </div>
                 </div>
-                <div>
-                  <span className="text-slate-400 block text-[10px] uppercase">Editorial Headquarters</span>
-                  <p className="text-xs text-white">Plot No. - BJB Nagar, Bhubaneswar, Odisha — 751014</p>
-                  <p className="text-[10px] text-slate-400 mt-1">Jurisdiction: Bhubaneswar, Odisha only</p>
-                </div>
-              </div>
 
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-sm bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 flex-shrink-0">
-                  <Clock className="w-5 h-5 text-[#E4B592]" />
+                {/* Location */}
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-neutral-300 flex-shrink-0">
+                    <MapPin className="w-4 h-4 text-[#FFB703]" />
+                  </div>
+                  <div>
+                    <span className="text-neutral-400 block text-xs uppercase tracking-wider font-mono">
+                      Editorial Headquarters
+                    </span>
+                    <p className="text-sm text-white font-medium mt-0.5">
+                      BJB Nagar, Bhubaneswar, Odisha — 751014
+                    </p>
+                    <p className="text-xs text-neutral-500 mt-1">
+                      Legal jurisdiction: Bhubaneswar, Odisha only
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <span className="text-slate-400 block text-[10px] uppercase">Desk Working Hours</span>
-                  <p className="text-xs text-white">Monday – Saturday: 9:30 AM – 7:30 PM IST</p>
-                  <p className="text-[10px] text-[#E4B592] font-bold">24/7 Digital Intake Active</p>
+
+                {/* Working Hours */}
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-neutral-300 flex-shrink-0">
+                    <Clock className="w-4 h-4 text-[#FFB703]" />
+                  </div>
+                  <div>
+                    <span className="text-neutral-400 block text-xs uppercase tracking-wider font-mono">
+                      Desk Working Hours
+                    </span>
+                    <p className="text-sm text-white font-medium mt-0.5">
+                      Monday – Saturday: 9:30 AM – 7:30 PM IST
+                    </p>
+                    <p className="text-xs text-[#FFB703] font-semibold mt-0.5">
+                      24/7 Digital Intake Active
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
-          </ReticleBox>
-        </div>
 
-        {/* Interactive Inquiry Form */}
-        <div className="lg:col-span-7">
-          <ReticleBox tag="DISPATCH.TERMINAL" telemetry="TRANSMISSION GATEWAY" className="p-8 sm:p-10">
-            <h2 className="text-xl sm:text-2xl font-bold text-[#FFF3EA] font-mono mb-2">Send an Inquiry</h2>
-            <p className="text-xs text-slate-400 mb-8 font-sans">
-              Enter your details below and our editorial booking desk will respond within 2 operational hours.
-            </p>
-
-            {submitted ? (
-              <div className="p-8 bg-[#000000] border border-[#E4B592]/50 text-center space-y-4">
-                <div className="w-12 h-12 rounded-sm bg-[#E4B592]/10 border border-[#E4B592] flex items-center justify-center text-[#E4B592] mx-auto shadow-[0_0_20px_rgba(228,181,146,0.3)]">
-                  <CheckCircle2 className="w-6 h-6" />
+            {/* Statutory Accreditation Card */}
+            <div className="bg-[#121214] border border-white/10 rounded-2xl p-6 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-[#FFB703]/10 border border-[#FFB703]/20 flex items-center justify-center text-[#FFB703]">
+                  <ShieldCheck className="w-5 h-5" />
                 </div>
-                <h3 className="text-xl font-bold text-[#FFF3EA] font-mono">Inquiry Registered!</h3>
-                <p className="text-xs text-slate-300 max-w-md mx-auto leading-relaxed font-sans">
-                  Thank you, <strong className="text-white">{name}</strong>. Our editorial desk at BJB Nagar has received your message and will call you back at <strong className="text-[#E4B592]">{phone}</strong> shortly.
-                </p>
-                <div className="pt-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSubmitted(false);
-                      setName("");
-                      setPhone("");
-                      setMessage("");
-                    }}
-                    className="text-xs text-[#E4B592] font-mono uppercase tracking-wider hover:underline"
-                  >
-                    Submit another inquiry &rarr;
-                  </button>
+                <div>
+                  <h3 className="text-xs font-bold text-white uppercase font-mono">
+                    Statutory Accreditation
+                  </h3>
+                  <p className="text-xs text-neutral-400">
+                    PRGI: ORORI/25/A3295 • Udyam: UDYAM-OD-04-0039313
+                  </p>
                 </div>
               </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-5 font-mono">
-                {error && (
-                  <div className="p-4 bg-rose-950/60 border border-rose-800 text-rose-300 text-xs flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                    <span>{error}</span>
-                  </div>
-                )}
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div>
-                    <label htmlFor="name" className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-                      Your Name / Business Name *
-                    </label>
-                    <input
-                      id="name"
-                      type="text"
-                      required
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="e.g. Priyabrata Mohapatra"
-                      className="w-full px-4 py-3 bg-[#000000] border border-white/15 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-[#E4B592] transition"
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="phone" className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-                      10-Digit Mobile Number *
-                    </label>
-                    <input
-                      id="phone"
-                      type="tel"
-                      required
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder="e.g. 9876543210"
-                      className="w-full px-4 py-3 bg-[#000000] border border-white/15 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-[#E4B592] transition"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div>
-                    <label htmlFor="email" className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-                      Email Address (Optional)
-                    </label>
-                    <input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="e.g. business@gmail.com"
-                      className="w-full px-4 py-3 bg-[#000000] border border-white/15 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-[#E4B592] transition"
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="category" className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-                      Inquiry Category
-                    </label>
-                    <select
-                      id="category"
-                      value={category}
-                      onChange={(e) => setCategory(e.target.value)}
-                      className="w-full px-4 py-3 bg-[#000000] border border-white/15 text-white text-xs focus:outline-none focus:border-[#E4B592] transition"
-                    >
-                      <option>Ad Booking (P1–P5)</option>
-                      <option>NFC Smart Business Card</option>
-                      <option>Distribution &amp; Delivery Inquiry</option>
-                      <option>Editorial / Community Announcement</option>
-                      <option>Press / Partnership Inquiry</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label htmlFor="message" className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
-                    Message / Campaign Specifications
-                  </label>
-                  <textarea
-                    id="message"
-                    rows={4}
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Tell us about your business, preferred ad package or upcoming festival announcement..."
-                    className="w-full px-4 py-3 bg-[#000000] border border-white/15 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-[#E4B592] transition font-sans resize-none"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="reticle-btn-primary w-full text-center"
-                >
-                  {loading ? (
-                    <span>TRANSMITTING...</span>
-                  ) : (
-                    <>
-                      <Send className="w-4 h-4" />
-                      <span>DISPATCH INQUIRY TO EDITORIAL DESK</span>
-                    </>
-                  )}
-                </button>
-              </form>
-            )}
-          </ReticleBox>
-        </div>
-      </div>
-
-      {/* Frequently Asked Questions (FAQ) Section */}
-      <div className="pt-16 border-t border-[#E4B592]/20">
-        <div className="text-center max-w-xl mx-auto mb-12">
-          <span className="reticle-badge mb-3">
-            [KNOWLEDGE_BASE // FAQ]
-          </span>
-          <h2 className="text-2xl sm:text-4xl font-black text-[#FFF3EA] tracking-tight">
-            Frequently Asked Questions.
-          </h2>
-        </div>
-
-        <div className="max-w-3xl mx-auto space-y-4">
-          {faqs.map((faq, idx) => {
-            const isOpen = openFaq === idx;
-            return (
-              <ReticleBox
-                key={idx}
-                tag={`QUERY.0${idx + 1}`}
-                telemetry={isOpen ? "OPEN" : "COLLAPSED"}
-                className="overflow-hidden p-0"
+              <Link
+                href="/about"
+                className="text-xs text-[#FFB703] hover:underline font-semibold flex-shrink-0"
               >
-                <button
-                  type="button"
-                  onClick={() => setOpenFaq(isOpen ? null : idx)}
-                  className="w-full p-5 text-left flex items-center justify-between gap-4 font-mono text-xs sm:text-sm font-bold text-[#FFF3EA] hover:text-[#E4B592] transition"
-                  aria-expanded={isOpen}
-                >
-                  <span>{faq.q}</span>
-                  <ChevronDown
-                    className={`w-4 h-4 text-slate-400 transition-transform ${
-                      isOpen ? "rotate-180 text-[#E4B592]" : ""
-                    }`}
-                  />
-                </button>
-                {isOpen && (
-                  <div className="px-5 pb-5 text-xs text-slate-300 leading-relaxed border-t border-white/5 pt-3 font-sans">
-                    {faq.a}
+                View Archive &rarr;
+              </Link>
+            </div>
+          </div>
+
+          {/* Inquiry Form Column */}
+          <div className="lg:col-span-7">
+            <div className="bg-[#121214] border border-white/10 rounded-2xl p-8 sm:p-10">
+              <h2 className="text-2xl font-bold text-white font-display mb-2">
+                Send an Online Inquiry
+              </h2>
+              <p className="text-sm text-neutral-400 mb-8 font-normal leading-relaxed">
+                Provide your campaign specifications below. Our editorial booking desk will review your submission and contact you within 2 business hours.
+              </p>
+
+              {submitted ? (
+                <div className="p-8 bg-black/60 border border-emerald-500/30 rounded-2xl text-center space-y-4">
+                  <div className="w-14 h-14 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mx-auto">
+                    <CheckCircle2 className="w-7 h-7" />
                   </div>
-                )}
-              </ReticleBox>
-            );
-          })}
+                  <h3 className="text-2xl font-bold text-white font-display">
+                    Inquiry Received
+                  </h3>
+                  <p className="text-sm text-neutral-300 max-w-md mx-auto leading-relaxed font-normal">
+                    Thank you, <strong className="text-white">{name}</strong>. Our editorial team at BJB Nagar has logged your request and will call you back at <strong className="text-[#FFB703]">{phone}</strong> shortly.
+                  </p>
+                  <div className="pt-4">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSubmitted(false);
+                        setName("");
+                        setPhone("");
+                        setEmail("");
+                        setMessage("");
+                      }}
+                      className="rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-6 py-2.5 transition-all"
+                    >
+                      Submit Another Inquiry
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  {error && (
+                    <div className="p-4 bg-rose-950/40 border border-rose-800/60 rounded-xl text-rose-300 text-xs flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-400" />
+                      <span>{error}</span>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                      <label
+                        htmlFor="name"
+                        className="block text-xs font-semibold text-neutral-300 uppercase tracking-wider mb-2 font-mono"
+                      >
+                        Name / Business Name *
+                      </label>
+                      <input
+                        id="name"
+                        type="text"
+                        required
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="e.g. Priyabrata Mohapatra"
+                        className="w-full px-4 py-3 bg-[#18181B] border border-white/10 rounded-xl text-white text-sm placeholder:text-neutral-500 focus:outline-none focus:border-[#FFB703] transition-colors"
+                      />
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="phone"
+                        className="block text-xs font-semibold text-neutral-300 uppercase tracking-wider mb-2 font-mono"
+                      >
+                        10-Digit Mobile Number *
+                      </label>
+                      <input
+                        id="phone"
+                        type="tel"
+                        required
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder="e.g. 9876543210"
+                        className="w-full px-4 py-3 bg-[#18181B] border border-white/10 rounded-xl text-white text-sm placeholder:text-neutral-500 focus:outline-none focus:border-[#FFB703] transition-colors"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                      <label
+                        htmlFor="email"
+                        className="block text-xs font-semibold text-neutral-300 uppercase tracking-wider mb-2 font-mono"
+                      >
+                        Email Address (Optional)
+                      </label>
+                      <input
+                        id="email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="e.g. business@gmail.com"
+                        className="w-full px-4 py-3 bg-[#18181B] border border-white/10 rounded-xl text-white text-sm placeholder:text-neutral-500 focus:outline-none focus:border-[#FFB703] transition-colors"
+                      />
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="category"
+                        className="block text-xs font-semibold text-neutral-300 uppercase tracking-wider mb-2 font-mono"
+                      >
+                        Inquiry Category
+                      </label>
+                      <select
+                        id="category"
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        className="w-full px-4 py-3 bg-[#18181B] border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:border-[#FFB703] transition-colors"
+                      >
+                        <option>Ad Booking (P1–P5)</option>
+                        <option>NFC Smart Business Card</option>
+                        <option>Distribution &amp; Delivery Inquiry</option>
+                        <option>Editorial / Community Announcement</option>
+                        <option>Press / Partnership Inquiry</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="message"
+                      className="block text-xs font-semibold text-neutral-300 uppercase tracking-wider mb-2 font-mono"
+                    >
+                      Message / Campaign Specifications
+                    </label>
+                    <textarea
+                      id="message"
+                      rows={4}
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      placeholder="Tell us about your business, preferred advertising package, or specific requirements..."
+                      className="w-full px-4 py-3 bg-[#18181B] border border-white/10 rounded-xl text-white text-sm placeholder:text-neutral-500 focus:outline-none focus:border-[#FFB703] transition-colors resize-none"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full rounded-full bg-[#FFB703] hover:bg-amber-400 text-black font-bold text-sm sm:text-base py-3.5 transition-all inline-flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
+                  >
+                    {loading ? (
+                      <span>Sending inquiry...</span>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4" />
+                        <span>Dispatch Inquiry to Editorial Desk</span>
+                      </>
+                    )}
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Frequently Asked Questions (FAQ) Section */}
+        <div className="pt-20 border-t border-white/10">
+          <div className="max-w-2xl mb-12">
+            <span className="text-xs uppercase tracking-[0.2em] font-semibold text-[#FFB703] font-mono block mb-3">
+              KNOWLEDGE BASE
+            </span>
+            <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight font-display">
+              Frequently Asked Questions.
+            </h2>
+            <p className="text-sm text-neutral-400 mt-3">
+              Essential answers regarding production deadlines, distribution corridors, and dynamic QR routing.
+            </p>
+          </div>
+
+          <div className="max-w-3xl space-y-4">
+            {faqs.map((faq, idx) => {
+              const isOpen = openFaq === idx;
+              return (
+                <div
+                  key={idx}
+                  className="bg-[#121214] border border-white/10 rounded-2xl overflow-hidden transition-all duration-200 hover:border-white/20"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setOpenFaq(isOpen ? null : idx)}
+                    className="w-full p-6 text-left flex items-center justify-between gap-4 text-base font-bold text-white hover:text-[#FFB703] transition-colors"
+                    aria-expanded={isOpen}
+                  >
+                    <span>{faq.q}</span>
+                    <ChevronDown
+                      className={`w-4 h-4 text-neutral-400 transition-transform duration-200 flex-shrink-0 ${
+                        isOpen ? "rotate-180 text-[#FFB703]" : ""
+                      }`}
+                    />
+                  </button>
+                  {isOpen && (
+                    <div className="px-6 pb-6 text-sm text-neutral-400 leading-relaxed border-t border-white/5 pt-4">
+                      {faq.a}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>

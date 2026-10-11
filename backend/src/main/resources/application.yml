@@ -40,6 +40,14 @@ prachar:
     webhook-secret: ${RAZORPAY_WEBHOOK_SECRET:placeholder_webhook_secret_2026}
     api-url: ${RAZORPAY_API_URL:https://api.razorpay.com/v1}
     simulation-mode: ${RAZORPAY_SIMULATION_MODE:true}
+  outbox:
+    enabled: ${OUTBOX_ENABLED:true}
+    batch-size: ${OUTBOX_BATCH_SIZE:20}
+    fixed-delay-ms: ${OUTBOX_FIXED_DELAY_MS:5000}
+    max-attempts: ${OUTBOX_MAX_ATTEMPTS:5}
+    stale-lock-timeout-seconds: ${OUTBOX_STALE_LOCK_TIMEOUT_SECONDS:300}
+    base-retry-delay-seconds: ${OUTBOX_BASE_RETRY_DELAY_SECONDS:2}
+    max-retry-delay-seconds: ${OUTBOX_MAX_RETRY_DELAY_SECONDS:3600}
 
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

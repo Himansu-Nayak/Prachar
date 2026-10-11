@@ -24,6 +24,15 @@ public class PaymentWebhookEvent extends BaseEntity {
     @Column(name = "status", nullable = false, length = 50)
     private String status = "PROCESSED";
 
+    @Column(name = "failure_reason", columnDefinition = "TEXT")
+    private String failureReason;
+
+    @Column(name = "processed_at")
+    private java.time.Instant processedAt;
+
+    @Column(name = "retry_count", nullable = false)
+    private int retryCount = 0;
+
     public PaymentWebhookEvent() {
     }
 
@@ -33,6 +42,17 @@ public class PaymentWebhookEvent extends BaseEntity {
         this.entityId = entityId;
         this.payload = payload;
         this.status = status;
+    }
+
+    public PaymentWebhookEvent(String eventId, String eventType, String entityId, String payload, String status, String failureReason, java.time.Instant processedAt, int retryCount) {
+        this.eventId = eventId;
+        this.eventType = eventType;
+        this.entityId = entityId;
+        this.payload = payload;
+        this.status = status;
+        this.failureReason = failureReason;
+        this.processedAt = processedAt;
+        this.retryCount = retryCount;
     }
 
     public String getEventId() {
@@ -73,5 +93,29 @@ public class PaymentWebhookEvent extends BaseEntity {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getFailureReason() {
+        return failureReason;
+    }
+
+    public void setFailureReason(String failureReason) {
+        this.failureReason = failureReason;
+    }
+
+    public java.time.Instant getProcessedAt() {
+        return processedAt;
+    }
+
+    public void setProcessedAt(java.time.Instant processedAt) {
+        this.processedAt = processedAt;
+    }
+
+    public int getRetryCount() {
+        return retryCount;
+    }
+
+    public void setRetryCount(int retryCount) {
+        this.retryCount = retryCount;
     }
 }

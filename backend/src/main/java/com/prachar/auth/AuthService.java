@@ -83,7 +83,7 @@ public class AuthService {
         // Invalidate prior refresh tokens and persist hashed new one
         refreshTokenRepository.revokeAllUserTokens(user.getId());
 
-        String hashedRefreshToken = passwordEncoder.encode(rawRefreshToken);
+        String hashedRefreshToken = hashToken(rawRefreshToken);
         Instant expiry = jwtTokenProvider.getRefreshTokenExpiry();
         RefreshToken refreshTokenEntity = new RefreshToken(user, hashedRefreshToken, expiry);
         refreshTokenRepository.save(refreshTokenEntity);
@@ -102,6 +102,22 @@ public class AuthService {
         );
     }
 
+    private String hashToken(String rawToken) {
+        try {
+            java.security.MessageDigest digest = java.security.MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(rawToken.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (java.security.NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 algorithm unavailable", e);
+        }
+    }
+
     @Transactional
     public AuthResponseDto refreshAccessToken(RefreshTokenRequestDto request) {
         String rawToken = request.getRefreshToken();
@@ -109,12 +125,18 @@ public class AuthService {
             throw new IllegalArgumentException("Refresh token is required.");
         }
 
-        // Find active valid refresh token across unrevoked tokens
-        RefreshToken activeToken = refreshTokenRepository.findAll().stream()
+        String tokenHash = hashToken(rawToken.trim());
+        // Primary O(1) indexed lookup via SHA-256
+        RefreshToken activeToken = refreshTokenRepository.findByTokenHash(tokenHash)
                 .filter(rt -> !rt.isRevoked() && rt.getExpiresAt().isAfter(Instant.now()))
-                .filter(rt -> passwordEncoder.matches(rawToken, rt.getTokenHash()))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Invalid or expired refresh token."));
+                .orElseGet(() -> {
+                    // Graceful fallback: check legacy BCrypt hash if active
+                    return refreshTokenRepository.findAll().stream()
+                            .filter(rt -> !rt.isRevoked() && rt.getExpiresAt().isAfter(Instant.now()))
+                            .filter(rt -> passwordEncoder.matches(rawToken, rt.getTokenHash()))
+                            .findFirst()
+                            .orElseThrow(() -> new IllegalArgumentException("Invalid or expired refresh token."));
+                });
 
         User user = activeToken.getUser();
 

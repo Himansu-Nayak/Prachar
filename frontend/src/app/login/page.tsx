@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
 import { requestOtp, verifyOtp } from "@/lib/api";
+import { normalizeIndianPhoneNumber, isValidIndianPhoneNumber } from "@/lib/utils/phone";
 import { CheckCircle2, ShieldCheck, Printer, ArrowRight, Sparkles } from "lucide-react";
 
 export default function LoginPage() {
@@ -23,15 +24,14 @@ export default function LoginPage() {
     setError(null);
     setSuccessMsg(null);
 
-    const cleanPhone = phone.trim();
-    if (!cleanPhone || cleanPhone.length < 10) {
+    if (!isValidIndianPhoneNumber(phone)) {
       setError("Please enter a valid 10-digit Indian mobile number.");
       return;
     }
 
     setLoading(true);
     try {
-      const formatted = cleanPhone.startsWith("+91") ? cleanPhone : `+91${cleanPhone.replace(/^0+/, "")}`;
+      const formatted = normalizeIndianPhoneNumber(phone);
       const res = await requestOtp(formatted);
       if (res.success) {
         setStep("OTP");
@@ -58,7 +58,7 @@ export default function LoginPage() {
 
     setLoading(true);
     try {
-      const formatted = phone.trim().startsWith("+91") ? phone.trim() : `+91${phone.trim().replace(/^0+/, "")}`;
+      const formatted = normalizeIndianPhoneNumber(phone);
       const res = await verifyOtp(formatted, cleanOtp);
       if (res.success && res.data) {
         login(res.data);

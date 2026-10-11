@@ -22,11 +22,14 @@ public class SecurityConfig {
 
     private final CorsConfigurationSource corsConfigurationSource;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
 
     public SecurityConfig(CorsConfigurationSource corsConfigurationSource,
-                          JwtAuthenticationFilter jwtAuthenticationFilter) {
+                          JwtAuthenticationFilter jwtAuthenticationFilter,
+                          com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
         this.corsConfigurationSource = corsConfigurationSource;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.objectMapper = objectMapper;
     }
 
     @Bean
@@ -50,12 +53,34 @@ public class SecurityConfig {
                 .authenticationEntryPoint((request, response, authException) -> {
                     response.setStatus(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
                     response.setContentType(org.springframework.http.MediaType.APPLICATION_JSON_VALUE);
-                    response.getWriter().write("{\"success\":false,\"error\":{\"code\":\"UNAUTHORIZED\",\"message\":\"Full authentication is required to access this resource\"}}");
+                    String correlationId = request.getHeader("X-Correlation-Id");
+                    if (correlationId == null || correlationId.isBlank()) {
+                        correlationId = java.util.UUID.randomUUID().toString();
+                    }
+                    com.prachar.common.ErrorResponse error = new com.prachar.common.ErrorResponse(
+                            "UNAUTHORIZED",
+                            "Full authentication is required to access this resource",
+                            jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED,
+                            request.getRequestURI(),
+                            correlationId
+                    );
+                    objectMapper.writeValue(response.getWriter(), com.prachar.common.ApiResponse.error(error));
                 })
                 .accessDeniedHandler((request, response, accessDeniedException) -> {
                     response.setStatus(jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN);
                     response.setContentType(org.springframework.http.MediaType.APPLICATION_JSON_VALUE);
-                    response.getWriter().write("{\"success\":false,\"error\":{\"code\":\"FORBIDDEN\",\"message\":\"Access is denied for this account.\"}}");
+                    String correlationId = request.getHeader("X-Correlation-Id");
+                    if (correlationId == null || correlationId.isBlank()) {
+                        correlationId = java.util.UUID.randomUUID().toString();
+                    }
+                    com.prachar.common.ErrorResponse error = new com.prachar.common.ErrorResponse(
+                            "FORBIDDEN",
+                            "Access is denied for this account.",
+                            jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN,
+                            request.getRequestURI(),
+                            correlationId
+                    );
+                    objectMapper.writeValue(response.getWriter(), com.prachar.common.ApiResponse.error(error));
                 })
             )
             .authorizeHttpRequests(auth -> auth
