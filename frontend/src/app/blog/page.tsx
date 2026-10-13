@@ -11,10 +11,30 @@ import {
   ChevronRight,
 } from "lucide-react";
 
+import Breadcrumbs from "@/components/seo/Breadcrumbs";
+
 export const metadata: Metadata = {
-  title: "Community Blog & Local Commerce Insights — PRACHAR",
+  title: "Local Commerce Insights & Merchant Case Studies | Blog",
   description:
-    "Practical guides, merchant case studies, and local marketing strategies for retail stores, clinics, and businesses across Bhubaneswar, Odisha.",
+    "Read actionable local commerce strategies, merchant case studies, and print advertising benchmarks for growing retail businesses in Bhubaneswar, Odisha.",
+  alternates: {
+    canonical: "https://prachar.in/blog",
+  },
+  openGraph: {
+    title: "Local Commerce Insights & Merchant Case Studies | Blog",
+    description:
+      "Read actionable local commerce strategies, merchant case studies, and print advertising benchmarks for growing retail businesses in Bhubaneswar, Odisha.",
+    url: "https://prachar.in/blog",
+    type: "website",
+    images: [{ url: "https://prachar.in/og-image.jpg", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Local Commerce Insights & Merchant Case Studies | Blog",
+    description:
+      "Read actionable local commerce strategies, merchant case studies, and print advertising benchmarks for growing retail businesses in Bhubaneswar, Odisha.",
+    images: ["https://prachar.in/og-image.jpg"],
+  },
 };
 
 export default function BlogPage() {
@@ -83,6 +103,9 @@ export default function BlogPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-12 lg:py-20">
+      {/* Breadcrumb Navigation */}
+      <Breadcrumbs items={[{ label: "Community Blog", href: "/blog" }]} className="mb-8" />
+
       {/* Header */}
       <div className="text-center max-w-2xl mx-auto mb-16">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-orange-500/30 bg-orange-950/40 text-xs font-semibold text-orange-400 mb-4">

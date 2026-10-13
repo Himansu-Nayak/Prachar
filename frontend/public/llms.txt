@@ -1,0 +1,52 @@
+# PRACHAR — Phygital Publicity Platform
+
+> High-circulation physical commercial advertising booklets and tactile NFC smart cards integrated with verified digital identity infrastructure in Bhubaneswar, Odisha.
+
+## Organization & Legal Identity
+- **Entity Name:** PRACHAR
+- **Publishing Unit:** Saroswati Khabar
+- **PRGI Registration Number:** ORORI/25/A3295
+- **MSME Udyam Registration:** UDYAM-OD-04-0039313
+- **Headquarters:** BJB Nagar, Bhubaneswar, Odisha — 751014, India
+- **Hotline Phone:** +91 70770 11733, +91 91788 98844
+- **WhatsApp Desk:** +91 70770 11733
+- **Official Email:** pracharbbsr1@gmail.com
+- **Operating Hours:** Monday – Saturday: 9:30 AM – 7:30 PM IST (Digital Intake: 24/7)
+- **Primary Website:** https://prachar.in
+
+## Core Value Proposition
+PRACHAR addresses local advertising fatigue by combining physical, high-circulation doorstep booklets with verified digital technology:
+1. **50,000+ Doorstep Print Copies:** Distributed free door-to-door across 8 major commercial and residential sectors in Bhubaneswar on the 1st of every month.
+2. **Offset Printing Operations:** Engineered at Chandan Printers, Unit-3, Bhubaneswar.
+3. **Monthly Submission Cutoff:** 18th of every month at 18:00 IST for copy, creative artwork proof, and slot reservations.
+4. **Tactile NFC Smart Business Cards:** ISO/IEC 14443 Type A contactless cards with zero battery requirements.
+5. **Dynamic QR & Edge Telemetry:** Every printed advertisement includes a permanent edge redirect QR code (`/qr/:uuid`) routing to a verified public micro-profile (`/u/:username`) featuring 1-tap WhatsApp chat, instant phone calling, and RFC 6350 vCard contact download.
+
+## Advertising Tiers (P1–P5)
+- **P1 (Mini-Quarter Page, B&W):** ₹550 single edition / ₹1,500 quarterly (Save ₹150)
+- **P2 (Quarter Page, B&W):** ₹1,030 single edition / ₹3,000 quarterly (Save ₹90)
+- **P3 (Half Page, B&W):** ₹2,050 single edition / ₹6,000 quarterly (Save ₹150)
+- **P4 (Directory Spot, Full Color):** ₹3,100 single edition / ₹9,000 quarterly (Save ₹300)
+- **P5 (Cover Showcase, Premium Color):** ₹5,500 single edition / ₹16,000 quarterly (Save ₹500)
+
+## Distribution Corridors in Bhubaneswar
+- Saheed Nagar & Janpath Commercial Strip
+- Patia & Infocity IT Corridor
+- Master Canteen & Station Square
+- Jayadev Vihar & Mayfair Commercial Belt
+- Nayapalli & VIP Road
+- Khandagiri & Baramunda Hub
+- BJB Nagar & Lewis Road
+- Chandrasekharpur & Damana Square
+
+## Key Page Links
+- **Home:** https://prachar.in/
+- **Rate Card & Advertising Reservation:** https://prachar.in/advertise
+- **Commercial Categories & Services:** https://prachar.in/services
+- **Product Architecture & NFC Cards:** https://prachar.in/product
+- **About Us & Publishing Accreditation:** https://prachar.in/about
+- **Communication & Booking Desk:** https://prachar.in/contact
+- **Insights & Case Studies Blog:** https://prachar.in/blog
+- **Interactive Sandbox & NFC Demo:** https://prachar.in/demo
+- **Merchant Registration:** https://prachar.in/register
+- **Merchant Login:** https://prachar.in/login

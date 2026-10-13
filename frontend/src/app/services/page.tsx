@@ -16,10 +16,31 @@ import {
   MessageCircle,
 } from "lucide-react";
 
+import Breadcrumbs from "@/components/seo/Breadcrumbs";
+import { ServiceJsonLd } from "@/components/seo/JsonLd";
+
 export const metadata: Metadata = {
-  title: "Publicity Services — Monthly Print & Digital Categories | PRACHAR",
+  title: "Publicity Services — Monthly Print & Digital Categories",
   description:
-    "Explore PRACHAR's commercial publicity solutions for Bhubaneswar: retail promotions, clinic announcements, coaching centers, festive greetings, and milestone celebrations across 50,000+ monthly doorstep copies.",
+    "Explore commercial advertising categories across Bhubaneswar: retail stores, clinics, education academies, festive greetings, and milestone announcements.",
+  alternates: {
+    canonical: "https://prachar.in/services",
+  },
+  openGraph: {
+    title: "Publicity Services — Monthly Print & Digital Categories",
+    description:
+      "Explore commercial advertising categories across Bhubaneswar: retail stores, clinics, education academies, festive greetings, and milestone announcements.",
+    url: "https://prachar.in/services",
+    type: "website",
+    images: [{ url: "https://prachar.in/og-image.jpg", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Publicity Services — Monthly Print & Digital Categories",
+    description:
+      "Explore commercial advertising categories across Bhubaneswar: retail stores, clinics, education academies, festive greetings, and milestone announcements.",
+    images: ["https://prachar.in/og-image.jpg"],
+  },
 };
 
 export default function ServicesPage() {
@@ -100,7 +121,17 @@ export default function ServicesPage() {
 
   return (
     <div className="min-h-screen bg-[#0A0A0E] text-[#EDEDED] py-16 sm:py-24">
+      {/* Schema.org Service Structured Data */}
+      <ServiceJsonLd
+        name="PRACHAR Commercial Publicity Services"
+        description="High-circulation print advertising booklets and smart NFC business identity across Bhubaneswar"
+        serviceType="Commercial Physical and Digital Advertising"
+      />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
+        {/* Breadcrumb Navigation */}
+        <Breadcrumbs items={[{ label: "Publicity Services", href: "/services" }]} className="mb-8" />
+
         {/* Header Section */}
         <div className="max-w-3xl mb-16 sm:mb-20">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-neutral-300 text-xs font-mono mb-6">

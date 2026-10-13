@@ -12,10 +12,31 @@ import {
   Sliders,
 } from "lucide-react";
 
+import Breadcrumbs from "@/components/seo/Breadcrumbs";
+import { ServiceJsonLd } from "@/components/seo/JsonLd";
+
 export const metadata: Metadata = {
-  title: "Product Architecture — Phygital Smart Identity Ecosystem | PRACHAR",
+  title: "Product Architecture — Phygital NFC & Dynamic QR Hub",
   description:
-    "Explore the complete PRACHAR phygital stack: contactless NFC smart cards, dynamic QR edge redirect engine, and verified digital micro-profiles for Bhubaneswar businesses.",
+    "Discover the PRACHAR ecosystem: ISO/IEC contactless NFC smart cards, dynamic QR edge redirect telemetry, and verified digital micro-profiles for merchants.",
+  alternates: {
+    canonical: "https://prachar.in/product",
+  },
+  openGraph: {
+    title: "Product Architecture — Phygital NFC & Dynamic QR Hub",
+    description:
+      "Discover the PRACHAR ecosystem: ISO/IEC contactless NFC smart cards, dynamic QR edge redirect telemetry, and verified digital micro-profiles for merchants.",
+    url: "https://prachar.in/product",
+    type: "website",
+    images: [{ url: "https://prachar.in/og-image.jpg", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Product Architecture — Phygital NFC & Dynamic QR Hub",
+    description:
+      "Discover the PRACHAR ecosystem: ISO/IEC contactless NFC smart cards, dynamic QR edge redirect telemetry, and verified digital micro-profiles for merchants.",
+    images: ["https://prachar.in/og-image.jpg"],
+  },
 };
 
 export default function ProductPage() {
@@ -54,7 +75,17 @@ export default function ProductPage() {
 
   return (
     <div className="min-h-screen bg-[#0A0A0E] text-[#EDEDED] py-16 sm:py-24">
+      {/* Schema.org Service Structured Data */}
+      <ServiceJsonLd
+        name="PRACHAR Phygital Smart Cards and QR Telemetry"
+        description="Contactless ISO/IEC 14443 NFC smart cards and dynamic QR edge redirects for verified digital profiles."
+        serviceType="Smart Identity Hardware and Cloud Telemetry"
+      />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
+        {/* Breadcrumb Navigation */}
+        <Breadcrumbs items={[{ label: "Product Architecture", href: "/product" }]} className="mb-8" />
+
         {/* Product Hero */}
         <div className="max-w-3xl mb-16 sm:mb-20">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-neutral-300 text-xs font-mono mb-6">

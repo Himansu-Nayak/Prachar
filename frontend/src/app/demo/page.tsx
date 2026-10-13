@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useCardTilt } from "@/lib/motion";
 import ReticleBox from "@/components/ui/ReticleBox";
+import Breadcrumbs from "@/components/seo/Breadcrumbs";
 
 interface DemoPreset {
   id: string;
@@ -112,6 +113,9 @@ export default function DemoPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14 lg:py-20 text-[#FFF3EA]">
+      {/* Breadcrumb Navigation */}
+      <Breadcrumbs items={[{ label: "Interactive Sandbox", href: "/demo" }]} className="mb-8" />
+
       {/* Editorial Header */}
       <div className="text-center max-w-3xl mx-auto mb-14">
         <span className="reticle-badge mb-4">

@@ -344,7 +344,7 @@ export default function OnboardingPage() {
                 <input
                   type="email"
                   className="form-input"
-                  placeholder="you@example.com"
+                  placeholder="name@company.in"
                   value={form.email}
                   onChange={(e) => updateField("email", e.target.value)}
                 />
@@ -353,7 +353,7 @@ export default function OnboardingPage() {
                 Website URL
                 <input
                   className="form-input"
-                  placeholder="https://yourwebsite.com"
+                  placeholder="https://yourbrand.in"
                   value={form.websiteUrl}
                   onChange={(e) => updateField("websiteUrl", e.target.value)}
                 />

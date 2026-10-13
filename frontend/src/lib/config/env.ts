@@ -12,7 +12,7 @@ const RAW_RAZORPAY_KEY = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
 
 export const ENV = {
   API_BASE_URL: (RAW_API_BASE_URL || "http://localhost:8080").replace(/\/+$/, ""),
-  APP_URL: (RAW_APP_URL || "http://localhost:3000").replace(/\/+$/, ""),
+  APP_URL: (RAW_APP_URL || "https://prachar.in").replace(/\/+$/, ""),
   APP_NAME: RAW_APP_NAME || "PRACHAR",
   RAZORPAY_KEY_ID: RAW_RAZORPAY_KEY || "rzp_test_placeholder_key",
   IS_PRODUCTION: process.env.NODE_ENV === "production",

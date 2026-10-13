@@ -10,6 +10,7 @@ import InteractiveCardSandbox from "@/components/home/InteractiveCardSandbox";
 import HowItWorksSection from "@/components/home/HowItWorksSection";
 import TrustSection from "@/components/home/TrustSection";
 import EditorialStandardSection from "@/components/home/EditorialStandardSection";
+import { HomeJsonLd } from "@/components/seo/JsonLd";
 import { fetchHealth } from "@/lib/api";
 import {
   ArrowRight,
@@ -35,6 +36,9 @@ export default async function HomePage() {
 
   return (
     <div className="flex flex-col items-center overflow-x-hidden bg-[#0A0A0A] text-[#EDEDED]">
+      {/* Schema.org Organization, WebSite & LocalBusiness Structured Data */}
+      <HomeJsonLd />
+
       {/* 01. TYPOGRAPHY-FIRST EDITORIAL HERO (Brand Appart Monumental Typography + Partner Marquee) */}
       <MasterCinematicHero />
 

@@ -16,6 +16,8 @@ import {
   ShieldCheck,
   Building2,
 } from "lucide-react";
+import Breadcrumbs from "@/components/seo/Breadcrumbs";
+import { FaqJsonLd } from "@/components/seo/JsonLd";
 
 export default function ContactPage() {
   const [name, setName] = useState("");
@@ -78,7 +80,13 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-[#EDEDED] py-16 sm:py-24">
+      {/* Schema.org FAQPage Structured Data */}
+      <FaqJsonLd faqs={faqs} />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
+        {/* Breadcrumb Navigation */}
+        <Breadcrumbs items={[{ label: "Contact Us", href: "/contact" }]} className="mb-8" />
+
         {/* Header Title Section */}
         <div className="max-w-3xl mb-16 sm:mb-20">
           <span className="text-xs uppercase tracking-[0.2em] font-semibold text-[#FFB703] font-mono block mb-4">

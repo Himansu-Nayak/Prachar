@@ -1,0 +1,16 @@
+# https://prachar.in robots.txt
+User-agent: *
+Allow: /
+
+# Disallow authenticated, administrative, and private dashboard corridors
+Disallow: /admin
+Disallow: /admin/
+Disallow: /dashboard
+Disallow: /dashboard/
+Disallow: /onboarding
+Disallow: /onboarding/
+Disallow: /api/
+
+# Host & Sitemap specification
+Host: https://prachar.in
+Sitemap: https://prachar.in/sitemap.xml

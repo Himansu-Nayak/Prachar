@@ -20,6 +20,8 @@ import {
 } from "@/lib/api";
 import EditionCutoffBanner from "@/features/advertising/components/EditionCutoffBanner";
 import { UploadCloud, FileText, X, ArrowRight, CheckCircle2, Clock, ShieldCheck } from "lucide-react";
+import Breadcrumbs from "@/components/seo/Breadcrumbs";
+import { ServiceJsonLd } from "@/components/seo/JsonLd";
 
 const FALLBACK_PACKAGES: AdvertisementPackage[] = [
   {
@@ -245,7 +247,24 @@ export default function AdvertisePage() {
 
   return (
     <div className="min-h-screen bg-[#0A0A0C] text-[#EDEDED] py-16 sm:py-24">
+      {/* Schema.org Service Structured Data for P1-P5 Advertising */}
+      <ServiceJsonLd
+        name="PRACHAR Print Directory & Rate Matrix (P1–P5)"
+        description="High-circulation print booklet advertising across 50,000+ doorsteps in Bhubaneswar with dynamic QR telemetry."
+        serviceType="Print and Phygital Advertising"
+        offers={[
+          { name: "P1 Mini-Quarter (B&W)", price: "550", priceCurrency: "INR" },
+          { name: "P2 Quarter Page (B&W)", price: "1030", priceCurrency: "INR" },
+          { name: "P3 Half Page (B&W)", price: "2050", priceCurrency: "INR" },
+          { name: "P4 Directory Spot (Color)", price: "3100", priceCurrency: "INR" },
+          { name: "P5 Cover Showcase (Color)", price: "5500", priceCurrency: "INR" },
+        ]}
+      />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
+        {/* Breadcrumb Navigation */}
+        <Breadcrumbs items={[{ label: "Advertising Rate Card", href: "/advertise" }]} className="mb-6" />
+
         {/* Editorial Cutoff & Dispatch Schedule Banner */}
         <EditionCutoffBanner cutoff={cutoff} className="mb-12 shadow-xl" />
 

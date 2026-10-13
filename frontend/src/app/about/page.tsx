@@ -12,10 +12,30 @@ import {
   Sparkles,
 } from "lucide-react";
 
+import Breadcrumbs from "@/components/seo/Breadcrumbs";
+
 export const metadata: Metadata = {
-  title: "About Us — Editorial Heritage & Publishing Credentials | PRACHAR",
+  title: "About PRACHAR — Editorial Heritage & Publishing Press",
   description:
-    "Discover the story of PRACHAR, a registered unit of Saroswati Khabar. Learn about our PRGI registration, leadership team, printing press at Unit-3, and our free door-to-door distribution mission across Bhubaneswar.",
+    "Explore the story of PRACHAR, a unit of Saroswati Khabar. Discover our PRGI registration, leadership team, Chandan Printers press, and Odisha mission.",
+  alternates: {
+    canonical: "https://prachar.in/about",
+  },
+  openGraph: {
+    title: "About PRACHAR — Editorial Heritage & Publishing Press",
+    description:
+      "Explore the story of PRACHAR, a unit of Saroswati Khabar. Discover our PRGI registration, leadership team, Chandan Printers press, and Odisha mission.",
+    url: "https://prachar.in/about",
+    type: "website",
+    images: [{ url: "https://prachar.in/og-image.jpg", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About PRACHAR — Editorial Heritage & Publishing Press",
+    description:
+      "Explore the story of PRACHAR, a unit of Saroswati Khabar. Discover our PRGI registration, leadership team, Chandan Printers press, and Odisha mission.",
+    images: ["https://prachar.in/og-image.jpg"],
+  },
 };
 
 export default function AboutPage() {
@@ -43,6 +63,9 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-[#EDEDED] py-16 sm:py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
+        {/* Breadcrumb Navigation */}
+        <Breadcrumbs items={[{ label: "About Us", href: "/about" }]} className="mb-8" />
+
         {/* Header Title */}
         <div className="max-w-3xl mb-16 sm:mb-20">
           <span className="text-xs uppercase tracking-[0.2em] font-semibold text-[#FFB703] font-mono block mb-4">

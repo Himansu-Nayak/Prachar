@@ -1,6 +1,10 @@
 {
   "name": "prachar-frontend",
   "version": "1.0.0",
+  "description": "PRACHAR — Phygital Commercial Publicity Platform & Contactless NFC Identity Ecosystem | Bhubaneswar, Odisha",
+  "author": "PRACHAR / Saroswati Khabar <pracharbbsr1@gmail.com>",
+  "homepage": "https://prachar.in",
+  "license": "UNLICENSED",
   "private": true,
   "scripts": {
     "dev": "next dev",

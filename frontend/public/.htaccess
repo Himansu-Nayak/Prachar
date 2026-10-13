@@ -1,0 +1,90 @@
+# ==============================================================================
+# PRACHAR PLATFORM — HOSTINGER PRODUCTION .HTACCESS (Apache / LiteSpeed)
+# Domain: https://prachar.in
+# ==============================================================================
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # 1. Enforce HTTPS & Canonical Apex Domain (https://prachar.in)
+  RewriteCond %{HTTPS} off [OR]
+  RewriteCond %{HTTP_HOST} ^www\.prachar\.in$ [NC]
+  RewriteRule ^(.*)$ https://prachar.in/$1 [L,R=301]
+
+  # 2. Redirect legacy / alternate slugs to clean routes
+  RewriteRule ^rate-card/?$ /advertise [R=301,L]
+  RewriteRule ^pricing/?$ /advertise [R=301,L]
+  RewriteRule ^plans/?$ /advertise [R=301,L]
+  RewriteRule ^faq/?$ /contact [R=301,L]
+  RewriteRule ^help/?$ /contact [R=301,L]
+
+  # 3. Prevent trailing slashes on clean file/route requests
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} (.+)/$
+  RewriteRule ^ %1 [R=301,L]
+
+  # 4. Protect hidden files and sensitive configuration
+  RewriteRule ^\.(?!well-known) - [F]
+</IfModule>
+
+# ==============================================================================
+# SECURITY HEADERS
+# ==============================================================================
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  Header always set X-XSS-Protection "1; mode=block"
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" env=HTTPS
+</IfModule>
+
+# ==============================================================================
+# COMPRESSION (mod_deflate / mod_brotli)
+# ==============================================================================
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html
+  AddOutputFilterByType DEFLATE text/css
+  AddOutputFilterByType DEFLATE text/javascript
+  AddOutputFilterByType DEFLATE text/plain
+  AddOutputFilterByType DEFLATE text/xml
+  AddOutputFilterByType DEFLATE application/javascript
+  AddOutputFilterByType DEFLATE application/x-javascript
+  AddOutputFilterByType DEFLATE application/json
+  AddOutputFilterByType DEFLATE application/xml
+  AddOutputFilterByType DEFLATE application/xhtml+xml
+  AddOutputFilterByType DEFLATE application/rss+xml
+  AddOutputFilterByType DEFLATE application/atom+xml
+  AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# ==============================================================================
+# BROWSER CACHING (mod_expires / mod_headers)
+# ==============================================================================
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault "access plus 1 month"
+
+  # HTML & Manifest (revalidate)
+  ExpiresByType text/html "access plus 0 seconds"
+  ExpiresByType application/manifest+json "access plus 1 week"
+
+  # Static Next.js Bundles, CSS & JS (1 year immutable)
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType text/javascript "access plus 1 year"
+
+  # Images, Media & Fonts
+  ExpiresByType image/avif "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType image/x-icon "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType font/woff "access plus 1 year"
+</IfModule>
+
+# Custom 404 Error Handler
+ErrorDocument 404 /_not-found
