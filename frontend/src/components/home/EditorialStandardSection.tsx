@@ -56,7 +56,7 @@ export default function EditorialStandardSection() {
             </span>
             <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.04] font-display">
               The design language <br />
-              <span className="text-neutral-500">of premium publicity</span>
+              <span className="text-neutral-400">of premium publicity</span>
             </h2>
           </div>
 

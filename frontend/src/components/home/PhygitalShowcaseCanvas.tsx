@@ -192,20 +192,20 @@ export default function PhygitalShowcaseCanvas() {
                             <span className="text-[11px] font-semibold text-neutral-800 block">
                               +91 94370 12890
                             </span>
-                            <span className="text-[10px] text-neutral-500 font-mono">
+                            <span className="text-[10px] text-neutral-700 font-mono">
                               prachar.in/u/purisweets
                             </span>
                           </div>
                         </div>
 
                         <div className="text-right">
-                          <span className="text-[9px] font-mono text-neutral-500 uppercase block">Corridor</span>
+                          <span className="text-[9px] font-mono text-neutral-700 uppercase block">Corridor</span>
                           <span className="text-xs font-bold text-black font-mono">Unit-1 &amp; Master Canteen</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="pt-3 flex items-center justify-between text-[10px] font-mono text-neutral-600">
+                    <div className="pt-3 flex items-center justify-between text-[10px] font-mono text-neutral-700">
                       <span>PAGE 14</span>
                       <span>PRACHAR BHUBANESWAR DISPATCH</span>
                     </div>
@@ -412,7 +412,7 @@ export default function PhygitalShowcaseCanvas() {
                             Verified Member
                           </span>
                         </div>
-                        <p className="text-[11px] font-mono text-neutral-500 mt-1">
+                        <p className="text-[11px] font-mono text-neutral-400 mt-1">
                           NFC Phygital Business Identity
                         </p>
                       </div>
@@ -450,7 +450,7 @@ export default function PhygitalShowcaseCanvas() {
 
                       <div className="text-[10px] font-mono text-neutral-400 space-y-1 relative z-10 pt-4">
                         <p>This card connects instantly to your verified Prachar public micro-profile.</p>
-                        <p className="text-neutral-500">
+                        <p className="text-neutral-400">
                           Complies with ISO/IEC 14443 Type A • NFC Forum Type 2 Tag • Odia Media Network
                         </p>
                       </div>

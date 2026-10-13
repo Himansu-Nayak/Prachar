@@ -11,16 +11,16 @@ export default function ProblemSection() {
         {/* Section Header */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-16 lg:mb-24 gap-8">
           <div className="max-w-2xl">
-            <span className="text-xs uppercase tracking-[0.2em] font-semibold text-neutral-500 block mb-3 font-mono">
+            <span className="text-xs uppercase tracking-[0.2em] font-semibold text-neutral-700 block mb-3 font-mono">
               The Market Reality
             </span>
             <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-[#121212] tracking-tight leading-[1.04] font-display">
               Digital noise drowns. <br />
-              <span className="text-neutral-500">Physical presence endures.</span>
+              <span className="text-neutral-600">Physical presence endures.</span>
             </h2>
           </div>
 
-          <div className="max-w-md text-sm sm:text-base text-neutral-600 leading-relaxed font-normal">
+          <div className="max-w-md text-sm sm:text-base text-neutral-700 leading-relaxed font-normal">
             Local businesses in Bhubaneswar spend tens of thousands on social media ads that disappear in 1.2 seconds. PRACHAR restores tangible commercial permanence where real buying decisions happen — in living rooms and on business desks.
           </div>
         </div>
@@ -39,41 +39,41 @@ export default function ProblemSection() {
                     The Digital-Only Trap
                   </span>
                 </div>
-                <span className="text-xs font-mono text-neutral-500">1.2s Attention</span>
+                <span className="text-xs font-mono text-neutral-700">1.2s Attention</span>
               </div>
 
               <div className="mt-8 space-y-8">
                 <div className="flex items-start gap-5">
-                  <span className="text-xs font-mono text-neutral-400 font-bold mt-1">01</span>
+                  <span className="text-xs font-mono text-neutral-700 font-bold mt-1">01</span>
                   <div>
                     <h3 className="text-base sm:text-lg font-bold text-neutral-900 font-display">
                       Instant Feed Scroll &amp; Ad Fatigue
                     </h3>
-                    <p className="text-sm text-neutral-600 mt-1.5 leading-relaxed">
+                    <p className="text-sm text-neutral-700 mt-1.5 leading-relaxed">
                       Social feeds refresh every second. Customers scroll past sponsored posts without registering your brand, while browser adblockers hide display banners entirely.
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-5">
-                  <span className="text-xs font-mono text-neutral-400 font-bold mt-1">02</span>
+                  <span className="text-xs font-mono text-neutral-700 font-bold mt-1">02</span>
                   <div>
                     <h3 className="text-base sm:text-lg font-bold text-neutral-900 font-display">
                       Algorithmic Rent-Seeking
                     </h3>
-                    <p className="text-sm text-neutral-600 mt-1.5 leading-relaxed">
+                    <p className="text-sm text-neutral-700 mt-1.5 leading-relaxed">
                       The day you stop paying daily pay-per-click charges, your brand visibility drops to zero. You never own the audience or the distribution channel.
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-5">
-                  <span className="text-xs font-mono text-neutral-400 font-bold mt-1">03</span>
+                  <span className="text-xs font-mono text-neutral-700 font-bold mt-1">03</span>
                   <div>
                     <h3 className="text-base sm:text-lg font-bold text-neutral-900 font-display">
                       Anonymous Local Credibility
                     </h3>
-                    <p className="text-sm text-neutral-600 mt-1.5 leading-relaxed">
+                    <p className="text-sm text-neutral-700 mt-1.5 leading-relaxed">
                       Sponsored feeds feel distant and unverified. Residents in Bhubaneswar trust neighborhood recommendations that they can inspect and touch in their hands.
                     </p>
                   </div>
@@ -81,7 +81,7 @@ export default function ProblemSection() {
               </div>
             </div>
 
-            <div className="mt-10 pt-6 border-t border-neutral-100 flex items-center justify-between text-xs font-mono text-neutral-500">
+            <div className="mt-10 pt-6 border-t border-neutral-100 flex items-center justify-between text-xs font-mono text-neutral-700">
               <span>Audience Retention</span>
               <span className="text-rose-600 font-bold">Ephemeral (0–2 seconds)</span>
             </div>

@@ -46,7 +46,7 @@ export default function TrustSection() {
             </span>
             <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.04] font-display">
               Built on verified proof. <br />
-              <span className="text-neutral-500">Not algorithms.</span>
+              <span className="text-neutral-400">Not algorithms.</span>
             </h2>
           </div>
 
@@ -133,7 +133,7 @@ export default function TrustSection() {
                   </div>
                 </div>
 
-                <div className="mt-8 pt-4 border-t border-white/5 text-[11px] font-mono text-neutral-500">
+                <div className="mt-8 pt-4 border-t border-white/5 text-[11px] font-mono text-neutral-400">
                   Saroswati Khabar • Bhubaneswar Jurisdiction
                 </div>
               </div>

@@ -2,7 +2,8 @@ import Link from "next/link";
 import MasterCinematicHero from "@/components/hero/MasterCinematicHero";
 import PhygitalShowcaseCanvas from "@/components/home/PhygitalShowcaseCanvas";
 import ProblemSection from "@/components/home/ProblemSection";
-import FeaturedPillarsSection from "@/components/home/FeaturedPillarsSection";
+import FeaturedWorkMosaique from "@/components/home/FeaturedWorkMosaique";
+import StackedServicesSection from "@/components/home/StackedServicesSection";
 import PhygitalJourney from "@/components/home/PhygitalJourney";
 import AdvertisingShowcase from "@/components/home/AdvertisingShowcase";
 import InteractiveCardSandbox from "@/components/home/InteractiveCardSandbox";
@@ -34,7 +35,7 @@ export default async function HomePage() {
 
   return (
     <div className="flex flex-col items-center overflow-x-hidden bg-[#0A0A0A] text-[#EDEDED]">
-      {/* 01. TYPOGRAPHY-FIRST EDITORIAL HERO (Brand Appart Monumental Typography) */}
+      {/* 01. TYPOGRAPHY-FIRST EDITORIAL HERO (Brand Appart Monumental Typography + Partner Marquee) */}
       <MasterCinematicHero />
 
       {/* 02. COLOSSAL ROUNDED SHOWCASE CANVAS (Brand Appart Section 2 Hallmark) */}
@@ -43,8 +44,11 @@ export default async function HomePage() {
       {/* 03. EDITORIAL MARKET REALITY & PROBLEM (Warm Light Ivory Contrast) */}
       <ProblemSection />
 
-      {/* 04. FEATURED PHYGITAL EXPERIENCE & 4 CASE STUDY PILLARS (Brand Appart Structure) */}
-      <FeaturedPillarsSection />
+      {/* 04. BRANDAPPART-STYLE FEATURED WORK MOSAIQUE (Authentic Local Case Studies & Testimonials) */}
+      <FeaturedWorkMosaique />
+
+      {/* 05. NUMBERED STACKED SERVICES (Brand Appart "What we ship" Architecture) */}
+      <StackedServicesSection />
 
       {/* 05. BHUBANESWAR HYPER-LOCAL DISTRIBUTION NETWORK */}
       <section id="corridors" className="relative w-full py-24 sm:py-32 lg:py-40 bg-[#0E0E10] px-4 sm:px-8 border-b border-white/10">
@@ -82,7 +86,7 @@ export default async function HomePage() {
                       {hub.name}
                     </h3>
                     <p className="text-xs text-neutral-400 font-sans mt-0.5">{hub.type}</p>
-                    <span className="inline-block font-mono text-[11px] text-neutral-500 mt-1">
+                    <span className="inline-block font-mono text-[11px] text-neutral-400 mt-1">
                       {hub.coordinates}
                     </span>
                   </div>
@@ -177,7 +181,7 @@ export default async function HomePage() {
 
       {/* 11. CLEAN SYSTEM HEALTH STRIP (PRESERVES API HEALTH CHECK CONTRACT) */}
       <div className="w-full border-t border-white/5 bg-[#0A0A0A] py-3.5 px-4 sm:px-8">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-neutral-500 font-mono">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-neutral-400 font-mono">
           <div className="flex items-center gap-3">
             <span>PRACHAR PHYGITAL SYSTEM</span>
             <span className="text-neutral-700">•</span>

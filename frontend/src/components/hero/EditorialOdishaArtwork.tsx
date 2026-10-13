@@ -259,8 +259,8 @@ export default function EditorialOdishaArtwork({
             <span className="text-neutral-300">50,000+ Print Circulation Hub</span>
           </div>
 
-          <div className="flex items-center gap-2 font-mono text-[11px] text-neutral-500">
-            <span className="text-neutral-400">20.2961° N, 85.8245° E</span>
+          <div className="flex items-center gap-2 font-mono text-[11px] text-neutral-400">
+            <span className="text-neutral-300">20.2961° N, 85.8245° E</span>
             <span>•</span>
             <span className="text-[#FFB703] font-medium">8 Prime Corridors</span>
           </div>

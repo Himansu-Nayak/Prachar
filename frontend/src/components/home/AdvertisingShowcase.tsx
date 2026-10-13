@@ -207,7 +207,7 @@ export default function AdvertisingShowcase() {
             </span>
             <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.04] font-display">
               Advertising <br />
-              <span className="text-neutral-500">rate matrix (P1–P5)</span>
+              <span className="text-neutral-400">rate matrix (P1–P5)</span>
             </h2>
           </div>
 
@@ -268,7 +268,7 @@ export default function AdvertisingShowcase() {
                 </span>
                 <span className="text-sm text-neutral-400">/ single month edition</span>
               </div>
-              <p className="text-xs text-neutral-500 font-mono mt-1">
+              <p className="text-xs text-neutral-400 font-mono mt-1">
                 Quarterly (3 editions): <strong className="text-neutral-300">{selectedTier.threePrice}</strong> • {selectedTier.savings}
               </p>
             </div>
@@ -372,14 +372,14 @@ export default function AdvertisingShowcase() {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-neutral-500">
+                <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-neutral-400">
                   <span>{selectedTier.printCreative.registrationToken}</span>
                   <span className="text-[#FFB703]">Verified Slot</span>
                 </div>
               </div>
             </div>
 
-            <div className="mt-4 text-center text-xs text-neutral-500 font-mono">
+            <div className="mt-4 text-center text-xs text-neutral-400 font-mono">
               Next print cutoff: 18th of this month at 18:00 IST
             </div>
           </div>

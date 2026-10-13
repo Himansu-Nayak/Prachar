@@ -117,7 +117,7 @@ export default function InteractiveCardSandbox() {
             </span>
             <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.04] font-display">
               Tactile Smart Card <br />
-              <span className="text-neutral-500">interactive sandbox</span>
+              <span className="text-neutral-400">interactive sandbox</span>
             </h2>
           </div>
 
@@ -128,7 +128,7 @@ export default function InteractiveCardSandbox() {
 
         {/* Merchant Switcher Pills */}
         <div className="flex items-center gap-3 pb-8 mb-10 border-b border-white/10 overflow-x-auto scrollbar-none">
-          <span className="text-xs uppercase tracking-wider font-mono text-neutral-500 mr-2 flex-shrink-0">
+          <span className="text-xs uppercase tracking-wider font-mono text-neutral-400 mr-2 flex-shrink-0">
             Sample Profile:
           </span>
           {MERCHANTS.map((m) => (
@@ -146,7 +146,9 @@ export default function InteractiveCardSandbox() {
               }`}
             >
               <span>{m.name}</span>
-              <span className="text-[11px] opacity-60">({m.category.split(" ")[0]})</span>
+              <span className={selectedMerchant.id === m.id ? "text-neutral-600 text-[11px]" : "text-neutral-300 text-[11px]"}>
+                ({m.category.split(" ")[0]})
+              </span>
             </button>
           ))}
         </div>
@@ -219,9 +221,9 @@ export default function InteractiveCardSandbox() {
 
                   {/* Middle: Brand Header */}
                   <div className="relative z-10">
-                    <h4 className="text-xl font-bold text-white font-display tracking-tight">
+                    <h3 className="text-xl font-bold text-white font-display tracking-tight">
                       {selectedMerchant.name}
-                    </h4>
+                    </h3>
                     <p className="text-xs text-[#FFB703] font-serif mt-0.5">{selectedMerchant.odiaName}</p>
                     <p className="text-xs text-neutral-400 font-mono mt-1">{selectedMerchant.category}</p>
                   </div>
@@ -335,7 +337,7 @@ export default function InteractiveCardSandbox() {
                     {selectedMerchant.avatarText}
                   </div>
                   <div>
-                    <h5 className="font-bold text-white text-lg font-display">{selectedMerchant.name}</h5>
+                    <h3 className="font-bold text-white text-lg font-display">{selectedMerchant.name}</h3>
                     <p className="text-xs text-neutral-400 font-mono">prachar.in/u/{selectedMerchant.id}</p>
                   </div>
                 </div>

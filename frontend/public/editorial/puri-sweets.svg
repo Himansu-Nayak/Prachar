@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <defs>
+    <linearGradient id="psBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#14110E"/>
+      <stop offset="50%" stop-color="#0E0C09"/>
+      <stop offset="100%" stop-color="#070605"/>
+    </linearGradient>
+    <linearGradient id="psCard" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#241E17" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#18130E" stop-opacity="0.98"/>
+    </linearGradient>
+    <linearGradient id="saffronGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFB703"/>
+      <stop offset="50%" stop-color="#FB8500"/>
+      <stop offset="100%" stop-color="#D4A373"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="800" height="600" fill="url(#psBg)"/>
+
+  <!-- Ambient Golden Glow -->
+  <circle cx="400" cy="300" r="280" fill="#FFB703" opacity="0.06" filter="blur(60px)"/>
+
+  <!-- Corner Crop Marks -->
+  <path d="M 32 48 L 32 32 L 48 32" fill="none" stroke="rgba(255,183,3,0.3)" stroke-width="1.5"/>
+  <path d="M 768 48 L 768 32 L 752 32" fill="none" stroke="rgba(255,183,3,0.3)" stroke-width="1.5"/>
+  <path d="M 32 552 L 32 568 L 48 568" fill="none" stroke="rgba(255,183,3,0.3)" stroke-width="1.5"/>
+  <path d="M 768 552 L 768 568 L 752 568" fill="none" stroke="rgba(255,183,3,0.3)" stroke-width="1.5"/>
+
+  <!-- Metadata Header -->
+  <text x="64" y="60" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="700" fill="#FFB703" letter-spacing="3">CASE STUDY • BHUBANESWAR RETAIL</text>
+  <text x="590" y="60" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="600" fill="#A3A3A3" letter-spacing="1.5">P2 HALF PAGE • 2026</text>
+  <line x1="64" y1="76" x2="736" y2="76" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+
+  <!-- Main Showcase Plate -->
+  <g transform="translate(64, 100)">
+    <rect width="672" height="440" rx="20" fill="url(#psCard)" stroke="rgba(255,183,3,0.2)" stroke-width="1"/>
+
+    <!-- Left: Print Creative Layout Specimen -->
+    <g transform="translate(40, 40)">
+      <!-- Physical Booklet Page Frame -->
+      <rect width="320" height="360" rx="12" fill="#FAF8F5" stroke="#E5E0D8" stroke-width="1"/>
+      
+      <!-- Top Banner in Booklet -->
+      <rect x="0" y="0" width="320" height="90" rx="12" fill="#8B2500"/>
+      <rect x="0" y="78" width="320" height="12" fill="#8B2500"/>
+      <text x="24" y="42" font-family="'Plus Jakarta Sans', sans-serif" font-size="18" font-weight="800" fill="#FFFFFF">PURI SWEETS</text>
+      <text x="24" y="64" font-family="'Noto Sans Odia', sans-serif" font-size="12" font-weight="600" fill="#FFD54F">ପୁରୀ ସୁଇଟ୍ସ • ୟୁନିଟ-୨ ମାର୍କେଟ</text>
+
+      <!-- Editorial Product Callout -->
+      <text x="24" y="125" font-family="'Plus Jakarta Sans', sans-serif" font-size="13" font-weight="700" fill="#1C1917">Authentic Chhena Poda &amp; Rasagola</text>
+      <text x="24" y="148" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="400" fill="#78716C">Fresh daily batch • Pure Cow Milk Khua</text>
+      <text x="24" y="166" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="400" fill="#78716C">Unit-2 Market Building, Bhubaneswar</text>
+
+      <!-- Special Offer Box -->
+      <rect x="24" y="190" width="272" height="64" rx="8" fill="#FFF7ED" stroke="#FDBA74" stroke-width="1"/>
+      <text x="40" y="216" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="700" fill="#C2410C">FESTIVE DISCOUNT: 15% OFF</text>
+      <text x="40" y="236" font-family="'Plus Jakarta Sans', sans-serif" font-size="9.5" font-weight="500" fill="#9A3412">On Box Packings above 1 Kg • Show this Booklet</text>
+
+      <!-- Bottom Dynamic QR Box -->
+      <g transform="translate(24, 274)">
+        <rect width="64" height="64" rx="6" fill="#1C1917"/>
+        <!-- Simulated QR Pattern -->
+        <rect x="8" y="8" width="20" height="20" fill="#FFB703"/>
+        <rect x="12" y="12" width="12" height="12" fill="#1C1917"/>
+        <rect x="36" y="8" width="20" height="20" fill="#FFB703"/>
+        <rect x="40" y="12" width="12" height="12" fill="#1C1917"/>
+        <rect x="8" y="36" width="20" height="20" fill="#FFB703"/>
+        <rect x="12" y="40" width="12" height="12" fill="#1C1917"/>
+        <rect x="36" y="36" width="8" height="8" fill="#FFB703"/>
+        <rect x="48" y="48" width="8" height="8" fill="#FFB703"/>
+
+        <text x="76" y="26" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="700" fill="#1C1917">SCAN FOR 1-TAP</text>
+        <text x="76" y="42" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="700" fill="#16A34A">WHATSAPP MENU</text>
+        <text x="76" y="58" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="600" fill="#78716C">prachar.in/u/purisweets</text>
+      </g>
+    </g>
+
+    <!-- Right: Commercial Impact Ledger -->
+    <g transform="translate(390, 50)">
+      <text x="0" y="30" font-family="'Plus Jakarta Sans', sans-serif" font-size="24" font-weight="800" fill="#FFFFFF">Puri Sweets &amp; Confectionery</text>
+      <text x="0" y="56" font-family="'Plus Jakarta Sans', sans-serif" font-size="13" font-weight="500" fill="#A3A3A3">Heritage Confectionery Brand • Unit-2 High Street</text>
+
+      <!-- Metrics Row -->
+      <g transform="translate(0, 90)">
+        <rect width="240" height="60" rx="10" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+        <text x="18" y="26" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="600" fill="#FFB703">MONTHLY REACH</text>
+        <text x="18" y="48" font-family="'Plus Jakarta Sans', sans-serif" font-size="16" font-weight="800" fill="#FFFFFF">50,000 Doorsteps</text>
+      </g>
+
+      <g transform="translate(0, 165)">
+        <rect width="240" height="60" rx="10" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+        <text x="18" y="26" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="600" fill="#10B981">WHATSAPP DIRECT DIALS</text>
+        <text x="18" y="48" font-family="'Plus Jakarta Sans', sans-serif" font-size="16" font-weight="800" fill="#FFFFFF">380+ Orders / Mo</text>
+      </g>
+
+      <g transform="translate(0, 240)">
+        <rect width="240" height="60" rx="10" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+        <text x="18" y="26" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="600" fill="#38BDF8">DYNAMIC ROUTING</text>
+        <text x="18" y="48" font-family="'Plus Jakarta Sans', sans-serif" font-size="16" font-weight="800" fill="#FFFFFF">Zero Reprint Cost</text>
+      </g>
+    </g>
+  </g>
+</svg>

@@ -44,16 +44,16 @@ export default function HowItWorksSection() {
         {/* Section Header */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-16 lg:mb-24 gap-8">
           <div>
-            <span className="text-xs uppercase tracking-[0.2em] font-semibold text-neutral-500 block mb-3 font-mono">
+            <span className="text-xs uppercase tracking-[0.2em] font-semibold text-neutral-700 block mb-3 font-mono">
               The Press Choreography
             </span>
             <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-[#121212] tracking-tight leading-[1.04] font-display">
               From reservation <br />
-              <span className="text-neutral-500">to 50,000 doorsteps.</span>
+              <span className="text-neutral-700">to 50,000 doorsteps.</span>
             </h2>
           </div>
 
-          <div className="max-w-md text-sm sm:text-base text-neutral-600 leading-relaxed font-normal">
+          <div className="max-w-md text-sm sm:text-base text-neutral-700 leading-relaxed font-normal">
             Every edition follows a disciplined, verified calendar synchronized with Chandan Printers Unit-3 offset press operations and dedicated street-level logistics teams.
           </div>
         </div>
@@ -84,10 +84,10 @@ export default function HowItWorksSection() {
                     <p className="text-xs font-serif text-amber-700">
                       {step.odia}
                     </p>
-                    <p className="text-xs font-mono text-neutral-500 font-medium">
+                    <p className="text-xs font-mono text-neutral-700 font-medium">
                       {step.schedule}
                     </p>
-                    <p className="text-sm text-neutral-600 leading-relaxed pt-2">
+                    <p className="text-sm text-neutral-700 leading-relaxed pt-2">
                       {step.description}
                     </p>
                   </div>

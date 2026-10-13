@@ -11,13 +11,19 @@ export default function HeaderNav() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
-  // Subtle background transition on scroll
+  // Subtle background transition and scroll progress calculation
   useEffect(() => {
     const handleScroll = () => {
+      const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
+      if (totalScroll > 0) {
+        setScrollProgress(Math.min(100, Math.max(0, (window.scrollY / totalScroll) * 100)));
+      }
       setIsScrolled(window.scrollY > 20);
     };
     window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -47,7 +53,7 @@ export default function HeaderNav() {
 
   return (
     <header
-      className={`sticky top-0 z-50 transition-all duration-300 ${
+      className={`sticky top-0 z-50 transition-all duration-300 relative ${
         isScrolled
           ? "border-b border-white/10 bg-[#0A0A0A]/90 backdrop-blur-md py-3.5"
           : isHomeTop
@@ -55,6 +61,17 @@ export default function HeaderNav() {
           : "border-b border-transparent bg-transparent py-5"
       }`}
     >
+      {/* Brand Appart Signature Scroll Progress Bar */}
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-transparent pointer-events-none z-50 overflow-hidden">
+        <div
+          className="h-full bg-gradient-to-r from-[#FFB703] via-[#FFAA00] to-[#FF8800] transition-all duration-75 ease-out relative"
+          style={{ width: `${scrollProgress}%` }}
+        >
+          {scrollProgress > 0 && (
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_8px_#FFB703]" />
+          )}
+        </div>
+      </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-8 flex items-center justify-between">
         {/* Brand Wordmark (Brand Appart simplicity) */}
         <Link href="/" className="flex items-center gap-2.5 group">
@@ -280,7 +297,7 @@ export default function HeaderNav() {
               </div>
             )}
 
-            <div className="pt-4 text-[11px] text-neutral-500 font-mono text-center">
+            <div className="pt-4 text-[11px] text-neutral-400 font-mono text-center">
               Saroswati Khabar • Bhubaneswar, Odisha
             </div>
           </div>

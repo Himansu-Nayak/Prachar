@@ -71,7 +71,7 @@ export default function PhygitalJourney() {
             </span>
             <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.04] font-display">
               The Phygital <br />
-              <span className="text-neutral-500">conversion journey</span>
+              <span className="text-neutral-400">conversion journey</span>
             </h2>
           </div>
 
@@ -123,7 +123,7 @@ export default function PhygitalJourney() {
                   </div>
                 </div>
 
-                <div className="mt-8 pt-4 border-t border-white/5 text-[11px] font-mono text-neutral-500 flex items-center justify-between">
+                <div className="mt-8 pt-4 border-t border-white/5 text-[11px] font-mono text-neutral-400 flex items-center justify-between">
                   <span>{stage.metrics}</span>
                 </div>
               </div>
@@ -137,9 +137,9 @@ export default function PhygitalJourney() {
             <span className="text-xs font-mono text-[#FFB703] uppercase tracking-widest block">
               Stage {STAGES[activeStage].step} In Detail
             </span>
-            <h4 className="text-2xl sm:text-3xl font-bold text-white font-display">
+            <h3 className="text-2xl sm:text-3xl font-bold text-white font-display">
               {STAGES[activeStage].title}
-            </h4>
+            </h3>
             <p className="text-sm sm:text-base text-neutral-300 leading-relaxed">
               {STAGES[activeStage].detail}
             </p>

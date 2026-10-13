@@ -56,6 +56,11 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 import SmoothScrollProvider from "@/components/ui/SmoothScrollProvider";
@@ -132,7 +137,7 @@ export default function RootLayout({
                 <p className="text-xs sm:text-sm text-neutral-400 max-w-sm leading-relaxed">
                   The unified phygital network bridging high-circulation physical advertising booklets and tactile smart cards with verified digital identity infrastructure.
                 </p>
-                <div className="pt-2 text-xs text-neutral-500 space-y-1 font-mono">
+                <div className="pt-2 text-xs text-neutral-400 space-y-1 font-mono">
                   <p>A Unit of <strong className="text-neutral-300">Saroswati Khabar</strong></p>
                   <p>PRGI Registration: <span className="text-neutral-300">ORORI/25/A3295</span></p>
                   <p>MSME Udyam: <span className="text-neutral-300">UDYAM-OD-04-0039313</span></p>
@@ -181,11 +186,11 @@ export default function RootLayout({
                 <ul className="space-y-3 text-xs sm:text-sm text-neutral-400">
                   <li>
                     <span className="text-neutral-300 block font-medium">Distribution Hubs</span>
-                    <span className="text-xs text-neutral-500">8 Bhubaneswar Sectors</span>
+                    <span className="text-xs text-neutral-400">8 Bhubaneswar Sectors</span>
                   </li>
                   <li>
                     <span className="text-neutral-300 block font-medium">Monthly Circulation</span>
-                    <span className="text-xs text-neutral-500">50,000+ Door-to-Door</span>
+                    <span className="text-xs text-neutral-400">50,000+ Door-to-Door</span>
                   </li>
                   <li>
                     <span className="text-neutral-300 block font-medium">Next Press Cutoff</span>
@@ -208,23 +213,23 @@ export default function RootLayout({
                   <p className="text-neutral-300">
                     BJB Nagar, Bhubaneswar, Odisha — 751014
                   </p>
-                  <div className="space-y-1">
-                    <a href="tel:7077011733" className="block text-[#FFB703] hover:underline font-mono text-xs">
+                  <div className="flex flex-col gap-2 py-1">
+                    <a href="tel:7077011733" className="inline-block py-1 text-[#FFB703] hover:underline font-mono text-xs">
                       +91 70770 11733
                     </a>
-                    <a href="tel:9178898844" className="block text-[#FFB703] hover:underline font-mono text-xs">
+                    <a href="tel:9178898844" className="inline-block py-1 text-[#FFB703] hover:underline font-mono text-xs">
                       +91 91788 98844
                     </a>
                   </div>
                   <div>
-                    <a href="mailto:pracharbbsr1@gmail.com" className="text-neutral-400 hover:text-white text-xs break-all">
+                    <a href="mailto:pracharbbsr1@gmail.com" className="text-neutral-400 hover:text-white text-xs break-all inline-block py-1">
                       pracharbbsr1@gmail.com
                     </a>
                   </div>
                   <div className="pt-2">
                     <Link
                       href="/contact"
-                      className="text-[#FFB703] hover:underline font-medium text-xs inline-flex items-center gap-1"
+                      className="text-[#FFB703] hover:underline font-medium text-xs inline-flex items-center gap-1 py-1"
                     >
                       <span>Booking Inquiry Desk &amp; FAQ</span>
                       <ArrowRight className="w-3 h-3" />
@@ -235,18 +240,18 @@ export default function RootLayout({
             </div>
 
             {/* Bottom Bar */}
-            <div className="pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-neutral-500">
+            <div className="pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-neutral-400">
               <p>
                 &copy; {new Date().getFullYear()} PRACHAR. All rights reserved. Published by Saroswati Khabar, Bhubaneswar.
               </p>
               <div className="flex items-center gap-6">
-                <Link href="/about" className="hover:text-neutral-300 transition-colors">
+                <Link href="/about" className="hover:text-neutral-200 transition-colors py-1">
                   About
                 </Link>
-                <Link href="/contact" className="hover:text-neutral-300 transition-colors">
+                <Link href="/contact" className="hover:text-neutral-200 transition-colors py-1">
                   Contact
                 </Link>
-                <Link href="/advertise" className="hover:text-neutral-300 transition-colors">
+                <Link href="/advertise" className="hover:text-neutral-200 transition-colors py-1">
                   Rate Card
                 </Link>
               </div>

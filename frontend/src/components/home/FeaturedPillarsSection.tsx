@@ -104,7 +104,7 @@ export default function FeaturedPillarsSection() {
             </div>
             <h2 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[0.98] font-display">
               Featured <br />
-              <span className="text-neutral-500 font-serif italic font-normal">work &amp; capabilities</span>
+              <span className="text-neutral-400 font-serif italic font-normal">work &amp; capabilities</span>
             </h2>
           </div>
 
@@ -138,10 +138,10 @@ export default function FeaturedPillarsSection() {
                   <div className="absolute top-0 left-6 right-6 h-[1.5px] bg-gradient-to-r from-transparent via-[#FFB703] to-transparent" />
                 )}
                 <div className="flex items-center justify-between mb-2 font-mono text-xs">
-                  <span className={isSelected ? "text-[#FFB703] font-bold" : "text-neutral-500"}>
+                  <span className={isSelected ? "text-[#FFB703] font-bold" : "text-neutral-400"}>
                     {pillar.number}
                   </span>
-                  <span className="text-[11px] uppercase tracking-wider text-neutral-500">
+                  <span className="text-[11px] uppercase tracking-wider text-neutral-400">
                     {pillar.tag}
                   </span>
                 </div>

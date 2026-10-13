@@ -93,7 +93,7 @@ export default function MasterCinematicHero() {
 
       {/* Eyebrow Category */}
       <div className="max-w-6xl mx-auto w-full text-center relative z-20 pt-2 pb-4">
-        <span className="text-[11px] sm:text-xs font-mono font-bold tracking-[0.25em] text-neutral-500 uppercase">
+        <span className="text-[11px] sm:text-xs font-mono font-bold tracking-[0.25em] text-neutral-700 uppercase">
           PHYGITAL PUBLICITY NETWORK • BHUBANESWAR
         </span>
       </div>
@@ -119,7 +119,7 @@ export default function MasterCinematicHero() {
         {/* Quiet Monochromatic Corridor Strip */}
         <div
           ref={corridorRef}
-          className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-mono tracking-widest text-neutral-500 uppercase max-w-3xl mx-auto"
+          className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-mono tracking-widest text-neutral-700 uppercase max-w-3xl mx-auto"
         >
           <span>SAHEED NAGAR</span>
           <span className="text-neutral-300">•</span>
@@ -130,6 +130,44 @@ export default function MasterCinematicHero() {
           <span>CHANDRASEKHARPUR</span>
           <span className="text-neutral-300">•</span>
           <span className="text-black font-bold">50,000+ COPIES</span>
+        </div>
+
+        {/* Continuous BrandAppart-Style Partner & Accreditation Marquee */}
+        <div className="w-full overflow-hidden py-3 border-y border-black/5 bg-black/[0.02]">
+          <div className="animate-marquee items-center gap-10 text-[11px] font-mono tracking-widest text-neutral-600 uppercase">
+            <span>PRGI REG: ORORI/25/A3295</span>
+            <span className="text-amber-600">•</span>
+            <span>MSME UDYAM: UDYAM-OD-04-0039313</span>
+            <span className="text-amber-600">•</span>
+            <span>CHANDAN PRINTERS UNIT-3 OFFSET</span>
+            <span className="text-amber-600">•</span>
+            <span>50,000+ COPIES MONTHLY PRESS CIRCULATION</span>
+            <span className="text-amber-600">•</span>
+            <span>8 BHUBANESWAR SATURATION HUBS</span>
+            <span className="text-amber-600">•</span>
+            <span>18TH MONTHLY PRESS CUTOFF</span>
+            <span className="text-amber-600">•</span>
+            <span>DYNAMIC EDGE QR TELEMETRY</span>
+            <span className="text-amber-600">•</span>
+            <span>RFC 6350 VCARD INTEGRATION</span>
+            <span className="text-amber-600">•</span>
+            <span>PRGI REG: ORORI/25/A3295</span>
+            <span className="text-amber-600">•</span>
+            <span>MSME UDYAM: UDYAM-OD-04-0039313</span>
+            <span className="text-amber-600">•</span>
+            <span>CHANDAN PRINTERS UNIT-3 OFFSET</span>
+            <span className="text-amber-600">•</span>
+            <span>50,000+ COPIES MONTHLY PRESS CIRCULATION</span>
+            <span className="text-amber-600">•</span>
+            <span>8 BHUBANESWAR SATURATION HUBS</span>
+            <span className="text-amber-600">•</span>
+            <span>18TH MONTHLY PRESS CUTOFF</span>
+            <span className="text-amber-600">•</span>
+            <span>DYNAMIC EDGE QR TELEMETRY</span>
+            <span className="text-amber-600">•</span>
+            <span>RFC 6350 VCARD INTEGRATION</span>
+            <span className="text-amber-600">•</span>
+          </div>
         </div>
 
         {/* Centered Editorial Supporting Narrative */}
@@ -179,7 +217,7 @@ export default function MasterCinematicHero() {
         </div>
 
         {/* Center: Scroll Indicator */}
-        <div className="hidden md:flex items-center gap-2 text-neutral-400">
+        <div className="hidden md:flex items-center gap-2 text-neutral-600">
           <span>(↓)</span>
           <span className="uppercase tracking-widest text-[10px]">Scroll to Inspect the Craft</span>
         </div>
